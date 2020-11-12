@@ -1,0 +1,34 @@
+拉去依赖会直接兼容gomod
+
+go get github.com/gomodule/redigo/redis
+go get -u github.com/go-sql-driver/mysql
+go get github.com/kataras/iris/v12.1.4
+go get -u github.com/golang/net/websocket
+github.com/BurntSushi/toml
+
+//拉去依赖的所有的
+go get -v ./...
+
+
+
+git config --global http.postBuffer 1048576000
+git config --global http.postBuffer 1048576000
+git config http.postBuffer 524288000
+git config https.postBuffer 524288000
+//拉去无法拉去的 golang/x
+mkdir -p $GOPATH/src/github.com/golang/
+mkdir -p $GOPATH/src/golang.org/x
+git clone https://github.com/golang/sys.git $GOPATH/src/github.com/golang/sys
+git clone https://github.com/golang/net.git $GOPATH/src/github.com/golang/net
+git clone https://github.com/golang/text.git $GOPATH/src/github.com/golang/text
+git clone https://github.com/golang/lint.git $GOPATH/src/github.com/golang/lint
+git clone https://github.com/golang/tools.git $GOPATH/src/github.com/golang/tools
+git clone https://github.com/golang/crypto.git $GOPATH/src/github.com/golang/crypto
+
+ln -s $GOPATH/src/github.com/golang/ $GOPATH/src/golang.org/x
+如果找不到，直接拷贝到对应目录
+
+
+
+
+

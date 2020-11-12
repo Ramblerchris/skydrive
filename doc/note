@@ -1,0 +1,12 @@
+import (
+	"fmt"
+	"image"
+	"os"
+	_"image/gif"
+	_ "image/jpeg"
+	_ "image/png"
+)
+
+_操作其实只是引入该包。当导入一个包时，它所有的init()函数就会被执行，但有些时候并非真的需要使用这些包，仅仅是希望它的init()函数被执行而已
+
+

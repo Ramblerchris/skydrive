@@ -1,0 +1,13 @@
+*.iml
+/.idea/workspace.xml
+/.idea/libraries
+/.idea/
+.DS_Store
+/build
+*/build/
+/captures
+.externalNativeBuild
+/vendor/*
+/temp/*
+.idea
+*.exe
