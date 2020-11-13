@@ -39,7 +39,7 @@ func CreateDirbySha1( sha, filename string,uid int64) (error, string) {
 		sha = filename
 	}
 	code := HashCode(sha)
-	dir := fmt.Sprintf("%s/%d/%d/%d/%d/%d/", "temp", code&0xf, (code>>4)&0xf, (code>>8)&0xf, (code>>12)&0xf, (code>>16)&0xf)
+	dir := fmt.Sprintf("%s/%d/%d/%d/%d/%d", "temp", code&0xf, (code>>4)&0xf, (code>>8)&0xf, (code>>12)&0xf, (code>>16)&0xf)
 	err := os.MkdirAll(dir, os.ModePerm)
 	if err!=nil{
 		return err,""
