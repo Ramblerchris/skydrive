@@ -8,6 +8,7 @@ import (
 	"strings"
 )
 //需要优化
+// Deprecated: broadcast.broStartUDPServerV2 instead.
 func StartUDPServer(UDPListenPort int )  {
 	address :=  ":" + strconv.Itoa(UDPListenPort)
 	addr, err := net.ResolveUDPAddr("udp", address)

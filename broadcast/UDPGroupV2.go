@@ -3,6 +3,7 @@ package broadcast
 import (
 	"fmt"
 	"net"
+	"strings"
 )
 
 //3个并发处理管道
@@ -44,7 +45,7 @@ func dealUdpGroup(UDPServerSendPort int,listener *net.UDPConn) {
 		fmt.Println(err)
 	}
 	//defer conn.Close()
-	conn.Write([]byte("hello"))
+	conn.Write([]byte(fmt.Sprintf("pong %s", strings.ToUpper(string(data[:n])))))
 	fmt.Printf("<%s>\n", conn.RemoteAddr())
 	<-conngrouplist
 

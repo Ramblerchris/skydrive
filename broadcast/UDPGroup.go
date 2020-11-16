@@ -6,6 +6,7 @@ import (
 )
 
 //需要优化
+// Deprecated: broadcast.StartUDPGroupV2 instead.
 func StartUDPGroup(UDPListenPort int) {
 	//如果第二参数为nil,它会使用系统指定多播接口，但是不推荐这样使用
 	addr, err := net.ResolveUDPAddr("udp", "225.0.0.1:8998")
