@@ -174,7 +174,7 @@ func FinishMultipartUploadHandler(w http.ResponseWriter, r *http.Request, utoken
 			if _, err := db.GetUserFileMeta(filesha1, utoken.Uid.Int64); err != nil {
 				//避免重复保存
 				//文件表已经插入成功,再插入用户文件表
-				/*if !db.SaveUserFileInfo(utoken.Uid.Int64, pid, utoken.Phone.String, filesha1, filename, fileLocation, int64(filesize)) {
+				/*if !db.UpdateUserFileInfo(utoken.Uid.Int64, pid, utoken.Phone.String, filesha1, filename, fileLocation, int64(filesize)) {
 					ReturnResponseCodeMessage(w, config.Net_ErrorCode, "用户文件保存失败")
 					return
 				}*/

@@ -17,7 +17,10 @@ import (
 //获取用户文件列表
 func GetUserFileList(w http.ResponseWriter, r *http.Request, utoken *db.UToken) {
 	r.ParseForm()
-	if byuid, err := db.GetUserFileMetaByuid(utoken.Uid.Int64); err == nil {
+	//pageNo, _ := strconv.ParseInt(r.FormValue("pageNo"), 10, 64)
+	//pageSize, _ := strconv.ParseInt(r.FormValue("pageSize"), 10, 64)
+
+	if byuid, err := db.GetUserFileListMetaByuid(utoken.Uid.Int64); err == nil {
 		metaFilelist := make([]meta.FileMeta, 0)
 		for _, value := range byuid {
 			//fmt.Println("GetUserFileList",value)
@@ -60,7 +63,7 @@ func GetSha1sIsExistByUser(w http.ResponseWriter, r *http.Request, utoken *db.UT
 			return
 		}
 		split := strings.Split(value, ";")
-		if byuid, err := db.GetUFileBysha1s(utoken.Uid.Int64, split); err == nil {
+		if byuid, err := db.GetUFileListBysha1s(utoken.Uid.Int64, split); err == nil {
 			metaFilelist := make([]meta.FileMeta, 0)
 			for _, value := range byuid {
 				//fmt.Println("GetUserDirFileList", value)
@@ -117,7 +120,7 @@ func DeleteFilesDirByUser(w http.ResponseWriter, r *http.Request, utoken *db.UTo
 
 //查看当前用户所有保存文件的sha1
 func GetAllSha1sByUser(w http.ResponseWriter, r *http.Request, utoken *db.UToken) {
-	if byuid, err := db.GetUFileAllsha1s(utoken.Uid.Int64); err == nil {
+	if byuid, err := db.GetUFileAllSha1List(utoken.Uid.Int64); err == nil {
 		ReturnResponse(w, config.Net_SuccessCode, "get sha1s success ", byuid)
 		return
 	}
@@ -134,7 +137,7 @@ func AddDir(w http.ResponseWriter, r *http.Request, utoken *db.UToken) {
 		return
 	}
 	//todo 查询用户同级文件夹下的文件名是否存在
-	if data, err := db.GetUserDirNmaeByUidAndPidAndDirName(utoken.Uid.Int64, pid, dirname); err == nil && len(data) != 0 {
+	if data, err := db.GetUserDirListByUidAndPidAndDirName(utoken.Uid.Int64, pid, dirname); err == nil && len(data) != 0 {
 		ReturnResponseCodeMessage(w, config.Net_ErrorCode, dirname+"文件夹已经存在")
 		return
 	}
@@ -164,7 +167,7 @@ func HitPass(w http.ResponseWriter, r *http.Request, utoken *db.UToken) {
 			ReturnResponse(w, config.Net_SuccessAginCode, "already save success ", *meta.GetNewFileMetaObject(*value))
 			return
 		}
-		if db.SaveUserFileInfo(utoken.Uid.Int64, pid, utoken.Phone.String, metaInfo.FileHash.String, metaInfo.FileName.String, metaInfo.FileLocation.String, metaInfo.FileSize.Int64, metaInfo.Minitype.String, int(metaInfo.Ftype.Int32), metaInfo.Video_duration.String) {
+		if db.UpdateUserFileInfo(utoken.Uid.Int64, pid, utoken.Phone.String, metaInfo.FileHash.String, metaInfo.FileName.String, metaInfo.FileLocation.String, metaInfo.FileSize.Int64, metaInfo.Minitype.String, int(metaInfo.Ftype.Int32), metaInfo.Video_duration.String) {
 			fmt.Println(" metaInfo: ", metaInfo)
 			fmt.Printf("保存文件 成功，大小 %d \n", metaInfo.FileSize)
 			//更新当前文件夹的缩略图最新
@@ -251,7 +254,7 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, utoken *db.UToken) {
 			return
 		}
 		//文件表已经插入成功,再插入用户文件表
-		if db.SaveUserFileInfo(utoken.Uid.Int64, pid, utoken.Phone.String, metaInfo.Filesha1, metaInfo.FileName, metaInfo.Location, metaInfo.FileSize, minetype, ftype, utils.GetTimeStr(int(videoduration))) {
+		if db.UpdateUserFileInfo(utoken.Uid.Int64, pid, utoken.Phone.String, metaInfo.Filesha1, metaInfo.FileName, metaInfo.Location, metaInfo.FileSize, minetype, ftype, utils.GetTimeStr(int(videoduration))) {
 			//更新当前文件夹的缩略图最新
 			db.UpdateUFileDirSha1Pre(metaInfo.Filesha1, pid)
 			fmt.Println(" metaInfo: ", metaInfo)

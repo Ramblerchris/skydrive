@@ -75,7 +75,7 @@ func SaveUserDirInfo(uid, pid int64, phone, dirName string) (bool, int64) {
 }
 
 //保存文件信息到用户对应文件夹
-func SaveUserFileInfo(uid, pid int64, phone, filehash, filename, location string, filesize int64, minitype string, ftype int, video_duration string) bool {
+func UpdateUserFileInfo(uid, pid int64, phone, filehash, filename, location string, filesize int64, minitype string, ftype int, video_duration string) bool {
 	stmt, error := mysql.DbConnect().Prepare(saveUFileinfo)
 	if error != nil {
 		fmt.Println(tAG_userfile, "failed to prepare statement error:", error.Error())
@@ -101,7 +101,7 @@ func SaveUserFileInfo(uid, pid int64, phone, filehash, filename, location string
 }
 
 //修改所有用户的这个文件状态
-func UpdateUserFileInfo(filehash string, filestatus int8) bool {
+func UpdateUserFileInfoStatus(filehash string, filestatus int8) bool {
 	stmt, error := mysql.DbConnect().Prepare(updateUFileInfo)
 	if error != nil {
 		fmt.Println(tAG_userfile, "failed to prepare statement error:", error.Error())
@@ -178,8 +178,8 @@ func GetUserFileMeta(filehash string, uid int64) (*TableUserFile, error) {
 	return &tfile, nil
 }
 
-//查询用户同级文件夹下的文件名是否存在
-func GetUserDirNmaeByUidAndPidAndDirName(uid, pid int64, filename string) (tableUserFile []TableUserFile, err error) {
+//查询用户同级文件夹下相同文件名的文件夹列表
+func GetUserDirListByUidAndPidAndDirName(uid, pid int64, filename string) (tableUserFile []TableUserFile, err error) {
 	stmt, error := mysql.DbConnect().Prepare(selectUFileByUidAndPidAndFileName)
 	if error != nil {
 		fmt.Println(tAG_userfile, "failed to prepare statement error:", error)
@@ -233,7 +233,7 @@ func GetUserDirFileListByUidAndPid(uid, pid int64) (tableUserFile []TableUserFil
 }
 
 //查询用户所有的文件
-func GetUserFileMetaByuid(uid int64) (tableUserFile []TableUserFile, err error) {
+func GetUserFileListMetaByuid(uid int64) (tableUserFile []TableUserFile, err error) {
 	stmt, error := mysql.DbConnect().Prepare(selectUFileByUid)
 	if error != nil {
 		fmt.Println(tAG_userfile, "failed to prepare statement error:", error)
@@ -260,7 +260,7 @@ func GetUserFileMetaByuid(uid int64) (tableUserFile []TableUserFile, err error) 
 }
 
 //查询用户所有的文件
-func GetUFileAllsha1s(uid int64) (sha1s []string, err error) {
+func GetUFileAllSha1List(uid int64) (sha1s []string, err error) {
 	stmt, error := mysql.DbConnect().Prepare(selectUFileAllsha1s)
 	if error != nil {
 		fmt.Println(tAG_userfile, "failed to prepare statement error:", error)
@@ -288,11 +288,11 @@ func GetUFileAllsha1s(uid int64) (sha1s []string, err error) {
 }
 
 //查询用户所有的文件
-func GetUFileBysha1s(uid int64, sha1s []string) (tableUserFile []TableUserFile, err error) {
+func GetUFileListBysha1s(uid int64, sha1s []string) (tableUserFile []TableUserFile, err error) {
 	sha1sJoin := strings.Join(sha1s, "','")
 	sprintf := fmt.Sprintf(selectUFileBysha1s, sha1sJoin)
 	stmt, error := mysql.DbConnect().Prepare(sprintf)
-	fmt.Println(tAG_userfile, "GetUFileBysha1s sprintf:", sprintf)
+	fmt.Println(tAG_userfile, "GetUFileListBysha1s sprintf:", sprintf)
 	if error != nil {
 		fmt.Println(tAG_userfile, "failed to prepare statement error:", error)
 		return nil, error
@@ -322,7 +322,7 @@ func UpdateUFileBysha1s(uid, pid int64, filestatus int8, sha1s []string) bool {
 	sha1sJoin := strings.Join(sha1s, "','")
 	sprintf := fmt.Sprintf(updateUFileStatus, sha1sJoin)
 	stmt, error := mysql.DbConnect().Prepare(sprintf)
-	fmt.Println(tAG_userfile, "GetUFileBysha1s sprintf:", sprintf)
+	fmt.Println(tAG_userfile, "GetUFileListBysha1s sprintf:", sprintf)
 	if error != nil {
 		fmt.Println(tAG_userfile, "failed to prepare statement error:", error)
 		return false
@@ -348,7 +348,7 @@ func UpdateUFileDirStatus(ids []string, filestatus int8) bool {
 	sha1sJoin := strings.Join(ids, "','")
 	sprintf := fmt.Sprintf(updateUFileDirsStatus, sha1sJoin)
 	stmt, error := mysql.DbConnect().Prepare(sprintf)
-	fmt.Println(tAG_userfile, "GetUFileBysha1s sprintf:", updateUFileDirsStatus)
+	fmt.Println(tAG_userfile, "GetUFileListBysha1s sprintf:", updateUFileDirsStatus)
 	if error != nil {
 		fmt.Println(tAG_userfile, "failed to prepare statement error:", error)
 		return false
