@@ -33,7 +33,7 @@ type User struct {
 }
 
 //登录
-func Signin(w http.ResponseWriter, r *http.Request) {
+func SignInHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		r.ParseMultipartForm(32 << 20)
 	}
@@ -48,10 +48,10 @@ func Signin(w http.ResponseWriter, r *http.Request) {
 		ReturnResponseCodeMessage(w, config.Net_ErrorCode, "手机号格式错误")
 		return
 	}
-	if info, err := db.GetUserInfo(phone); err == nil && info.Id.Int32 > 0 {
+	if info, err := db.GetUserInfoByPhone(phone); err == nil && info.Id.Int32 > 0 {
 		if BuildEncodePwd(password) == info.User_pwd.String {
 			//todo 生成token
-			if token, error := db.SaveUToken(info.Id.Int32, info.Phone.String); error == nil {
+			if token, error := db.CreateUserTokenByUidPhone(info.Id.Int32, info.Phone.String); error == nil {
 				ReturnResponse(w, config.Net_SuccessCode, "登录成功", token)
 			} else {
 				ReturnResponseCodeMessage(w, config.Net_ErrorCode, "登陆失败")
@@ -65,7 +65,7 @@ func Signin(w http.ResponseWriter, r *http.Request) {
 }
 
 //注册
-func Register(w http.ResponseWriter, r *http.Request) {
+func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		r.ParseMultipartForm(32 << 20)
 	}
@@ -87,12 +87,12 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	//是否重复注册
-	if info, err := db.GetUserInfo(phone); err == nil && info.Id.Int32 > 0 {
+	if info, err := db.GetUserInfoByPhone(phone); err == nil && info.Id.Int32 > 0 {
 		ReturnResponseCodeMessage(w, config.Net_ErrorCode, "用户已经注册")
 		return
 	}
 	if db.SaveUserInfo(phone, BuildEncodePwd(password), time.Now().Format("2006-01-02 15:04:05")) {
-		if info, err := db.GetUserInfo(phone); err == nil {
+		if info, err := db.GetUserInfoByPhone(phone); err == nil {
 			ReturnResponse(w, config.Net_SuccessCode, "注册成功", &User{
 				Id:              info.Id.Int32,
 				User_name:       info.User_name.String,
@@ -114,7 +114,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 }
 
 //获取用户信息
-func GetUserInfo(w http.ResponseWriter, r *http.Request, utoken *db.UToken) {
+func GetUserInfoByTokenHandler(w http.ResponseWriter, r *http.Request, utoken *db.UToken) {
 	r.ParseForm()
 	token := getToken(r)
 
@@ -122,7 +122,7 @@ func GetUserInfo(w http.ResponseWriter, r *http.Request, utoken *db.UToken) {
 		ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
 		return
 	}
-	if info, err := db.GetUserInfo(utoken.Phone.String); err == nil && info.Id.Int32 > 0 {
+	if info, err := db.GetUserInfoByPhone(utoken.Phone.String); err == nil && info.Id.Int32 > 0 {
 		ReturnResponse(w, config.Net_SuccessCode, "获取成功", &User{
 			Id:              info.Id.Int32,
 			User_name:       info.User_name.String,
@@ -143,21 +143,21 @@ func GetUserInfo(w http.ResponseWriter, r *http.Request, utoken *db.UToken) {
 }
 
 //登出
-func SignOut(w http.ResponseWriter, r *http.Request, utoken *db.UToken) {
+func SignOutHandler(w http.ResponseWriter, r *http.Request, utoken *db.UToken) {
 	r.ParseForm()
 	token := getToken(r)
 	if len(token) == 0 || token == "" {
 		ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
 		return
 	}
-	if db.DeleteUTokenById(utoken.Tid.Int64) {
+	if db.DeleteUserTokenByTid(utoken.Tid.Int64) {
 		ReturnResponseCodeMessage(w, config.Net_SuccessCode, "登出成功")
 	} else {
 		ReturnResponseCodeMessage(w, config.Net_ErrorCode, "登出失败")
 	}
 }
 
-func UploadUserNameHandler(w http.ResponseWriter, r *http.Request, utoken *db.UToken) {
+func UpdateUserNameByUidHandler(w http.ResponseWriter, r *http.Request, utoken *db.UToken) {
 	r.ParseForm()
 	if r.Method == "POST" {
 		//uid, _ := strconv.ParseInt(r.FormValue("uid"), 10, 64)
@@ -166,7 +166,7 @@ func UploadUserNameHandler(w http.ResponseWriter, r *http.Request, utoken *db.UT
 		//	ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
 		//	return
 		//}
-		if db.UpdateUserName(value, utoken.Uid.Int64) {
+		if db.UpdateUserNameByUid(value, utoken.Uid.Int64) {
 			ReturnResponseCodeMessage(w, config.Net_SuccessCode, "修改成功")
 			return
 		}
@@ -175,7 +175,7 @@ func UploadUserNameHandler(w http.ResponseWriter, r *http.Request, utoken *db.UT
 
 }
 
-func UploadUserPhotoHandler(w http.ResponseWriter, r *http.Request, utoken *db.UToken) {
+func UpdataUploadUserPhotoHandler(w http.ResponseWriter, r *http.Request, utoken *db.UToken) {
 	r.ParseForm()
 	if r.Method == "POST" {
 		file, fileheader, error := r.FormFile("file")
@@ -227,7 +227,7 @@ func UploadUserPhotoHandler(w http.ResponseWriter, r *http.Request, utoken *db.U
 		}
 
 		//文件表已经插入成功,再插入用户文件表
-		if db.UpdateUserPhoto(metaInfo.Location, metaInfo.Filesha1, utoken.Uid.Int64) {
+		if db.UpdateUserPhotoByUid(metaInfo.Location, metaInfo.Filesha1, utoken.Uid.Int64) {
 			fmt.Println(" metaInfo: ", metaInfo)
 			ReturnMetaInfo(w, config.Net_SuccessCode, "file save success", &metaInfo)
 		} else {

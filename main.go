@@ -49,35 +49,36 @@ func main() {
 }
 
 func httpServer() {
-	http.HandleFunc("/user/checknet", handler.CheckNet)
-	http.HandleFunc("/user/register", handler.Register)
-	http.HandleFunc("/user/signin", handler.Signin)
-	http.HandleFunc("/user/getuserinfo", handler.TokenCheckInterceptor(handler.GetUserInfo))
-	http.HandleFunc("/user/signout", handler.TokenCheckInterceptor(handler.SignOut))
-	http.HandleFunc("/user/updatePhoto", handler.TokenCheckInterceptor(handler.UploadUserPhotoHandler))
-	http.HandleFunc("/user/updateUserName", handler.TokenCheckInterceptor(handler.UploadUserNameHandler))
+	http.HandleFunc("/user/checknet", handler.CheckNetIsOkHandler)
+	http.HandleFunc("/user/register", handler.RegisterHandler)
+	http.HandleFunc("/user/signin", handler.SignInHandler)
+	http.HandleFunc("/user/getuserinfo", handler.TokenCheckInterceptor(handler.GetUserInfoByTokenHandler))
+	http.HandleFunc("/user/signout", handler.TokenCheckInterceptor(handler.SignOutHandler))
+	http.HandleFunc("/user/updatePhoto", handler.TokenCheckInterceptor(handler.UpdataUploadUserPhotoHandler))
+	http.HandleFunc("/user/updateUserName", handler.TokenCheckInterceptor(handler.UpdateUserNameByUidHandler))
+
+	http.HandleFunc("/file/getinfo", handler.TokenCheckInterceptor(handler.GetFileInfoBySha1Handler))
+	http.HandleFunc("/file/update", handler.TokenCheckInterceptor(handler.UpdateFileInfoFileNameBySha1Handler))
+	http.HandleFunc("/file/delete", handler.TokenCheckInterceptor(handler.DeleteFileInfoBySha1Handler))
 	//浏览器打开直接下载文件
-	http.HandleFunc("/file/get_download", handler.TokenCheckInterceptor(handler.DownloadFile))
+	http.HandleFunc("/file/download", handler.TokenCheckInterceptor(handler.DownloadFileWebBySha1Handler))
 	//浏览器直接打开查看
-	http.HandleFunc("/file/get_open", handler.TokenCheckInterceptor(handler.OpenFile1))
-	http.HandleFunc("/userfile/getSha1IsExistList", handler.TokenCheckInterceptor(handler.GetSha1sIsExistByUser))
-	http.HandleFunc("/userfile/getAllSha1sByUser", handler.TokenCheckInterceptor(handler.GetAllSha1sByUser))
-	http.HandleFunc("/userfile/upload", handler.TokenCheckInterceptor(handler.UploadHandler))
+	http.HandleFunc("/file/open", handler.TokenCheckInterceptor(handler.OpenFile1Handler))
 
-	http.HandleFunc("/userfile/deletefiles", handler.TokenCheckInterceptor(handler.DeleteFilesBySha1sUser))
-	http.HandleFunc("/userfile/deleteDir", handler.TokenCheckInterceptor(handler.DeleteFilesDirByUser))
 
-	http.HandleFunc("/userfile/getlist", handler.TokenCheckInterceptor(handler.GetUserFileList))
-	http.HandleFunc("/userfile/hitpass", handler.TokenCheckInterceptor(handler.HitPass))
-	http.HandleFunc("/userfile/adddir", handler.TokenCheckInterceptor(handler.AddDir))
-	http.HandleFunc("/userfile/dirlist", handler.TokenCheckInterceptor(handler.GetUserDirFileList))
+	http.HandleFunc("/userfile/getSha1IsExistList", handler.TokenCheckInterceptor(handler.GetSha1ListIsExistByUidHandler))
+	http.HandleFunc("/userfile/getAllSha1sByUser", handler.TokenCheckInterceptor(handler.GetAllSha1ListByUidHandler))
+	http.HandleFunc("/userfile/upload", handler.TokenCheckInterceptor(handler.UploadUserFileHandler))
+	http.HandleFunc("/userfile/deletefiles", handler.TokenCheckInterceptor(handler.DeleteFileListBySha1sUidHandler))
+	http.HandleFunc("/userfile/deleteDir", handler.TokenCheckInterceptor(handler.DeleteFileDirByUidHandler))
+	http.HandleFunc("/userfile/getlist", handler.TokenCheckInterceptor(handler.GetUserFileListByUidHandler))
+	http.HandleFunc("/userfile/hitpass", handler.TokenCheckInterceptor(handler.HitPassBySha1Handler))
+	http.HandleFunc("/userfile/adddir", handler.TokenCheckInterceptor(handler.AddFileDirByUidPidHandler))
+	http.HandleFunc("/userfile/dirlist", handler.TokenCheckInterceptor(handler.GetUserDirFileListByPidHandler))
 	http.HandleFunc("/userfile/initmultipartinfo", handler.TokenCheckInterceptor(handler.InitMultipartUploadHandler))
 	http.HandleFunc("/userfile/finishmultipartinfo", handler.TokenCheckInterceptor(handler.FinishMultipartUploadHandler))
 	http.HandleFunc("/userfile/uploadmultipartinfo", handler.TokenCheckInterceptor(handler.UploadMultipartHandler))
 
-	http.HandleFunc("/file/getinfo", handler.TokenCheckInterceptor(handler.GetFileSha1))
-	http.HandleFunc("/file/update", handler.TokenCheckInterceptor(handler.UpdateFileInfo))
-	http.HandleFunc("/file/delete", handler.TokenCheckInterceptor(handler.DeleteFile))
 
 	fmt.Printf("开始启动本地服务 地址为 %s \r\n", config.ServeLocation)
 	if error := http.ListenAndServe(config.ServeLocation, nil); error != nil {

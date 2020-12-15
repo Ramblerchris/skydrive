@@ -41,7 +41,7 @@ const (
 	updateUFileDirsStatus             = "update tbl_user_file set status=? where id in('%s')"
 	selectUFileBysha1s                = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at,filetype,minitype,ftype,video_duration from tbl_user_file where uid=? and file_sha1 in('%s') "
 	selectUFileAllsha1s               = "select file_sha1 from tbl_user_file where uid=?"
-	tAG_userfile                      = "userfile.go"
+	tAG_userfile                      = "userfileinfo.go"
 )
 
 //创建一个文件夹
@@ -75,7 +75,7 @@ func SaveUserDirInfo(uid, pid int64, phone, dirName string) (bool, int64) {
 }
 
 //保存文件信息到用户对应文件夹
-func UpdateUserFileInfo(uid, pid int64, phone, filehash, filename, location string, filesize int64, minitype string, ftype int, video_duration string) bool {
+func SaveUserFileInfo(uid, pid int64, phone, filehash, filename, location string, filesize int64, minitype string, ftype int, video_duration string) bool {
 	stmt, error := mysql.DbConnect().Prepare(saveUFileinfo)
 	if error != nil {
 		fmt.Println(tAG_userfile, "failed to prepare statement error:", error.Error())
@@ -101,7 +101,7 @@ func UpdateUserFileInfo(uid, pid int64, phone, filehash, filename, location stri
 }
 
 //修改所有用户的这个文件状态
-func UpdateUserFileInfoStatus(filehash string, filestatus int8) bool {
+func UpdateUserFileInfoStatusBySha1(filehash string, filestatus int8) bool {
 	stmt, error := mysql.DbConnect().Prepare(updateUFileInfo)
 	if error != nil {
 		fmt.Println(tAG_userfile, "failed to prepare statement error:", error.Error())
@@ -124,7 +124,7 @@ func UpdateUserFileInfoStatus(filehash string, filestatus int8) bool {
 }
 
 //查看单个文件具体信息
-func GetUserDirInfoByid(id int64) (*TableUserFile, error) {
+func GetUserDirInfoById(id int64) (*TableUserFile, error) {
 	stmt, error := mysql.DbConnect().Prepare(selectUFileByid)
 	if error != nil {
 		fmt.Println(tAG_userfile, "failed to prepare statement error:", error)
@@ -142,7 +142,7 @@ func GetUserDirInfoByid(id int64) (*TableUserFile, error) {
 }
 
 //查看当前用户是否已经存储filehash对应的文件
-func GetUserFileMetaByPid(filehash string, uid, pid int64) (*TableUserFile, error) {
+func GetUserFileMetaByPidUidSha1(filehash string, uid, pid int64) (*TableUserFile, error) {
 	stmt, error := mysql.DbConnect().Prepare(selectUFileByUidAndPidAndSha1)
 	if error != nil {
 		fmt.Println(tAG_userfile, "failed to prepare statement error:", error)
@@ -161,7 +161,7 @@ func GetUserFileMetaByPid(filehash string, uid, pid int64) (*TableUserFile, erro
 }
 
 //查看当前用户是否已经存储filehash对应的文件
-func GetUserFileMeta(filehash string, uid int64) (*TableUserFile, error) {
+func GetUserFileInfoByUidSha1(filehash string, uid int64) (*TableUserFile, error) {
 	stmt, error := mysql.DbConnect().Prepare(selectUFileBySha1)
 	if error != nil {
 		fmt.Println(tAG_userfile, "failed to prepare statement error:", error)
@@ -179,7 +179,7 @@ func GetUserFileMeta(filehash string, uid int64) (*TableUserFile, error) {
 }
 
 //查询用户同级文件夹下相同文件名的文件夹列表
-func GetUserDirListByUidAndPidAndDirName(uid, pid int64, filename string) (tableUserFile []TableUserFile, err error) {
+func GetUserDirListByUidPidDirName(uid, pid int64, filename string) (tableUserFile []TableUserFile, err error) {
 	stmt, error := mysql.DbConnect().Prepare(selectUFileByUidAndPidAndFileName)
 	if error != nil {
 		fmt.Println(tAG_userfile, "failed to prepare statement error:", error)
@@ -206,7 +206,7 @@ func GetUserDirListByUidAndPidAndDirName(uid, pid int64, filename string) (table
 }
 
 //查看当前用户 pid 对应子目录所有文件列表，包括文件列表
-func GetUserDirFileListByUidAndPid(uid, pid int64) (tableUserFile []TableUserFile, err error) {
+func GetUserDirListByUidPid(uid, pid int64) (tableUserFile []TableUserFile, err error) {
 	stmt, error := mysql.DbConnect().Prepare(selectUFileByUidAndPid)
 	if error != nil {
 		fmt.Println(tAG_userfile, "failed to prepare statement error:", error)
@@ -233,7 +233,7 @@ func GetUserDirFileListByUidAndPid(uid, pid int64) (tableUserFile []TableUserFil
 }
 
 //查询用户所有的文件
-func GetUserFileListMetaByuid(uid int64) (tableUserFile []TableUserFile, err error) {
+func GetUserFileListMetaByUid(uid int64) (tableUserFile []TableUserFile, err error) {
 	stmt, error := mysql.DbConnect().Prepare(selectUFileByUid)
 	if error != nil {
 		fmt.Println(tAG_userfile, "failed to prepare statement error:", error)
@@ -260,7 +260,7 @@ func GetUserFileListMetaByuid(uid int64) (tableUserFile []TableUserFile, err err
 }
 
 //查询用户所有的文件
-func GetUFileAllSha1List(uid int64) (sha1s []string, err error) {
+func GetUserFileAllSha1ListByUid(uid int64) (sha1s []string, err error) {
 	stmt, error := mysql.DbConnect().Prepare(selectUFileAllsha1s)
 	if error != nil {
 		fmt.Println(tAG_userfile, "failed to prepare statement error:", error)
@@ -288,11 +288,11 @@ func GetUFileAllSha1List(uid int64) (sha1s []string, err error) {
 }
 
 //查询用户所有的文件
-func GetUFileListBysha1s(uid int64, sha1s []string) (tableUserFile []TableUserFile, err error) {
+func GetUserFileListBySha1s(uid int64, sha1s []string) (tableUserFile []TableUserFile, err error) {
 	sha1sJoin := strings.Join(sha1s, "','")
 	sprintf := fmt.Sprintf(selectUFileBysha1s, sha1sJoin)
 	stmt, error := mysql.DbConnect().Prepare(sprintf)
-	fmt.Println(tAG_userfile, "GetUFileListBysha1s sprintf:", sprintf)
+	fmt.Println(tAG_userfile, "GetUserFileListBySha1s sprintf:", sprintf)
 	if error != nil {
 		fmt.Println(tAG_userfile, "failed to prepare statement error:", error)
 		return nil, error
@@ -318,11 +318,11 @@ func GetUFileListBysha1s(uid int64, sha1s []string) (tableUserFile []TableUserFi
 }
 
 //批量修改当前用户文件状态
-func UpdateUFileBysha1s(uid, pid int64, filestatus int8, sha1s []string) bool {
+func UpdateUserFileStatusBySha1sUidPid(uid, pid int64, filestatus int8, sha1s []string) bool {
 	sha1sJoin := strings.Join(sha1s, "','")
 	sprintf := fmt.Sprintf(updateUFileStatus, sha1sJoin)
 	stmt, error := mysql.DbConnect().Prepare(sprintf)
-	fmt.Println(tAG_userfile, "GetUFileListBysha1s sprintf:", sprintf)
+	fmt.Println(tAG_userfile, "GetUserFileListBySha1s sprintf:", sprintf)
 	if error != nil {
 		fmt.Println(tAG_userfile, "failed to prepare statement error:", error)
 		return false
@@ -344,11 +344,11 @@ func UpdateUFileBysha1s(uid, pid int64, filestatus int8, sha1s []string) bool {
 }
 
 //当前用户文件状态批量修改
-func UpdateUFileDirStatus(ids []string, filestatus int8) bool {
+func UpdateUserFileDirStatusByIds(ids []string, filestatus int8) bool {
 	sha1sJoin := strings.Join(ids, "','")
 	sprintf := fmt.Sprintf(updateUFileDirsStatus, sha1sJoin)
 	stmt, error := mysql.DbConnect().Prepare(sprintf)
-	fmt.Println(tAG_userfile, "GetUFileListBysha1s sprintf:", updateUFileDirsStatus)
+	fmt.Println(tAG_userfile, "GetUserFileListBySha1s sprintf:", updateUFileDirsStatus)
 	if error != nil {
 		fmt.Println(tAG_userfile, "failed to prepare statement error:", error)
 		return false
@@ -370,9 +370,9 @@ func UpdateUFileDirStatus(ids []string, filestatus int8) bool {
 }
 
 //当前用户文件预览图
-func UpdateUFileDirSha1Pre(sha1 string, id int64) bool {
+func UpdateUserFileDirPreSha1ById(sha1 string, id int64) bool {
 	stmt, error := mysql.DbConnect().Prepare(updateUFileDirfile_sha1_pre)
-	fmt.Println(tAG_userfile, "UpdateUFileDirSha1Pre sprintf:", updateUFileDirfile_sha1_pre)
+	fmt.Println(tAG_userfile, "UpdateUserFileDirPreSha1ById sprintf:", updateUFileDirfile_sha1_pre)
 	if error != nil {
 		fmt.Println(tAG_userfile, "failed to prepare statement error:", error)
 		return false

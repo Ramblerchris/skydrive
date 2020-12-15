@@ -50,7 +50,7 @@ func SaveUserInfo(phone string, password string, time string) bool {
 	return false
 }
 
-func GetUserInfo(phone string) (*TabUser, error) {
+func GetUserInfoByPhone(phone string) (*TabUser, error) {
 	stmt, error := mysql.DbConnect().Prepare(selectUserInfo)
 	if error != nil {
 		fmt.Println("failed to prepare statement error:", error)
@@ -76,11 +76,11 @@ func GetUserInfo(phone string) (*TabUser, error) {
 		fmt.Println("failed to QueryRow error:", error)
 		return nil, error
 	}
-	fmt.Println("GetUserInfo:",tUser)
+	fmt.Println("GetUserInfoByPhone:",tUser)
 	return &tUser, nil
 }
 
-func UpdateUserPhoto(photoAddr string,filesha1 string, uid  int64) bool {
+func UpdateUserPhotoByUid(photoAddr string,filesha1 string, uid  int64) bool {
 	stmt, error := mysql.DbConnect().Prepare(updateUserPhoto)
 	if error != nil {
 		fmt.Println("failed to prepare statement error:", error)
@@ -98,7 +98,7 @@ func UpdateUserPhoto(photoAddr string,filesha1 string, uid  int64) bool {
 	return false
 }
 
-func UpdateUserName(userName string, uid  int64) bool {
+func UpdateUserNameByUid(userName string, uid  int64) bool {
 	stmt, error := mysql.DbConnect().Prepare(updateUserName)
 	if error != nil {
 		fmt.Println("failed to prepare statement error:", error)

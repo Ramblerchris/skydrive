@@ -38,7 +38,7 @@ func GetFileMeta(sha1 string) (*FileMeta, bool) {
 		return &filemeta, true
 	}
 	return nil, false*/
-	if meta, err := db.GetFileMeta(sha1); err == nil {
+	if meta, err := db.GetFileInfoBySha1(sha1); err == nil {
 		return &FileMeta{
 			Id:             meta.Id.Int64,
 			Filesha1:       meta.FileHash.String,
@@ -56,7 +56,7 @@ func GetFileMeta(sha1 string) (*FileMeta, bool) {
 
 func RemoveFileMeta(sha1 string) bool {
 	delete(fileMetas, sha1)
-	return db.UpdateFileInfo(sha1, 0)
+	return db.UpdateFileInfoStatusBySha1(sha1, 0)
 }
 
 func (filemeta *FileMeta) String() {

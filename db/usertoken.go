@@ -35,14 +35,15 @@ func (uToken UToken) String() string {
 		uToken.Tid, uToken.Uid, uToken.Phone, uToken.User_token, uToken.Expiretime)
 }*/
 
-func DeleteUTokenById(id int64) bool {
+//删除token表中一条记录
+func DeleteUserTokenByTid(tid int64) bool {
 	stmt, error := mysql.DbConnect().Prepare(deleteUToken)
 	if error != nil {
 		fmt.Println("failed to prepare statement error:", error.Error())
 		return false
 	}
 	defer stmt.Close()
-	exec, error := stmt.Exec(id)
+	exec, error := stmt.Exec(tid)
 	if error != nil {
 		fmt.Println("failed to Exec error:", error)
 		return false
@@ -56,7 +57,7 @@ func DeleteUTokenById(id int64) bool {
 	}
 	return true
 }
-func GetUTokenByToken(token string) (utoken UToken, err error) {
+func GetUserTokenInfoByToken(token string) (utoken UToken, err error) {
 	stmt, error := mysql.DbConnect().Prepare(selectUTokenInfoByToken)
 	if error != nil {
 		fmt.Println("failed to prepare statement error:", error.Error())
@@ -79,7 +80,7 @@ func GetUTokenByToken(token string) (utoken UToken, err error) {
 	return utoken, nil
 }
 
-func GetUTokenByUid(uid int32) (tokenlist []UToken, err error) {
+func GetUserTokenInfoListByUid(uid int32) (tokenlist []UToken, err error) {
 	stmt, error := mysql.DbConnect().Prepare(selectUTokenInfoByUId)
 	if error != nil {
 		fmt.Println("failed to prepare statement error:", error.Error())
@@ -105,7 +106,8 @@ func GetUTokenByUid(uid int32) (tokenlist []UToken, err error) {
 	return tokenlist, nil
 }
 
-func SaveUToken(uid int32, phone string) (token string, err error) {
+//创建用户一个新的token
+func CreateUserTokenByUidPhone(uid int32, phone string) (token string, err error) {
 	stmt, error := mysql.DbConnect().Prepare(saveUToken)
 	if error != nil {
 		fmt.Println("failed to prepare statement error:", error.Error())

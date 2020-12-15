@@ -21,7 +21,7 @@ type TableFile struct {
 const selectFile = "select id,file_sha1,file_name,file_size,file_addr,minitype,ftype,video_duration from tbl_file where file_sha1=? and status=1 limit 1"
 const saveFileinfo = "insert into tbl_file(file_sha1,file_name,file_size,file_addr,status,minitype,ftype,video_duration) values(?,?,?,?,?,?,?,?)"
 const updateFileInfo = "update tbl_file set status=? where file_sha1=?"
-const tAG_fileInfo ="fileInfo.go"
+const tAG_fileInfo ="fileinfo.go"
 
 func SaveFileInfo(filehash string, filename string, filesize int64, location string,minitype string ,ftype int ,video_duration int64) bool {
 	//stmt ,error:=mysql.DbConnect().Prepare(saveFile)
@@ -46,7 +46,7 @@ func SaveFileInfo(filehash string, filename string, filesize int64, location str
 	return true
 }
 
-func UpdateFileInfo(filehash string, filestatus int8) bool {
+func UpdateFileInfoStatusBySha1(filehash string, filestatus int8) bool {
 	//stmt ,error:=mysql.DbConnect().Prepare(saveFile)
 	stmt, error := mysql.DbConnect().Prepare(updateFileInfo)
 	if error != nil {
@@ -70,7 +70,7 @@ func UpdateFileInfo(filehash string, filestatus int8) bool {
 }
 
 
-func GetFileMeta(filehash string) (*TableFile, error) {
+func GetFileInfoBySha1(filehash string) (*TableFile, error) {
 	stmt, error := mysql.DbConnect().Prepare(selectFile)
 	if error != nil {
 		fmt.Println(tAG_fileInfo,"failed to prepare statement error:", error)

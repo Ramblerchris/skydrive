@@ -17,9 +17,10 @@ func BuildEncodePwd(pwd string) string {
 
 type HandlerFuncAuth func(http.ResponseWriter, *http.Request, *db.UToken)
 
-func CheckNet(w http.ResponseWriter, r *http.Request) {
+//测试网络是否连通，
+func CheckNetIsOkHandler(w http.ResponseWriter, r *http.Request) {
 	ReturnResponseCodeMessage(w, config.Net_SuccessCode, "连接成功")
-	fmt.Println(" CheckNet :", " Now:", time.Now().UnixNano()/1e6)
+	fmt.Println(" CheckNetIsOkHandler :", " Now:", time.Now().UnixNano()/1e6)
 }
 
 func getToken(r *http.Request) string {
@@ -63,7 +64,7 @@ func TokenCheckInterceptor(h HandlerFuncAuth) http.HandlerFunc {
 			ReturnResponseCodeMessageHttpCode(w, http.StatusUnauthorized, config.Net_ErrorCode, "bad request")
 			return
 		}
-		if byToken, err := db.GetUTokenByToken(token); err == nil && byToken.User_token.String != "" {
+		if byToken, err := db.GetUserTokenInfoByToken(token); err == nil && byToken.User_token.String != "" {
 			//todo 判断过期时间
 			fmt.Println(" Expiretime :", byToken.Expiretime.Int64, " Now:", time.Now().UnixNano()/1e6)
 			if byToken.Expiretime.Int64 < time.Now().UnixNano()/1e6 {
