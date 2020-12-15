@@ -14,38 +14,10 @@ import (
 	"time"
 )
 
-func handleFile(path string, fileinfo os.FileInfo, index int) {
-	//fmt.Print(" 处理", fileinfo.Mode())
-	//ext := filepath.Ext(fileinfo.Name())
-
-	media.ScaleImage(path)
-
-}
-
 func main() {
-	//media.ScaleImage("/Users/mac/Desktop/1589265866339_8927.JPG")
-	//media.ScaleImage("/Users/mac/Desktop/1589191894238_8130.png")
-
-	//handler.StartScanFile("/Users/mac/Desktop/image/", handleFile)
-
-	go broadcast.StartUDPServerV2(config.UDP_SERVER_ListenPORT)
-
-	//go broadcast.StartUDPGroup(config.UDP_SERVER_ListenPORT)
-	go broadcast.StartUDPGroupV2(config.UDP_GroupSERVER_SendPORT,config.UDP_GroupSERVER_ListenPORT)
-
-	fmt.Print(" AAAA")
-	var bar utils.Bar
-	bar.NewOption(0, 100)
-	//bar.NewOptionWithGraph(0, 100,"*")
-	for i := 0; i <= 100; i++ {
-		time.Sleep(2 * time.Millisecond)
-		bar.Play(int64(i))
-		fmt.Print(" 处理", i)
-	}
-	bar.Finish()
+	broadcast.InitUDP()
 	redisconn.GetRedisClient()
 	httpServer()
-
 }
 
 func httpServer() {
@@ -65,7 +37,6 @@ func httpServer() {
 	//浏览器直接打开查看
 	http.HandleFunc("/file/open", handler.TokenCheckInterceptor(handler.OpenFile1Handler))
 
-
 	http.HandleFunc("/userfile/getSha1IsExistList", handler.TokenCheckInterceptor(handler.GetSha1ListIsExistByUidHandler))
 	http.HandleFunc("/userfile/getAllSha1sByUser", handler.TokenCheckInterceptor(handler.GetAllSha1ListByUidHandler))
 	http.HandleFunc("/userfile/upload", handler.TokenCheckInterceptor(handler.UploadUserFileHandler))
@@ -79,9 +50,33 @@ func httpServer() {
 	http.HandleFunc("/userfile/finishmultipartinfo", handler.TokenCheckInterceptor(handler.FinishMultipartUploadHandler))
 	http.HandleFunc("/userfile/uploadmultipartinfo", handler.TokenCheckInterceptor(handler.UploadMultipartHandler))
 
-
 	fmt.Printf("开始启动本地服务 地址为 %s \r\n", config.ServeLocation)
 	if error := http.ListenAndServe(config.ServeLocation, nil); error != nil {
 		fmt.Printf("启动错误 error:%s \r\n", error.Error())
 	}
+}
+
+
+
+
+func handleFile(path string, fileinfo os.FileInfo, index int) {
+	//fmt.Print(" 处理", fileinfo.Mode())
+	//ext := filepath.Ext(fileinfo.Name())
+	media.ScaleImage(path)
+	//media.ScaleImage("/Users/mac/Desktop/1589265866339_8927.JPG")
+	//media.ScaleImage("/Users/mac/Desktop/1589191894238_8130.png")
+	//handler.StartScanFile("/Users/mac/Desktop/image/", handleFile)
+
+}
+
+func testProgressBar() {
+	var bar utils.Bar
+	bar.NewOption(0, 100)
+	//bar.NewOptionWithGraph(0, 100,"*")
+	for i := 0; i <= 100; i++ {
+		time.Sleep(2 * time.Millisecond)
+		bar.Play(int64(i))
+		fmt.Print(" 处理", i)
+	}
+	bar.Finish()
 }

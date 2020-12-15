@@ -16,6 +16,7 @@ func ReturnResponseCodeMessage(w http.ResponseWriter, code int32, message string
 	w.WriteHeader(http.StatusOK)
 	w.Write(sonResult)
 }
+
 func ReturnResponseCodeMessageHttpCode(w http.ResponseWriter,httpCode int, code int32, message string) {
 	w.Header().Add("Content-Type", "application/json")
 	response := response.NewResponse(code, message)
@@ -52,3 +53,24 @@ func ReturnResponse(w http.ResponseWriter, code int32, message string, data inte
 	}
 	w.Write(jsonResult)
 }
+
+func ReturnResponsePage(w http.ResponseWriter, code int32, message string, data interface{},pageNo ,pageSize ,total int64) {
+	w.Header().Add("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	jsonResult, error := json.Marshal(&response.FormatResponse{
+		Code:    code,
+		Message: message,
+		Data: &response.PageData{
+			PageNo:   pageNo,
+			PageSize: pageSize,
+			Total:    total,
+			Data:     data,
+		},
+	})
+	if error != nil {
+		ReturnResponseCodeMessage(w, config.Net_ErrorCode, "internel server error ")
+		return
+	}
+	w.Write(jsonResult)
+}
+

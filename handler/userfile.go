@@ -17,37 +17,43 @@ import (
 //获取用户文件列表
 func GetUserFileListByUidHandler(w http.ResponseWriter, r *http.Request, utoken *db.UToken) {
 	r.ParseForm()
-	//pageNo, _ := strconv.ParseInt(r.FormValue("pageNo"), 10, 64)
-	//pageSize, _ := strconv.ParseInt(r.FormValue("pageSize"), 10, 64)
+	pageNo, _ := strconv.ParseInt(r.FormValue("pageNo"), 10, 64)
+	pageSize, _ := strconv.ParseInt(r.FormValue("pageSize"), 10, 64)
+	lastId, _ := strconv.ParseInt(r.FormValue("lastId"), 10, 64)
 
-	if byuid, err := db.GetUserFileListMetaByUid(utoken.Uid.Int64); err == nil {
+	if byuid, err ,total := db.GetUserFileListMetaByUid(utoken.Uid.Int64,pageNo,pageSize,lastId); err == nil {
 		metaFilelist := make([]meta.FileMeta, 0)
 		for _, value := range byuid {
 			//fmt.Println("GetUserFileListByUidHandler",value)
 			metaFilelist = append(metaFilelist, *meta.GetNewFileMetaObject(value))
 		}
-
-		ReturnResponse(w, config.Net_SuccessCode, "get file success ", metaFilelist)
+		//ReturnResponse(w, config.Net_SuccessCode, "get file success ", metaFilelist)
+		//pageNo ,pageSize ,total
+		ReturnResponsePage(w, config.Net_SuccessCode, "get file success ", metaFilelist,pageNo,pageSize,total)
 		return
 	}
 	ReturnResponseCodeMessage(w, config.Net_ErrorCode, "get file success ")
 }
 
-// 获取用户文件夹
+// 获取用户文件夹内的所有文件
 func GetUserDirFileListByPidHandler(w http.ResponseWriter, r *http.Request, utoken *db.UToken) {
 	r.ParseForm()
+	pageNo, _ := strconv.ParseInt(r.FormValue("pageNo"), 10, 64)
+	pageSize, _ := strconv.ParseInt(r.FormValue("pageSize"), 10, 64)
+	lastId, _ := strconv.ParseInt(r.FormValue("lastId"), 10, 64)
 	pid, _ := strconv.ParseInt(r.FormValue("pid"), 10, 64)
 	if pid == 0 {
 		ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
 		return
 	}
-	if byuid, err := db.GetUserDirListByUidPid(utoken.Uid.Int64, pid); err == nil {
+	if byuid, err,total := db.GetUserDirFileListByUidPid(utoken.Uid.Int64, pid,pageNo,pageSize,lastId); err == nil {
 		metaFilelist := make([]meta.FileMeta, 0)
 		for _, value := range byuid {
 			//fmt.Println("GetUserDirFileListByPidHandler", value)
 			metaFilelist = append(metaFilelist, *meta.GetNewFileMetaObject(value))
 		}
-		ReturnResponse(w, config.Net_SuccessCode, "get file success ", metaFilelist)
+		//ReturnResponse(w, config.Net_SuccessCode, "get file success ", metaFilelist)
+		ReturnResponsePage(w, config.Net_SuccessCode, "get file success ", metaFilelist,pageNo,pageSize,total)
 		return
 	}
 	ReturnResponseCodeMessage(w, config.Net_ErrorCode, "get file success ")

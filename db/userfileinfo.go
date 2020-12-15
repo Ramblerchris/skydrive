@@ -29,7 +29,9 @@ const (
 	selectUFileBySha1                 = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at,filetype,minitype,ftype,video_duration from tbl_user_file where file_sha1=? and uid=? and status=1 limit 1"
 	selectUFileByid                   = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at,filetype,minitype,ftype,video_duration from tbl_user_file where id=?  and status=1 limit 1"
 	selectUFileByUid                  = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,filetype,minitype,ftype,video_duration from tbl_user_file where uid=? and status=1 "
+	selectUFileByUidPage              = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,filetype,minitype,ftype,video_duration from tbl_user_file where uid=? and status=1 and id>? limit ? "
 	selectUFileByUidAndPid            = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,filetype,minitype,ftype,video_duration from tbl_user_file where uid=? and pid=? and status=1 "
+	selectUFileByUidAndPidPage        = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,filetype,minitype,ftype,video_duration from tbl_user_file where uid=? and pid=? and status=1 and id>? limit ? "
 	selectUFileByUidAndPidAndSha1     = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,filetype,minitype,ftype,video_duration from tbl_user_file where file_sha1=? and uid=? and pid=? and status=1 limit 1 "
 	selectUFileByUidAndPidAndFileName = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,filetype,minitype,ftype,video_duration from tbl_user_file where uid=? and pid=? and file_name=? and status=1 "
 	saveUFileinfo                     = "insert into tbl_user_file(uid,pid,phone,file_sha1,file_name,file_size,file_addr,status,minitype,ftype,video_duration) values(?,?,?,?,?,?,?,?,?,?,?)"
@@ -41,6 +43,10 @@ const (
 	updateUFileDirsStatus             = "update tbl_user_file set status=? where id in('%s')"
 	selectUFileBysha1s                = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at,filetype,minitype,ftype,video_duration from tbl_user_file where uid=? and file_sha1 in('%s') "
 	selectUFileAllsha1s               = "select file_sha1 from tbl_user_file where uid=?"
+	//selectUFileCountByUid 			  = "select count(*) from tbl_user_file where  uid=? and status=1 and id>? "
+	selectUFileCountByUid 			  = "select count(*) from tbl_user_file where  uid=? and status=1  "
+	//selectUFileCountByUidPid 		  = "select count(*) from tbl_user_file where  pid=? and uid=? and status=1 and id>? "
+	selectUFileCountByUidPid 		  = "select count(*) from tbl_user_file where  pid=? and uid=? and status=1  "
 	tAG_userfile                      = "userfileinfo.go"
 )
 
@@ -206,17 +212,18 @@ func GetUserDirListByUidPidDirName(uid, pid int64, filename string) (tableUserFi
 }
 
 //查看当前用户 pid 对应子目录所有文件列表，包括文件列表
-func GetUserDirListByUidPid(uid, pid int64) (tableUserFile []TableUserFile, err error) {
-	stmt, error := mysql.DbConnect().Prepare(selectUFileByUidAndPid)
+func GetUserDirFileListByUidPid(uid, pid int64,pageNo,pageSize,lastid int64 ) (tableUserFile []TableUserFile, err error, total int64) {
+	//目前忽略了文件类型
+	stmt, error := mysql.DbConnect().Prepare(selectUFileByUidAndPidPage)
 	if error != nil {
 		fmt.Println(tAG_userfile, "failed to prepare statement error:", error)
-		return tableUserFile, error
+		return tableUserFile, error,0
 	}
 	defer stmt.Close()
-	rowdata, error := stmt.Query(uid, pid)
+	rowdata, error := stmt.Query(uid, pid,lastid,pageSize)
 	if error != nil {
 		fmt.Println("failed to Exec error:", error)
-		return tableUserFile, error
+		return tableUserFile, error,0
 	}
 	tableUserFile = make([]TableUserFile, 0)
 	for rowdata.Next() {
@@ -229,21 +236,63 @@ func GetUserDirListByUidPid(uid, pid int64) (tableUserFile []TableUserFile, err 
 		}
 		tableUserFile = append(tableUserFile, tfile)
 	}
-	return tableUserFile, nil
+	return tableUserFile, nil, GetUserDirListCountByUidPid(uid, pid, lastid)
+}
+
+//查询当前用户指定文件下的文件数
+func GetUserDirListCountByUidPid(uid, pid int64,lastid int64 ) (count int64) {
+	//目前忽略了文件类型
+	stmt, error := mysql.DbConnect().Prepare(selectUFileCountByUidPid)
+	if error != nil {
+		fmt.Println(tAG_userfile, "failed to prepare statement error:", error)
+		return 0
+	}
+	defer stmt.Close()
+	//result, err := stmt.Query(pid, uid, lastid)
+	result, err := stmt.Query(pid, uid)
+	if err != nil {
+		return 0
+	}
+	var countResult sql.NullInt64
+	if result.Next(){
+		result.Scan(&countResult)
+	}
+	return countResult.Int64
+}
+
+//查询当前用户指定文件下的文件数
+func GetUserDirListCountByUid(uid,lastid int64 ) (count int64) {
+	//目前忽略了文件类型
+	stmt, error := mysql.DbConnect().Prepare(selectUFileCountByUid)
+	if error != nil {
+		fmt.Println(tAG_userfile, "failed to prepare statement error:", error)
+		return 0
+	}
+	defer stmt.Close()
+	//result, err := stmt.Query(uid, lastid)
+	result, err := stmt.Query(uid)
+	if err != nil {
+		return 0
+	}
+	var countResult sql.NullInt64
+	if result.Next(){
+		result.Scan(&countResult)
+	}
+	return countResult.Int64
 }
 
 //查询用户所有的文件
-func GetUserFileListMetaByUid(uid int64) (tableUserFile []TableUserFile, err error) {
-	stmt, error := mysql.DbConnect().Prepare(selectUFileByUid)
+func GetUserFileListMetaByUid(uid int64,pageNo,pageSize,lastid int64 ) (tableUserFile []TableUserFile, err error, total int64) {
+	stmt, error := mysql.DbConnect().Prepare(selectUFileByUidPage)
 	if error != nil {
 		fmt.Println(tAG_userfile, "failed to prepare statement error:", error)
-		return nil, error
+		return nil, error,0
 	}
 	defer stmt.Close()
-	rowdata, error := stmt.Query(uid)
+	rowdata, error := stmt.Query(uid,lastid,pageSize)
 	if error != nil {
 		fmt.Println("failed to Exec error:", error)
-		return tableUserFile, error
+		return tableUserFile, error,0
 	}
 	tableUserFile = make([]TableUserFile, 0)
 	for rowdata.Next() {
@@ -256,7 +305,7 @@ func GetUserFileListMetaByUid(uid int64) (tableUserFile []TableUserFile, err err
 		}
 		tableUserFile = append(tableUserFile, tfile)
 	}
-	return tableUserFile, nil
+	return tableUserFile, nil, GetUserDirListCountByUid(uid , lastid)
 }
 
 //查询用户所有的文件

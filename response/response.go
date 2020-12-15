@@ -6,12 +6,6 @@ import (
 	"log"
 )
 
-type FormatResponse struct {
-	Code    int32  `json:"code"`
-	Message string `json:"message"`
-	Data interface{}`json:"data"`
-}
-
 func (response *FormatResponse) GetResponseCodeMessage(code int32, message string) {
 	response.Code = code
 	response.Message = message

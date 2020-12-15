@@ -13,6 +13,19 @@ type MetaInfoBaseResponse struct {
 	Data meta.FileMeta `json:"data"`
 }
 
+type FormatResponse struct {
+	Code    int32  	`json:"code"`
+	Message string 	`json:"message"`
+	Data 	interface{}	`json:"data"`
+}
+
+type PageData struct {
+	PageNo    int64  `json:"pageNo"`
+	PageSize  int64  `json:"pageSize"`
+	Total	  int64  `json:"total"`
+	Data  	  interface{} `json:"list"`
+}
+
 //构造
 func NewResponse(code int32, message string) *BaseResponse {
 	return &BaseResponse{
