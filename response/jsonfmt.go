@@ -7,39 +7,36 @@ import (
 )
 
 func ReturnResponseCodeMessage(w http.ResponseWriter, code int32, message string) {
-	w.Header().Add("Content-Type", "application/json")
 	response := NewResponse(code, message)
 	sonResult, _ := json.Marshal(response)
-	// w.WriteHeader(http.StatusInternalServerError)
-	w.WriteHeader(http.StatusOK)
-	w.Write(sonResult)
+	setResult(w, http.StatusOK,sonResult)
+}
+
+func setResult(w http.ResponseWriter, code int,result []byte) {
+	w.Header().Add("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.WriteHeader(code)
+	w.Write(result)
 }
 
 func ReturnResponseCodeMessageHttpCode(w http.ResponseWriter,httpCode int, code int32, message string) {
-	w.Header().Add("Content-Type", "application/json")
 	response := NewResponse(code, message)
 	sonResult, _ := json.Marshal(response)
-	// w.WriteHeader(http.StatusInternalServerError)
-	w.WriteHeader(httpCode)
-	w.Write(sonResult)
+	setResult(w, httpCode,sonResult)
 }
 
 
 func ReturnMetaInfo(w http.ResponseWriter, code int32, message string, filemeta *UserFile) {
-	w.Header().Add("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
 	response := NewMetaInfoBaseResponse(code, message, filemeta)
 	jsonResult, error := json.Marshal(response)
 	if error != nil {
 		ReturnResponseCodeMessage(w, config.Net_ErrorCode, "internel server error ")
 		return
 	}
-	w.Write(jsonResult)
+	setResult(w, http.StatusOK,jsonResult)
 }
 
 func ReturnResponse(w http.ResponseWriter, code int32, message string, data interface{}) {
-	w.Header().Add("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
 	jsonResult, error := json.Marshal(&FormatResponse{
 		Code:    code,
 		Message: message,
@@ -49,12 +46,10 @@ func ReturnResponse(w http.ResponseWriter, code int32, message string, data inte
 		ReturnResponseCodeMessage(w, config.Net_ErrorCode, "internel server error ")
 		return
 	}
-	w.Write(jsonResult)
+	setResult(w, http.StatusOK,jsonResult)
 }
 
 func ReturnResponsePage(w http.ResponseWriter, code int32, message string, data interface{},pageNo ,pageSize ,nextPageId,total int64) {
-	w.Header().Add("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
 	jsonResult, error := json.Marshal(&FormatResponse{
 		Code:    code,
 		Message: message,
@@ -70,6 +65,6 @@ func ReturnResponsePage(w http.ResponseWriter, code int32, message string, data 
 		ReturnResponseCodeMessage(w, config.Net_ErrorCode, "internel server error ")
 		return
 	}
-	w.Write(jsonResult)
+	setResult(w, http.StatusOK,jsonResult)
 }
 
