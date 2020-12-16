@@ -16,7 +16,7 @@ func BuildEncodePwd(pwd string) string {
 	return target
 }
 
-type HandlerFuncAuth func(http.ResponseWriter, *http.Request, *db.UToken)
+type HandlerFuncAuth func(http.ResponseWriter, *http.Request, *db.TableUToken)
 
 //测试网络是否连通，
 func CheckNetIsOkHandler(w http.ResponseWriter, r *http.Request) {

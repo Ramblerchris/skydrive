@@ -10,7 +10,7 @@ import (
 )
 
 //获取所有用户
-func GetAllUserListHandler(w http.ResponseWriter, r *http.Request, utoken *db.UToken) {
+func GetAllUserListHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	pageNo, _ := strconv.ParseInt(r.FormValue("pageNo"), 10, 64)
 	pageSize, _ := strconv.ParseInt(r.FormValue("pageSize"), 10, 64)
@@ -28,7 +28,7 @@ func GetAllUserListHandler(w http.ResponseWriter, r *http.Request, utoken *db.UT
 	response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "get file success ")
 }
 
-func GetAllUserTokenListHandler(w http.ResponseWriter, r *http.Request, utoken *db.UToken) {
+func GetAllUserTokenListHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	/*r.ParseForm()
 	pageNo, _ := strconv.ParseInt(r.FormValue("pageNo"), 10, 64)
 	pageSize, _ := strconv.ParseInt(r.FormValue("pageSize"), 10, 64)
@@ -46,7 +46,7 @@ func GetAllUserTokenListHandler(w http.ResponseWriter, r *http.Request, utoken *
 	response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "get file success ")*/
 }
 
-func GetAllFileListHandler(w http.ResponseWriter, r *http.Request, utoken *db.UToken) {
+func GetAllFileListHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	/*r.ParseForm()
 	pageNo, _ := strconv.ParseInt(r.FormValue("pageNo"), 10, 64)
 	pageSize, _ := strconv.ParseInt(r.FormValue("pageSize"), 10, 64)
@@ -64,7 +64,7 @@ func GetAllFileListHandler(w http.ResponseWriter, r *http.Request, utoken *db.UT
 	response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "get file success ")*/
 }
 
-func GetAllUserFileListHandler(w http.ResponseWriter, r *http.Request, utoken *db.UToken) {
+func GetAllUserFileListHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	pageNo, _ := strconv.ParseInt(r.FormValue("pageNo"), 10, 64)
 	pageSize, _ := strconv.ParseInt(r.FormValue("pageSize"), 10, 64)

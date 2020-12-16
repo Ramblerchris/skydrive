@@ -98,7 +98,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 //获取用户信息
-func GetUserInfoByTokenHandler(w http.ResponseWriter, r *http.Request, utoken *db.UToken) {
+func GetUserInfoByTokenHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	token := getToken(r)
 
@@ -127,7 +127,7 @@ func GetUserInfoByTokenHandler(w http.ResponseWriter, r *http.Request, utoken *d
 }
 
 //登出
-func SignOutHandler(w http.ResponseWriter, r *http.Request, utoken *db.UToken) {
+func SignOutHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	token := getToken(r)
 	if len(token) == 0 || token == "" {
@@ -141,7 +141,7 @@ func SignOutHandler(w http.ResponseWriter, r *http.Request, utoken *db.UToken) {
 	}
 }
 
-func UpdateUserNameByUidHandler(w http.ResponseWriter, r *http.Request, utoken *db.UToken) {
+func UpdateUserNameByUidHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	if r.Method == "POST" {
 		//uid, _ := strconv.ParseInt(r.FormValue("uid"), 10, 64)
@@ -159,7 +159,7 @@ func UpdateUserNameByUidHandler(w http.ResponseWriter, r *http.Request, utoken *
 
 }
 
-func UpdataUploadUserPhotoHandler(w http.ResponseWriter, r *http.Request, utoken *db.UToken) {
+func UpdataUploadUserPhotoHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	if r.Method == "POST" {
 		file, fileheader, error := r.FormFile("file")

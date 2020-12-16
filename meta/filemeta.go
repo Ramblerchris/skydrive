@@ -65,7 +65,7 @@ func GetNewFileMetaObject(value db.TableUserFile) *handler.UserFile {
 	}
 }
 
-func GetNewUserMetaObject(info db.TabUser) *handler.User {
+func GetNewUserMetaObject(info db.TableUser) *handler.User {
 	return  &handler.User{
 		Id:              info.Id.Int32,
 		User_name:       info.User_name.String,

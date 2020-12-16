@@ -11,7 +11,7 @@ const saveUserinfo = "insert into tbl_user(user_pwd,phone,signup_at,status,user_
 const updateUserPhoto = "UPDATE tbl_user SET photo_addr=? ,photo_file_sha1=? where id=?"
 const updateUserName = "UPDATE tbl_user SET user_name=? where id=?"
 
-func (t *TabUser) String() {
+func (t *TableUser) String() {
 	fmt.Printf("Id:%s User_name:%s User_pwd :%s Email:%s Phone:%s Email_validated:%s Phone_validated:%s Signup_at :%s Last_active:%s Profile:%s Status:%s",t.Id,t.User_name,t.User_pwd,t.Email,t.Phone,t.Email_validated,t.Phone_validated,t.Signup_at,t.Last_active,t.Profile,t.Status)
 }
 
@@ -33,14 +33,14 @@ func SaveUserInfo(phone string, password string, time string) bool {
 	return false
 }
 
-func GetUserInfoByPhone(phone string) (*TabUser, error) {
+func GetUserInfoByPhone(phone string) (*TableUser, error) {
 	stmt, error := mysql.DbConnect().Prepare(selectUserInfo)
 	if error != nil {
 		fmt.Println("failed to prepare statement error:", error)
 		return nil, error
 	}
 	defer stmt.Close()
-	tUser := TabUser{}
+	tUser := TableUser{}
 	error = stmt.QueryRow(phone).Scan(
 		&tUser.Id,
 		&tUser.User_name,

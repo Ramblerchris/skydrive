@@ -16,12 +16,12 @@ const (
 	deleteUToken            = "delete from  tbl_user_token where id=?"
 )
 
-func (uToken UToken) String() string {
+func (uToken TableUToken) String() string {
 	return fmt.Sprintf("Tid:%d Uid:%d  Phone: %s  User_token: %s  Expiretime: %d ",
 		uToken.Tid.Int64, uToken.Uid.Int64, uToken.Phone.String, uToken.User_token.String, uToken.Expiretime.Int64)
 }
 
-/*func (uToken *UToken) Stringer() string{
+/*func (uToken *TableUToken) Stringer() string{
 	return fmt.Sprintf("Tid:%d Uid:%d  Phone: %s  User_token: %s  Expiretime: %d ",
 		uToken.Tid, uToken.Uid, uToken.Phone, uToken.User_token, uToken.Expiretime)
 }*/
@@ -48,14 +48,14 @@ func DeleteUserTokenByTid(tid int64) bool {
 	}
 	return true
 }
-func GetUserTokenInfoByToken(token string) (utoken UToken, err error) {
+func GetUserTokenInfoByToken(token string) (utoken TableUToken, err error) {
 	stmt, error := mysql.DbConnect().Prepare(selectUTokenInfoByToken)
 	if error != nil {
 		fmt.Println("failed to prepare statement error:", error.Error())
 		return utoken, error
 	}
 	defer stmt.Close()
-	utoken = UToken{}
+	utoken = TableUToken{}
 	error = stmt.QueryRow(token).Scan(
 		&utoken.Tid,
 		&utoken.Uid,
@@ -71,7 +71,7 @@ func GetUserTokenInfoByToken(token string) (utoken UToken, err error) {
 	return utoken, nil
 }
 
-func GetUserTokenInfoListByUid(uid int32) (tokenlist []UToken, err error) {
+func GetUserTokenInfoListByUid(uid int32) (tokenlist []TableUToken, err error) {
 	stmt, error := mysql.DbConnect().Prepare(selectUTokenInfoByUId)
 	if error != nil {
 		fmt.Println("failed to prepare statement error:", error.Error())
@@ -83,10 +83,10 @@ func GetUserTokenInfoListByUid(uid int32) (tokenlist []UToken, err error) {
 		fmt.Println("failed to Exec error:", error)
 		return tokenlist, error
 	}
-	tokenlist = make([]UToken, 0)
+	tokenlist = make([]TableUToken, 0)
 	//顺序要保持一直
 	for rows.Next() {
-		var utoken UToken
+		var utoken TableUToken
 		if error := rows.Scan(&utoken.Tid, &utoken.Uid, &utoken.Phone, &utoken.User_token); error != nil {
 			fmt.Println("error is", error)
 			continue

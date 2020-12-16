@@ -13,6 +13,14 @@ type MultiPartInfo struct {
 	SuccessIndex []int  `json:"successchunkindex,omitempty"`
 }
 
+type UToken struct {
+	Tid        int64 `json:"id"`
+	Uid        int64 `json:"uid"`
+	Phone      string `json:"phone"`
+	User_token string `json:"utoken"`
+	Expiretime int64 `json:"expretime"`
+}
+
 type UserFile struct {
 	Id               int64  `json:"id,omitempty"`
 	PId              int64  `json:"pid,omitempty"`
@@ -29,10 +37,6 @@ type UserFile struct {
 	Minitype         string `json:"minitype,omitempty"`
 	Ftype            int32  `json:"ftype,omitempty"`
 	Video_duration   string `json:"video_duration,omitempty"`
-}
-
-func (filemeta *UserFile) String() {
-	fmt.Printf("filesha1:%s filename:%s  fileSize: %d  Location: %s  UpdateAtTime: %s ", filemeta.Filesha1, filemeta.FileName, filemeta.FileSize, filemeta.Location, filemeta.UpdateAtTime)
 }
 
 type User struct {
@@ -52,3 +56,10 @@ type User struct {
 	Profile string `json:"profile,omitempty"`
 	Status  int32  `json:"status"`
 }
+
+
+
+func (filemeta *UserFile) String() {
+	fmt.Printf("filesha1:%s filename:%s  fileSize: %d  Location: %s  UpdateAtTime: %s ", filemeta.Filesha1, filemeta.FileName, filemeta.FileSize, filemeta.Location, filemeta.UpdateAtTime)
+}
+

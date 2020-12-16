@@ -35,13 +35,13 @@ func AdminGetAllFileList(pageNo,pageSize int64 ) (tableFile []TableFile, err err
 	return tableFile, nil, GetCountByTableName("tbl_file")
 }
 
-func AdminGetAllUserList(pageNo,pageSize int64 ) (tableUserlist []TabUser, err error, total int64) {
+func AdminGetAllUserList(pageNo,pageSize int64 ) (tableUserlist []TableUser, err error, total int64) {
 	rowdata, err := getPageStmt(selectAllUserInfo, pageNo, pageSize)
 	if err != nil {
 		return tableUserlist, err,0
 	}
 	for rowdata.Next() {
-		tUser := TabUser{}
+		tUser := TableUser{}
 		error := rowdata.Scan(
 			&tUser.Id,
 			&tUser.User_name,
@@ -65,14 +65,14 @@ func AdminGetAllUserList(pageNo,pageSize int64 ) (tableUserlist []TabUser, err e
 	return tableUserlist, nil, GetCountByTableName("tbl_user")
 }
 
-func AdminGetAllUserTokenList(pageNo,pageSize int64 ) (tableUsertokenFile []UToken,  err error, total int64) {
+func AdminGetAllUserTokenList(pageNo,pageSize int64 ) (tableUsertokenFile []TableUToken,  err error, total int64) {
 	rowdata, err := getPageStmt(selectAllUTokenInfo, pageNo, pageSize)
 	if err != nil {
 		return tableUsertokenFile, err,0
 	}
-	tableUsertokenFile = make([]UToken, 0)
+	tableUsertokenFile = make([]TableUToken, 0)
 	for rowdata.Next() {
-		utoken := UToken{}
+		utoken := TableUToken{}
 		error:= rowdata.Scan(
 			&utoken.Tid,
 			&utoken.Uid,

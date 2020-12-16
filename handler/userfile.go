@@ -16,7 +16,7 @@ import (
 )
 
 //获取用户文件列表
-func GetUserFileListByUidHandler(w http.ResponseWriter, r *http.Request, utoken *db.UToken) {
+func GetUserFileListByUidHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	pageNo, _ := strconv.ParseInt(r.FormValue("pageNo"), 10, 64)
 	pageSize, _ := strconv.ParseInt(r.FormValue("pageSize"), 10, 64)
@@ -40,7 +40,7 @@ func GetUserFileListByUidHandler(w http.ResponseWriter, r *http.Request, utoken 
 }
 
 // 获取用户文件夹内的所有文件
-func GetUserDirFileListByPidHandler(w http.ResponseWriter, r *http.Request, utoken *db.UToken) {
+func GetUserDirFileListByPidHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	pageNo, _ := strconv.ParseInt(r.FormValue("pageNo"), 10, 64)
 	pageSize, _ := strconv.ParseInt(r.FormValue("pageSize"), 10, 64)
@@ -68,7 +68,7 @@ func GetUserDirFileListByPidHandler(w http.ResponseWriter, r *http.Request, utok
 }
 
 //批量查询文件是否存在
-func GetSha1ListIsExistByUidHandler(w http.ResponseWriter, r *http.Request, utoken *db.UToken) {
+func GetSha1ListIsExistByUidHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	if r.Method == "POST" {
 		value := r.FormValue("sha1s")
@@ -91,7 +91,7 @@ func GetSha1ListIsExistByUidHandler(w http.ResponseWriter, r *http.Request, utok
 }
 
 //批量删除文件
-func DeleteFileListBySha1sUidHandler(w http.ResponseWriter, r *http.Request, utoken *db.UToken) {
+func DeleteFileListBySha1sUidHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	if r.Method == "POST" {
 		value := r.FormValue("sha1s")
@@ -114,7 +114,7 @@ func DeleteFileListBySha1sUidHandler(w http.ResponseWriter, r *http.Request, uto
 }
 
 //批量删除指定文件夹
-func DeleteFileDirByUidHandler(w http.ResponseWriter, r *http.Request, utoken *db.UToken) {
+func DeleteFileDirByUidHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	if r.Method == "POST" {
 		//id, _ := strconv.ParseInt(r.FormValue("ids"), 10, 64)
@@ -133,7 +133,7 @@ func DeleteFileDirByUidHandler(w http.ResponseWriter, r *http.Request, utoken *d
 }
 
 //查看当前用户所有保存文件的sha1
-func GetAllSha1ListByUidHandler(w http.ResponseWriter, r *http.Request, utoken *db.UToken) {
+func GetAllSha1ListByUidHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	if byuid, err := db.GetUserFileAllSha1ListByUid(utoken.Uid.Int64); err == nil {
 		response.ReturnResponse(w, config.Net_SuccessCode, "get sha1s success ", byuid)
 		return
@@ -142,7 +142,7 @@ func GetAllSha1ListByUidHandler(w http.ResponseWriter, r *http.Request, utoken *
 }
 
 //创建文件夹
-func AddFileDirByUidPidHandler(w http.ResponseWriter, r *http.Request, utoken *db.UToken) {
+func AddFileDirByUidPidHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	dirname := r.FormValue("filename")
 	pid, _ := strconv.ParseInt(r.FormValue("pid"), 10, 64)
@@ -165,7 +165,7 @@ func AddFileDirByUidPidHandler(w http.ResponseWriter, r *http.Request, utoken *d
 }
 
 // 文件通过sha1 秒传
-func HitPassBySha1Handler(w http.ResponseWriter, r *http.Request, utoken *db.UToken) {
+func HitPassBySha1Handler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	sha1 := r.FormValue("sha1")
 	pid, _ := strconv.ParseInt(r.FormValue("pid"), 10, 64)
@@ -198,7 +198,7 @@ func HitPassBySha1Handler(w http.ResponseWriter, r *http.Request, utoken *db.UTo
 }
 
 //上传文件
-func UploadUserFileHandler(w http.ResponseWriter, r *http.Request, utoken *db.UToken) {
+func UploadUserFileHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	/*if r.Method == "GET" {
 		//浏览器打开

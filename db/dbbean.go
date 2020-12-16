@@ -15,7 +15,7 @@ type TableFile struct {
 }
 
 
-type TabUser struct {
+type TableUser struct {
 	Id              sql.NullInt32  `db:"id"`
 	User_name       sql.NullString `db:"user_name"`
 	User_pwd        sql.NullString `db:"user_pwd"`
@@ -51,7 +51,7 @@ type TableUserFile struct {
 }
 
 
-type UToken struct {
+type TableUToken struct {
 	Tid        sql.NullInt64
 	Uid        sql.NullInt64
 	Phone      sql.NullString

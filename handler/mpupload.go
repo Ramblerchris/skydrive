@@ -19,7 +19,7 @@ import (
 
 
 //初始化分块上传
-func InitMultipartUploadHandler(w http.ResponseWriter, r *http.Request, utoken *db.UToken) {
+func InitMultipartUploadHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	filesha1 := r.FormValue("sha1")
 	filename := r.FormValue("filename")
@@ -56,7 +56,7 @@ func InitMultipartUploadHandler(w http.ResponseWriter, r *http.Request, utoken *
 }
 
 //分块上传部分
-func UploadMultipartHandler(w http.ResponseWriter, r *http.Request, utoken *db.UToken) {
+func UploadMultipartHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	fmt.Println(r.Method)
 	if r.Method != "POST" {
@@ -93,7 +93,7 @@ func UploadMultipartHandler(w http.ResponseWriter, r *http.Request, utoken *db.U
 }
 
 //通知分块上传完成
-func FinishMultipartUploadHandler(w http.ResponseWriter, r *http.Request, utoken *db.UToken) {
+func FinishMultipartUploadHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	filesha1 := r.FormValue("sha1")
 	uploadId := r.FormValue("uploadId")

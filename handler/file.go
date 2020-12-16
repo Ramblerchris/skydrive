@@ -15,7 +15,7 @@ import (
 )
 
 //通过文件sha1获取文件的详细信息
-func GetFileInfoBySha1Handler(w http.ResponseWriter, r *http.Request, utoken *db.UToken) {
+func GetFileInfoBySha1Handler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	if r.Method == "GET" {
 		r.ParseForm()
 		sha1 := r.FormValue("sha1")
@@ -31,7 +31,7 @@ func GetFileInfoBySha1Handler(w http.ResponseWriter, r *http.Request, utoken *db
 }
 
 //下载文件
-func OpenFile1Handler(w http.ResponseWriter, r *http.Request, utoken *db.UToken) {
+func OpenFile1Handler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	filesha1 := r.FormValue("filesha1")
 	if len(filesha1) == 0 || filesha1 == "" || len(filesha1) == 0 || filesha1 == "" {
@@ -47,7 +47,7 @@ func OpenFile1Handler(w http.ResponseWriter, r *http.Request, utoken *db.UToken)
 }
 
 //获取文件信息,暂时不支持
-func UpdateFileInfoFileNameBySha1Handler(w http.ResponseWriter, r *http.Request, utoken *db.UToken) {
+func UpdateFileInfoFileNameBySha1Handler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	filesha1 := r.FormValue("filesha1")
 	newfilename := r.FormValue("filename")
@@ -66,7 +66,7 @@ func UpdateFileInfoFileNameBySha1Handler(w http.ResponseWriter, r *http.Request,
 }
 
 //删除文件
-func DeleteFileInfoBySha1Handler(w http.ResponseWriter, r *http.Request, utoken *db.UToken) {
+func DeleteFileInfoBySha1Handler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	filesha1 := r.FormValue("filesha1")
 	if len(filesha1) == 0 || filesha1 == "" {
@@ -93,7 +93,7 @@ func DeleteFileInfoBySha1Handler(w http.ResponseWriter, r *http.Request, utoken 
 }
 
 //浏览器打开直接下载文件
-func DownloadFileWebBySha1Handler(w http.ResponseWriter, r *http.Request, utoken *db.UToken) {
+func DownloadFileWebBySha1Handler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	filesha1 := r.FormValue("filesha1")
 	if len(filesha1) == 0 || filesha1 == "" || len(filesha1) == 0 || filesha1 == "" {
