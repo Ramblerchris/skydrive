@@ -1,11 +1,10 @@
 package meta
 
 import (
-	"time"
 	"github.com/skydrive/db"
 	"github.com/skydrive/handler"
+	"time"
 )
-
 
 var fileMetas map[string]handler.UserFile
 
@@ -24,7 +23,7 @@ func GetFileMeta(sha1 string) (*handler.UserFile, bool) {
 	if meta, err := db.GetFileInfoBySha1(sha1); err == nil {
 		return &handler.UserFile{
 			Id:             meta.Id.Int64,
-			Filesha1:       meta.FileHash.String,
+			Filesha1:       meta.Filesha1.String,
 			FileName:       meta.FileName.String,
 			FileSize:       meta.FileSize.Int64,
 			Location:       meta.FileLocation.String,
@@ -42,8 +41,7 @@ func RemoveFileMeta(sha1 string) bool {
 	return db.UpdateFileInfoStatusBySha1(sha1, 0)
 }
 
-
-func GetNewFileMetaObject(value db.TableUserFile) *handler.UserFile {
+func GetUserFileObject(value db.TableUserFile) *handler.UserFile {
 	createlong, _ := time.Parse("2006-01-02 15:04:05", value.Create_at.String)
 	updatelong, _ := time.Parse("2006-01-02 15:04:05", value.Update_at.String)
 	return &handler.UserFile{
@@ -65,8 +63,8 @@ func GetNewFileMetaObject(value db.TableUserFile) *handler.UserFile {
 	}
 }
 
-func GetNewUserMetaObject(info db.TableUser) *handler.User {
-	return  &handler.User{
+func GetUserObject(info db.TableUser) *handler.User {
+	return &handler.User{
 		Id:              info.Id.Int32,
 		User_name:       info.User_name.String,
 		Email:           info.Email.String,
@@ -79,3 +77,27 @@ func GetNewUserMetaObject(info db.TableUser) *handler.User {
 		Status:          info.Status.Int32,
 	}
 }
+
+func GetUserTokenObject(info db.TableUToken) *handler.UToken {
+	return &handler.UToken{
+		Tid:        info.Tid.Int64,
+		Uid:        info.Uid.Int64,
+		Phone:      info.Phone.String,
+		User_token: info.User_token.String,
+		Expiretime: info.Expiretime.Int64,
+	}
+}
+
+func GetFileObject(info db.TableFile) *handler.File {
+	return &handler.File{
+		Id:             info.Id.Int64,
+		Filesha1:       info.Filesha1.String,
+		FileName:       info.FileName.String,
+		FileLocation:   info.FileLocation.String,
+		FileSize:       info.FileSize.Int64,
+		Minitype:       info.Minitype.String,
+		Ftype:          info.Ftype.Int32,
+		Video_duration: info.Video_duration.String,
+	}
+}
+

@@ -50,6 +50,12 @@ func httpServer() {
 	http.HandleFunc("/userfile/finishmultipartinfo", handler.TokenCheckInterceptor(handler.FinishMultipartUploadHandler))
 	http.HandleFunc("/userfile/uploadmultipartinfo", handler.TokenCheckInterceptor(handler.UploadMultipartHandler))
 
+	http.HandleFunc("/admin/allUserList", handler.TokenCheckInterceptor(handler.GetAllUserListHandler))
+	http.HandleFunc("/admin/allUserTokenList", handler.TokenCheckInterceptor(handler.GetAllUserTokenListHandler))
+	http.HandleFunc("/admin/allFileList", handler.TokenCheckInterceptor(handler.GetAllFileListHandler))
+	http.HandleFunc("/admin/allUserFileList", handler.TokenCheckInterceptor(handler.GetAllUserFileListHandler))
+
+
 	fmt.Printf("开始启动本地服务 地址为 %s \r\n", config.ServeLocation)
 	if error := http.ListenAndServe(config.ServeLocation, nil); error != nil {
 		fmt.Printf("启动错误 error:%s \r\n", error.Error())

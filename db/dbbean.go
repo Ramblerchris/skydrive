@@ -5,7 +5,7 @@ import "database/sql"
 //这里的sql.NullString 是对象，不能直接用于json序列化
 type TableFile struct {
 	Id             sql.NullInt64
-	FileHash       sql.NullString
+	Filesha1       sql.NullString
 	FileName       sql.NullString
 	FileLocation   sql.NullString
 	FileSize       sql.NullInt64

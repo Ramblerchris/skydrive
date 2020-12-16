@@ -1,6 +1,8 @@
 package handler
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type MultiPartInfo struct {
 	UploadId     string `json:"uploadid"`
@@ -19,6 +21,17 @@ type UToken struct {
 	Phone      string `json:"phone"`
 	User_token string `json:"utoken"`
 	Expiretime int64 `json:"expretime"`
+}
+
+type File struct {
+	Id              int64  `json:"id,omitempty"`
+	Filesha1        string `json:"sha1,omitempty"`
+	FileName       	string `json:"filename,omitempty"`
+	FileLocation   	string `json:"path,omitempty"`
+	FileSize       	int64  `json:"size,omitempty"`
+	Minitype       	string `json:"minitype,omitempty"`
+	Ftype          	int32  `json:"ftype,omitempty"`
+	Video_duration 	string `json:"video_duration,omitempty"`
 }
 
 type UserFile struct {

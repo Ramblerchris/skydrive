@@ -28,7 +28,7 @@ func GetUserFileListByUidHandler(w http.ResponseWriter, r *http.Request, utoken 
 		metaFilelist := make([]UserFile, 0)
 		for _, value := range byuid {
 			//fmt.Println("GetUserFileListByUidHandler",value)
-			metaFilelist = append(metaFilelist, *meta.GetNewFileMetaObject(value))
+			metaFilelist = append(metaFilelist, *meta.GetUserFileObject(value))
 		}
 		nextPageId:=metaFilelist[len(metaFilelist)-1].Id
 		//ReturnResponse(w, config.Net_SuccessCode, "get file success ", metaFilelist)
@@ -57,7 +57,7 @@ func GetUserDirFileListByPidHandler(w http.ResponseWriter, r *http.Request, utok
 		metaFilelist := make([]UserFile, 0)
 		for _, value := range byuid {
 			//fmt.Println("GetUserDirFileListByPidHandler", value)
-			metaFilelist = append(metaFilelist, *meta.GetNewFileMetaObject(value))
+			metaFilelist = append(metaFilelist, *meta.GetUserFileObject(value))
 		}
 		nextPageId:=metaFilelist[len(metaFilelist)-1].Id
 		//ReturnResponse(w, config.Net_SuccessCode, "get file success ", metaFilelist)
@@ -81,7 +81,7 @@ func GetSha1ListIsExistByUidHandler(w http.ResponseWriter, r *http.Request, utok
 			metaFilelist := make([]UserFile, 0)
 			for _, value := range byuid {
 				//fmt.Println("GetUserDirFileListByPidHandler", value)
-				metaFilelist = append(metaFilelist, *meta.GetNewFileMetaObject(value))
+				metaFilelist = append(metaFilelist, *meta.GetUserFileObject(value))
 			}
 			response.ReturnResponse(w, config.Net_SuccessCode, "get file success ", metaFilelist)
 			return
@@ -157,7 +157,7 @@ func AddFileDirByUidPidHandler(w http.ResponseWriter, r *http.Request, utoken *d
 	}
 	if isok, id := db.SaveUserDirInfo(utoken.Uid.Int64, pid, utoken.Phone.String, dirname); isok {
 		if value, err := db.GetUserDirInfoById(id); err == nil {
-			response.ReturnResponse(w, config.Net_SuccessCode, "file save success", *meta.GetNewFileMetaObject(*value))
+			response.ReturnResponse(w, config.Net_SuccessCode, "file save success", *meta.GetUserFileObject(*value))
 			return
 		}
 	}
@@ -178,16 +178,16 @@ func HitPassBySha1Handler(w http.ResponseWriter, r *http.Request, utoken *db.Tab
 		//查看当前用户对应文件夹是否已经保存过
 		if value, err := db.GetUserFileMetaByPidUidSha1(sha1, utoken.Uid.Int64, pid); err == nil {
 			//避免重复保存
-			response.ReturnResponse(w, config.Net_SuccessAginCode, "already save success ", *meta.GetNewFileMetaObject(*value))
+			response.ReturnResponse(w, config.Net_SuccessAginCode, "already save success ", *meta.GetUserFileObject(*value))
 			return
 		}
-		if db.SaveUserFileInfo(utoken.Uid.Int64, pid, utoken.Phone.String, metaInfo.FileHash.String, metaInfo.FileName.String, metaInfo.FileLocation.String, metaInfo.FileSize.Int64, metaInfo.Minitype.String, int(metaInfo.Ftype.Int32), metaInfo.Video_duration.String) {
+		if db.SaveUserFileInfo(utoken.Uid.Int64, pid, utoken.Phone.String, metaInfo.Filesha1.String, metaInfo.FileName.String, metaInfo.FileLocation.String, metaInfo.FileSize.Int64, metaInfo.Minitype.String, int(metaInfo.Ftype.Int32), metaInfo.Video_duration.String) {
 			fmt.Println(" metaInfo: ", metaInfo)
 			fmt.Printf("保存文件 成功，大小 %d \n", metaInfo.FileSize)
 			//更新当前文件夹的缩略图最新
-			db.UpdateUserFileDirPreSha1ById(metaInfo.FileHash.String, pid)
+			db.UpdateUserFileDirPreSha1ById(metaInfo.Filesha1.String, pid)
 			if value, err := db.GetUserFileInfoByUidSha1(sha1, utoken.Uid.Int64); err == nil {
-				response.ReturnResponse(w, config.Net_SuccessCode, "file save success", *meta.GetNewFileMetaObject(*value))
+				response.ReturnResponse(w, config.Net_SuccessCode, "file save success", *meta.GetUserFileObject(*value))
 				return
 			}
 		}
@@ -264,7 +264,7 @@ func UploadUserFileHandler(w http.ResponseWriter, r *http.Request, utoken *db.Ta
 		//查看是否已经保存过
 		if value, err := db.GetUserFileInfoByUidSha1(metaInfo.Filesha1, utoken.Uid.Int64); err == nil {
 			//避免重复保存
-			response.ReturnResponse(w, config.Net_SuccessAginCode, "already save success ", *meta.GetNewFileMetaObject(*value))
+			response.ReturnResponse(w, config.Net_SuccessAginCode, "already save success ", *meta.GetUserFileObject(*value))
 			return
 		}
 		//文件表已经插入成功,再插入用户文件表

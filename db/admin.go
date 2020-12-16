@@ -25,7 +25,7 @@ func AdminGetAllFileList(pageNo,pageSize int64 ) (tableFile []TableFile, err err
 		tfile := TableFile{}
 		//file_sha1,file_name,file_size,file_addr
 		error :=rowdata.Scan(
-			&tfile.Id,&tfile.FileHash, &tfile.FileName, &tfile.FileSize, &tfile.FileLocation, &tfile.Minitype, &tfile.Ftype, &tfile.Video_duration)
+			&tfile.Id,&tfile.Filesha1, &tfile.FileName, &tfile.FileSize, &tfile.FileLocation, &tfile.Minitype, &tfile.Ftype, &tfile.Video_duration)
 		if error != nil {
 			fmt.Println(tAG_userfile, "failed to Query error:", error)
 			continue

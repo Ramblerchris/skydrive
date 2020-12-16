@@ -68,7 +68,7 @@ func GetFileInfoBySha1(filehash string) (*TableFile, error) {
 	tfile := TableFile{}
 	//file_sha1,file_name,file_size,file_addr
 	error =stmt.QueryRow(filehash).Scan(
-		&tfile.Id,&tfile.FileHash, &tfile.FileName, &tfile.FileSize, &tfile.FileLocation, &tfile.Minitype, &tfile.Ftype, &tfile.Video_duration)
+		&tfile.Id,&tfile.Filesha1, &tfile.FileName, &tfile.FileSize, &tfile.FileLocation, &tfile.Minitype, &tfile.Ftype, &tfile.Video_duration)
 	if error != nil {
 		fmt.Println(tAG_fileInfo,"failed to QueryRow error:", error)
 		return nil, error
