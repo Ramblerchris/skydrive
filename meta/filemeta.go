@@ -1,45 +1,28 @@
 package meta
 
 import (
-	"fmt"
-	"github.com/skydrive/db"
 	"time"
+	"github.com/skydrive/db"
+	"github.com/skydrive/handler"
 )
 
-type FileMeta struct {
-	Id               int64  `json:"id,omitempty"`
-	PId              int64  `json:"pid,omitempty"`
-	Filesha1         string `json:"sha1,omitempty"`
-	FileHash_Pre     string `json:"sha1_pre,omitempty"`
-	FileName         string `json:"filename,omitempty"`
-	FileSize         int64  `json:"size,omitempty"`
-	Location         string `json:"path,omitempty"`
-	Filetype         int32  `json:"type,omitempty"`
-	CreateAtTime     string `json:"createattimestr,omitempty"`
-	UpdateAtTime     string `json:"updatattimestr,omitempty"`
-	CreateAtTimeLong int64  `json:"createattimelong,omitempty"`
-	UpdateAtTimeLong int64  `json:"updatattimelong,omitempty"`
-	Minitype         string `json:"minitype,omitempty"`
-	Ftype            int32  `json:"ftype,omitempty"`
-	Video_duration   string `json:"video_duration,omitempty"`
-}
 
-var fileMetas map[string]FileMeta
+var fileMetas map[string]handler.UserFile
 
 func init() {
-	fileMetas = make(map[string]FileMeta)
+	fileMetas = make(map[string]handler.UserFile)
 }
-func AddOrUpdateFileMeta(filemeta FileMeta) {
+func AddOrUpdateFileMeta(filemeta handler.UserFile) {
 	fileMetas[filemeta.Filesha1] = filemeta
 }
 
-func GetFileMeta(sha1 string) (*FileMeta, bool) {
+func GetFileMeta(sha1 string) (*handler.UserFile, bool) {
 	/*if filemeta, ok := fileMetas[sha1]; ok {
 		return &filemeta, true
 	}
 	return nil, false*/
 	if meta, err := db.GetFileInfoBySha1(sha1); err == nil {
-		return &FileMeta{
+		return &handler.UserFile{
 			Id:             meta.Id.Int64,
 			Filesha1:       meta.FileHash.String,
 			FileName:       meta.FileName.String,
@@ -59,14 +42,11 @@ func RemoveFileMeta(sha1 string) bool {
 	return db.UpdateFileInfoStatusBySha1(sha1, 0)
 }
 
-func (filemeta *FileMeta) String() {
-	fmt.Printf("filesha1:%s filename:%s  fileSize: %d  Location: %s  UpdateAtTime: %s ", filemeta.Filesha1, filemeta.FileName, filemeta.FileSize, filemeta.Location, filemeta.UpdateAtTime)
-}
 
-func GetNewFileMetaObject(value db.TableUserFile) *FileMeta {
+func GetNewFileMetaObject(value db.TableUserFile) *handler.UserFile {
 	createlong, _ := time.Parse("2006-01-02 15:04:05", value.Create_at.String)
 	updatelong, _ := time.Parse("2006-01-02 15:04:05", value.Update_at.String)
-	return &FileMeta{
+	return &handler.UserFile{
 		Id:               value.Id.Int64,
 		PId:              value.PId.Int64,
 		Filesha1:         value.FileHash.String,
@@ -82,5 +62,20 @@ func GetNewFileMetaObject(value db.TableUserFile) *FileMeta {
 		Minitype:         value.Minitype.String,
 		Ftype:            value.Ftype.Int32,
 		Video_duration:   value.Video_duration.String,
+	}
+}
+
+func GetNewUserMetaObject(info db.TabUser) *handler.User {
+	return  &handler.User{
+		Id:              info.Id.Int32,
+		User_name:       info.User_name.String,
+		Email:           info.Email.String,
+		Phone:           info.Phone.String,
+		Email_validated: info.Email_validated.Int32,
+		Phone_validated: info.Phone_validated.Int32,
+		Signup_at:       info.Signup_at.String,
+		Last_active:     info.Last_active.String,
+		Profile:         info.Profile.String,
+		Status:          info.Status.Int32,
 	}
 }

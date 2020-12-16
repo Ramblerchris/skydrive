@@ -6,6 +6,7 @@ import (
 	"github.com/skydrive/config"
 	"github.com/skydrive/db"
 	"github.com/skydrive/meta"
+	"github.com/skydrive/response"
 	"github.com/skydrive/utils"
 	"math"
 	"net/http"
@@ -16,16 +17,6 @@ import (
 	"time"
 )
 
-type MultiPartInfo struct {
-	UploadId     string `json:"uploadid"`
-	ChunkCount   int    `json:"chunkcount"`
-	ChunkSize    int    `json:"chunksize"`
-	Filesha1     string `json:"sha1,omitempty"`
-	FileName     string `json:"filename,omitempty"`
-	FileSize     int    `json:"size,omitempty"`
-	Pid     int64    `json:"pid,omitempty"`
-	SuccessIndex []int  `json:"successchunkindex,omitempty"`
-}
 
 //初始化分块上传
 func InitMultipartUploadHandler(w http.ResponseWriter, r *http.Request, utoken *db.UToken) {
@@ -36,12 +27,12 @@ func InitMultipartUploadHandler(w http.ResponseWriter, r *http.Request, utoken *
 	pid, _ := strconv.ParseInt(r.FormValue("pid"), 10, 64)
 	println("aaa", error, filesha1)
 	if len(filesha1) == 0 || filesha1 == "" {
-		ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
+		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
 		return
 	}
 	_, ok := meta.GetFileMeta(filesha1)
 	if ok {
-		ReturnResponseCodeMessage(w, config.Net_ErrorCode, "文件已经上传:"+filesha1)
+		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "文件已经上传:"+filesha1)
 		return
 	}
 	uploadId := filesha1 + fmt.Sprintf("%x", time.Now().UnixNano())
@@ -53,7 +44,7 @@ func InitMultipartUploadHandler(w http.ResponseWriter, r *http.Request, utoken *
 	client.HMSet(redisconn.CTX, "MP_"+uploadId, "filename", filename)
 	client.HMSet(redisconn.CTX, "MP_"+uploadId, "pid", pid)
 
-	ReturnResponse(w, config.Net_SuccessCode, "成功", &MultiPartInfo{
+	response.ReturnResponse(w, config.Net_SuccessCode, "成功", &MultiPartInfo{
 		UploadId:   uploadId,
 		ChunkCount: chunkcount,
 		ChunkSize:  config.CHUNK_Size,
@@ -69,13 +60,13 @@ func UploadMultipartHandler(w http.ResponseWriter, r *http.Request, utoken *db.U
 	r.ParseForm()
 	fmt.Println(r.Method)
 	if r.Method != "POST" {
-		ReturnResponseCodeMessage(w, config.Net_ErrorCode, "bad request")
+		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "bad request")
 		return
 	}
 	uploadId := r.FormValue("uploadId")
 	chunkindex := r.FormValue("chunkindex")
 	if len(uploadId) == 0 || uploadId == "" {
-		ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
+		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
 		return
 	}
 	//todo 写文件
@@ -83,7 +74,7 @@ func UploadMultipartHandler(w http.ResponseWriter, r *http.Request, utoken *db.U
 	os.MkdirAll(path.Dir(fpath), 0744)
 	create, error := os.Create(fpath)
 	if error != nil {
-		ReturnResponseCodeMessage(w, config.Net_ErrorCode, "文件创建失败")
+		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "文件创建失败")
 		return
 	}
 	defer create.Close()
@@ -92,13 +83,13 @@ func UploadMultipartHandler(w http.ResponseWriter, r *http.Request, utoken *db.U
 		index, error := r.Body.Read(buf)
 		create.Write(buf[:index])
 		if error != nil {
-			ReturnResponseCodeMessage(w, config.Net_ErrorCode, "文件写入失败")
+			response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "文件写入失败")
 			return
 		}
 	}
 	client := redisconn.GetRedisClient()
 	client.HMSet(redisconn.CTX, "MP_"+uploadId, "chunk_index"+chunkindex, 1)
-	ReturnResponseCodeMessage(w, config.Net_SuccessCode, "成功")
+	response.ReturnResponseCodeMessage(w, config.Net_SuccessCode, "成功")
 }
 
 //通知分块上传完成
@@ -108,12 +99,12 @@ func FinishMultipartUploadHandler(w http.ResponseWriter, r *http.Request, utoken
 	uploadId := r.FormValue("uploadId")
 	pid, _ := strconv.ParseInt(r.FormValue("pid"), 10, 64)
 	if len(filesha1) == 0 || filesha1 == "" {
-		ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
+		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
 		return
 	}
 	_, ok := meta.GetFileMeta(filesha1)
 	if ok {
-		ReturnResponseCodeMessage(w, config.Net_SuccessAginCode, "文件已经上传:"+filesha1)
+		response.ReturnResponseCodeMessage(w, config.Net_SuccessAginCode, "文件已经上传:"+filesha1)
 		return
 	}
 	client := redisconn.GetRedisClient()
@@ -122,13 +113,13 @@ func FinishMultipartUploadHandler(w http.ResponseWriter, r *http.Request, utoken
 
 	if result == nil || len(result) == 0 {
 		//未上传
-		ReturnResponseCodeMessage(w, config.Net_ErrorCode, "文件上传任务不存在:"+filesha1)
+		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "文件上传任务不存在:"+filesha1)
 		return
 	} else {
 		filesha1Cache := result["filesha1"]
 		//对比sha1
 		if filesha1 != filesha1Cache {
-			ReturnResponseCodeMessage(w, config.Net_ErrorCode, "文件 sha1 错误:"+filesha1)
+			response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "文件 sha1 错误:"+filesha1)
 			return
 		}
 		var SuccessIndex []int
@@ -179,7 +170,7 @@ func FinishMultipartUploadHandler(w http.ResponseWriter, r *http.Request, utoken
 					return
 				}*/
 			}
-			ReturnResponse(w, int32(resultCode), errorMessage, &MultiPartInfo{
+			response.ReturnResponse(w, int32(resultCode), errorMessage, &MultiPartInfo{
 				UploadId:     uploadId,
 				ChunkCount:   countSum,
 				ChunkSize:    config.CHUNK_Size,
@@ -190,7 +181,7 @@ func FinishMultipartUploadHandler(w http.ResponseWriter, r *http.Request, utoken
 				SuccessIndex: SuccessIndex,
 			})
 		} else {
-			ReturnResponseCodeMessage(w, config.Net_ErrorCode, "文件分块合并失败")
+			response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "文件分块合并失败")
 		}
 
 	}

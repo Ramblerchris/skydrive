@@ -1,7 +1,6 @@
 package db
 
 import (
-	"database/sql"
 	"fmt"
 	mysql "github.com/skydrive/db/mysqlconn"
 )
@@ -11,22 +10,6 @@ const saveUserinfo = "insert into tbl_user(user_pwd,phone,signup_at,status,user_
 //const saveUserinfo = "insert into tbl_user(user_pwd,phone,signup_at,status) values(?,?,?,?)"
 const updateUserPhoto = "UPDATE tbl_user SET photo_addr=? ,photo_file_sha1=? where id=?"
 const updateUserName = "UPDATE tbl_user SET user_name=? where id=?"
-
-type TabUser struct {
-	Id              sql.NullInt32  `db:"id"`
-	User_name       sql.NullString `db:"user_name"`
-	User_pwd        sql.NullString `db:"user_pwd"`
-	Email           sql.NullString `db:"email"`
-	Phone           sql.NullString `db:"phone"`
-	Photo_addr      sql.NullString `db:"photo_addr"`
-	Photo_addr_sha1 sql.NullString `db:"photo_file_sha1"`
-	Email_validated sql.NullInt32  `db:"email_validated"`
-	Phone_validated sql.NullInt32  `db:"phone_validated"`
-	Signup_at       sql.NullString `db:"signup_at"`
-	Last_active     sql.NullString `db:"last_active"`
-	Profile         sql.NullString `db:"profile"`
-	Status          sql.NullInt32  `db:"status"`
-}
 
 func (t *TabUser) String() {
 	fmt.Printf("Id:%s User_name:%s User_pwd :%s Email:%s Phone:%s Email_validated:%s Phone_validated:%s Signup_at :%s Last_active:%s Profile:%s Status:%s",t.Id,t.User_name,t.User_pwd,t.Email,t.Phone,t.Email_validated,t.Phone_validated,t.Signup_at,t.Last_active,t.Profile,t.Status)

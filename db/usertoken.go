@@ -1,7 +1,6 @@
 package db
 
 import (
-	"database/sql"
 	"fmt"
 	"github.com/skydrive/config"
 	mysql "github.com/skydrive/db/mysqlconn"
@@ -16,14 +15,6 @@ const (
 	saveUToken              = "insert into tbl_user_token( uid,phone,user_token,expiretime) values(?,?,?,?)"
 	deleteUToken            = "delete from  tbl_user_token where id=?"
 )
-
-type UToken struct {
-	Tid        sql.NullInt64
-	Uid        sql.NullInt64
-	Phone      sql.NullString
-	User_token sql.NullString
-	Expiretime sql.NullInt64
-}
 
 func (uToken UToken) String() string {
 	return fmt.Sprintf("Tid:%d Uid:%d  Phone: %s  User_token: %s  Expiretime: %d ",

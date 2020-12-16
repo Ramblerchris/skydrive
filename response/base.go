@@ -1,6 +1,8 @@
 package response
 
-import "github.com/skydrive/meta"
+import (
+	"github.com/skydrive/handler"
+)
 
 type BaseResponse struct {
 	Code    int32  `json:"code"`
@@ -10,7 +12,7 @@ type BaseResponse struct {
 //组合方式
 type MetaInfoBaseResponse struct {
 	BaseResponse
-	Data meta.FileMeta `json:"data"`
+	Data handler.UserFile `json:"data"`
 }
 
 type FormatResponse struct {
@@ -20,6 +22,7 @@ type FormatResponse struct {
 }
 
 type PageData struct {
+	NextPageId    int64  `json:"nextpageid"`
 	PageNo    int64  `json:"pageNo"`
 	PageSize  int64  `json:"pageSize"`
 	Total	  int64  `json:"total"`
@@ -35,7 +38,7 @@ func NewResponse(code int32, message string) *BaseResponse {
 }
 
 //构造
-func NewMetaInfoBaseResponse(code int32, message string, meta *meta.FileMeta) *MetaInfoBaseResponse {
+func NewMetaInfoBaseResponse(code int32, message string, meta *handler.UserFile) *MetaInfoBaseResponse {
 	metaInfoBaseResponse := &MetaInfoBaseResponse{}
 	metaInfoBaseResponse.Code = code
 	// metaInfoBaseResponse.BaseResponseData.Message=message

@@ -1,16 +1,15 @@
-package handler
+package response
 
 import (
 	"encoding/json"
 	"github.com/skydrive/config"
-	"github.com/skydrive/meta"
-	"github.com/skydrive/response"
+	"github.com/skydrive/handler"
 	"net/http"
 )
 
 func ReturnResponseCodeMessage(w http.ResponseWriter, code int32, message string) {
 	w.Header().Add("Content-Type", "application/json")
-	response := response.NewResponse(code, message)
+	response := NewResponse(code, message)
 	sonResult, _ := json.Marshal(response)
 	// w.WriteHeader(http.StatusInternalServerError)
 	w.WriteHeader(http.StatusOK)
@@ -19,7 +18,7 @@ func ReturnResponseCodeMessage(w http.ResponseWriter, code int32, message string
 
 func ReturnResponseCodeMessageHttpCode(w http.ResponseWriter,httpCode int, code int32, message string) {
 	w.Header().Add("Content-Type", "application/json")
-	response := response.NewResponse(code, message)
+	response := NewResponse(code, message)
 	sonResult, _ := json.Marshal(response)
 	// w.WriteHeader(http.StatusInternalServerError)
 	w.WriteHeader(httpCode)
@@ -27,10 +26,10 @@ func ReturnResponseCodeMessageHttpCode(w http.ResponseWriter,httpCode int, code 
 }
 
 
-func ReturnMetaInfo(w http.ResponseWriter, code int32, message string, filemeta *meta.FileMeta) {
+func ReturnMetaInfo(w http.ResponseWriter, code int32, message string, filemeta *handler.UserFile) {
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	response := response.NewMetaInfoBaseResponse(code, message, filemeta)
+	response := NewMetaInfoBaseResponse(code, message, filemeta)
 	jsonResult, error := json.Marshal(response)
 	if error != nil {
 		ReturnResponseCodeMessage(w, config.Net_ErrorCode, "internel server error ")
@@ -42,7 +41,7 @@ func ReturnMetaInfo(w http.ResponseWriter, code int32, message string, filemeta 
 func ReturnResponse(w http.ResponseWriter, code int32, message string, data interface{}) {
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	jsonResult, error := json.Marshal(&response.FormatResponse{
+	jsonResult, error := json.Marshal(&FormatResponse{
 		Code:    code,
 		Message: message,
 		Data:    data,
@@ -54,13 +53,14 @@ func ReturnResponse(w http.ResponseWriter, code int32, message string, data inte
 	w.Write(jsonResult)
 }
 
-func ReturnResponsePage(w http.ResponseWriter, code int32, message string, data interface{},pageNo ,pageSize ,total int64) {
+func ReturnResponsePage(w http.ResponseWriter, code int32, message string, data interface{},pageNo ,pageSize ,nextPageId,total int64) {
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	jsonResult, error := json.Marshal(&response.FormatResponse{
+	jsonResult, error := json.Marshal(&FormatResponse{
 		Code:    code,
 		Message: message,
-		Data: &response.PageData{
+		Data: &PageData{
+			NextPageId:   nextPageId,
 			PageNo:   pageNo,
 			PageSize: pageSize,
 			Total:    total,

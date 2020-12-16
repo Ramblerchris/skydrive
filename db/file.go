@@ -1,27 +1,15 @@
 package db
 
 import (
-	"database/sql"
 	"fmt"
 	mysql "github.com/skydrive/db/mysqlconn"
 	"github.com/skydrive/utils"
 )
 
-//这里的sql.NullString 是对象，不能直接用于json序列化
-type TableFile struct {
-	Id             sql.NullInt64
-	FileHash       sql.NullString
-	FileName       sql.NullString
-	FileLocation   sql.NullString
-	FileSize       sql.NullInt64
-	Minitype       sql.NullString
-	Ftype          sql.NullInt32
-	Video_duration sql.NullString
-}
 const selectFile = "select id,file_sha1,file_name,file_size,file_addr,minitype,ftype,video_duration from tbl_file where file_sha1=? and status=1 limit 1"
 const saveFileinfo = "insert into tbl_file(file_sha1,file_name,file_size,file_addr,status,minitype,ftype,video_duration) values(?,?,?,?,?,?,?,?)"
 const updateFileInfo = "update tbl_file set status=? where file_sha1=?"
-const tAG_fileInfo ="fileinfo.go"
+const tAG_fileInfo ="file.go"
 
 func SaveFileInfo(filehash string, filename string, filesize int64, location string,minitype string ,ftype int ,video_duration int64) bool {
 	//stmt ,error:=mysql.DbConnect().Prepare(saveFile)

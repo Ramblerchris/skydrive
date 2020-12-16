@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/skydrive/config"
 	"github.com/skydrive/db"
+	"github.com/skydrive/response"
 	"github.com/skydrive/utils"
 	"net/http"
 	"time"
@@ -19,7 +20,7 @@ type HandlerFuncAuth func(http.ResponseWriter, *http.Request, *db.UToken)
 
 //测试网络是否连通，
 func CheckNetIsOkHandler(w http.ResponseWriter, r *http.Request) {
-	ReturnResponseCodeMessage(w, config.Net_SuccessCode, "连接成功")
+	response.ReturnResponseCodeMessage(w, config.Net_SuccessCode, "连接成功")
 	fmt.Println(" CheckNetIsOkHandler :", " Now:", time.Now().UnixNano()/1e6)
 }
 
@@ -61,19 +62,19 @@ func TokenCheckInterceptor(h HandlerFuncAuth) http.HandlerFunc {
 		}*/
 		if len(token) == 0 || token == "" {
 			//ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
-			ReturnResponseCodeMessageHttpCode(w, http.StatusUnauthorized, config.Net_ErrorCode, "bad request")
+			response.ReturnResponseCodeMessageHttpCode(w, http.StatusUnauthorized, config.Net_ErrorCode, "bad request")
 			return
 		}
 		if byToken, err := db.GetUserTokenInfoByToken(token); err == nil && byToken.User_token.String != "" {
 			//todo 判断过期时间
 			fmt.Println(" Expiretime :", byToken.Expiretime.Int64, " Now:", time.Now().UnixNano()/1e6)
 			if byToken.Expiretime.Int64 < time.Now().UnixNano()/1e6 {
-				ReturnResponseCodeMessageHttpCode(w, http.StatusForbidden, config.Net_ErrorCode_Token_exprise, "token expired")
+				response.ReturnResponseCodeMessageHttpCode(w, http.StatusForbidden, config.Net_ErrorCode_Token_exprise, "token expired")
 				return
 			}
 			h(w, r, &byToken)
 			return
 		}
-		ReturnResponseCodeMessageHttpCode(w, http.StatusForbidden, config.Net_ErrorCode, "bad request")
+		response.ReturnResponseCodeMessageHttpCode(w, http.StatusForbidden, config.Net_ErrorCode, "bad request")
 	}
 }

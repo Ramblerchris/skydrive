@@ -5,6 +5,7 @@ import (
 	"github.com/skydrive/config"
 	"github.com/skydrive/db"
 	"github.com/skydrive/meta"
+	"github.com/skydrive/response"
 	"io"
 	"io/ioutil"
 	"mime"
@@ -19,10 +20,10 @@ func GetFileInfoBySha1Handler(w http.ResponseWriter, r *http.Request, utoken *db
 		r.ParseForm()
 		sha1 := r.FormValue("sha1")
 		if metaInfo, ok := meta.GetFileMeta(sha1); ok {
-			ReturnMetaInfo(w, config.Net_SuccessCode, "file save success", metaInfo)
+			response.ReturnMetaInfo(w, config.Net_SuccessCode, "file save success", metaInfo)
 			return
 		}
-		ReturnResponseCodeMessage(w, config.Net_ErrorCode, "empty")
+		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "empty")
 	} else {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte("internel server error"))
@@ -34,12 +35,12 @@ func OpenFile1Handler(w http.ResponseWriter, r *http.Request, utoken *db.UToken)
 	r.ParseForm()
 	filesha1 := r.FormValue("filesha1")
 	if len(filesha1) == 0 || filesha1 == "" || len(filesha1) == 0 || filesha1 == "" {
-		ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
+		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
 		return
 	}
 	data, ok := meta.GetFileMeta(filesha1)
 	if !ok {
-		ReturnResponseCodeMessage(w, config.Net_ErrorCode, "not find filesha1:"+filesha1)
+		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "not find filesha1:"+filesha1)
 		return
 	}
 	http.ServeFile(w, r, data.Location)
@@ -51,17 +52,17 @@ func UpdateFileInfoFileNameBySha1Handler(w http.ResponseWriter, r *http.Request,
 	filesha1 := r.FormValue("filesha1")
 	newfilename := r.FormValue("filename")
 	if len(filesha1) == 0 || filesha1 == "" || len(filesha1) == 0 || filesha1 == "" {
-		ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
+		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
 		return
 	}
 	data, ok := meta.GetFileMeta(filesha1)
 	if !ok {
-		ReturnResponseCodeMessage(w, config.Net_ErrorCode, "not find filesha1:"+filesha1)
+		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "not find filesha1:"+filesha1)
 		return
 	}
 	data.FileName = newfilename
 	meta.AddOrUpdateFileMeta(*data)
-	ReturnMetaInfo(w, config.Net_SuccessCode, "update file "+data.FileName+" success ", data)
+	response.ReturnMetaInfo(w, config.Net_SuccessCode, "update file "+data.FileName+" success ", data)
 }
 
 //删除文件
@@ -69,12 +70,12 @@ func DeleteFileInfoBySha1Handler(w http.ResponseWriter, r *http.Request, utoken 
 	r.ParseForm()
 	filesha1 := r.FormValue("filesha1")
 	if len(filesha1) == 0 || filesha1 == "" {
-		ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
+		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
 		return
 	}
 	data, ok := meta.GetFileMeta(filesha1)
 	if !ok {
-		ReturnResponseCodeMessage(w, config.Net_ErrorCode, "not find filesha1:"+filesha1)
+		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "not find filesha1:"+filesha1)
 		return
 	}
 	/*
@@ -84,9 +85,9 @@ func DeleteFileInfoBySha1Handler(w http.ResponseWriter, r *http.Request, utoken 
 			return
 		}*/
 	if meta.RemoveFileMeta(filesha1) {
-		ReturnResponseCodeMessage(w, config.Net_SuccessCode, "delete file "+data.FileName+" success ")
+		response.ReturnResponseCodeMessage(w, config.Net_SuccessCode, "delete file "+data.FileName+" success ")
 	} else {
-		ReturnResponseCodeMessage(w, config.Net_ErrorCode, "delete file error:"+filesha1)
+		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "delete file error:"+filesha1)
 	}
 
 }
@@ -96,22 +97,22 @@ func DownloadFileWebBySha1Handler(w http.ResponseWriter, r *http.Request, utoken
 	r.ParseForm()
 	filesha1 := r.FormValue("filesha1")
 	if len(filesha1) == 0 || filesha1 == "" || len(filesha1) == 0 || filesha1 == "" {
-		ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
+		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
 		return
 	}
 	data, ok := meta.GetFileMeta(filesha1)
 	if !ok {
-		ReturnResponseCodeMessage(w, config.Net_ErrorCode, "not find filesha1:"+filesha1)
+		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "not find filesha1:"+filesha1)
 		return
 	}
 	file, error := os.Open(data.Location)
 	if error != nil {
-		ReturnResponseCodeMessage(w, config.Net_ErrorCode, "open  file error:"+error.Error())
+		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "open  file error:"+error.Error())
 		return
 	}
 	byteData, error := ioutil.ReadAll(file)
 	if error != nil {
-		ReturnResponseCodeMessage(w, config.Net_ErrorCode, "read file error:"+error.Error())
+		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "read file error:"+error.Error())
 		return
 	}
 	// w.Header().Set("Content-Type", "application/octect-stream")

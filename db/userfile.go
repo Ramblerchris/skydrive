@@ -7,23 +7,6 @@ import (
 	"strings"
 )
 
-type TableUserFile struct {
-	Id             sql.NullInt64
-	PId            sql.NullInt64
-	Uid            sql.NullInt64
-	Phone          sql.NullString
-	FileHash       sql.NullString
-	FileHash_Pre   sql.NullString
-	FileName       sql.NullString
-	FileLocation   sql.NullString
-	FileSize       sql.NullInt64
-	Filetype       sql.NullInt32
-	Create_at      sql.NullString
-	Update_at      sql.NullString
-	Minitype       sql.NullString
-	Ftype          sql.NullInt32
-	Video_duration sql.NullString
-}
 
 const (
 	selectUFileBySha1                 = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at,filetype,minitype,ftype,video_duration from tbl_user_file where file_sha1=? and uid=? and status=1 limit 1"
@@ -47,7 +30,7 @@ const (
 	selectUFileCountByUid 			  = "select count(*) from tbl_user_file where  uid=? and status=1  "
 	//selectUFileCountByUidPid 		  = "select count(*) from tbl_user_file where  pid=? and uid=? and status=1 and id>? "
 	selectUFileCountByUidPid 		  = "select count(*) from tbl_user_file where  pid=? and uid=? and status=1  "
-	tAG_userfile                      = "userfileinfo.go"
+	tAG_userfile                      = "userfile.go"
 )
 
 //创建一个文件夹
