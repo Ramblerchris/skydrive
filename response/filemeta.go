@@ -1,27 +1,22 @@
-package meta
+package response
 
 import (
 	"github.com/skydrive/db"
-	"github.com/skydrive/handler"
 	"time"
 )
 
-var fileMetas map[string]handler.UserFile
+var fileMetas map[string]UserFile
 
 func init() {
-	fileMetas = make(map[string]handler.UserFile)
+	fileMetas = make(map[string]UserFile)
 }
-func AddOrUpdateFileMeta(filemeta handler.UserFile) {
+func AddOrUpdateFileMeta(filemeta UserFile) {
 	fileMetas[filemeta.Filesha1] = filemeta
 }
 
-func GetFileMeta(sha1 string) (*handler.UserFile, bool) {
-	/*if filemeta, ok := fileMetas[sha1]; ok {
-		return &filemeta, true
-	}
-	return nil, false*/
+func GetFileMeta(sha1 string) (*UserFile, bool) {
 	if meta, err := db.GetFileInfoBySha1(sha1); err == nil {
-		return &handler.UserFile{
+		return &UserFile{
 			Id:             meta.Id.Int64,
 			Filesha1:       meta.Filesha1.String,
 			FileName:       meta.FileName.String,
@@ -41,10 +36,10 @@ func RemoveFileMeta(sha1 string) bool {
 	return db.UpdateFileInfoStatusBySha1(sha1, 0)
 }
 
-func GetUserFileObject(value db.TableUserFile) *handler.UserFile {
+func GetUserFileObject(value db.TableUserFile) *UserFile {
 	createlong, _ := time.Parse("2006-01-02 15:04:05", value.Create_at.String)
 	updatelong, _ := time.Parse("2006-01-02 15:04:05", value.Update_at.String)
-	return &handler.UserFile{
+	return &UserFile{
 		Id:               value.Id.Int64,
 		PId:              value.PId.Int64,
 		Filesha1:         value.FileHash.String,
@@ -63,8 +58,8 @@ func GetUserFileObject(value db.TableUserFile) *handler.UserFile {
 	}
 }
 
-func GetUserObject(info db.TableUser) *handler.User {
-	return &handler.User{
+func GetUserObject(info db.TableUser) *User {
+	return &User{
 		Id:              info.Id.Int32,
 		User_name:       info.User_name.String,
 		Email:           info.Email.String,
@@ -78,8 +73,8 @@ func GetUserObject(info db.TableUser) *handler.User {
 	}
 }
 
-func GetUserTokenObject(info db.TableUToken) *handler.UToken {
-	return &handler.UToken{
+func GetUserTokenObject(info db.TableUToken) *UToken {
+	return &UToken{
 		Tid:        info.Tid.Int64,
 		Uid:        info.Uid.Int64,
 		Phone:      info.Phone.String,
@@ -88,8 +83,8 @@ func GetUserTokenObject(info db.TableUToken) *handler.UToken {
 	}
 }
 
-func GetFileObject(info db.TableFile) *handler.File {
-	return &handler.File{
+func GetFileObject(info db.TableFile) *File {
+	return &File{
 		Id:             info.Id.Int64,
 		Filesha1:       info.Filesha1.String,
 		FileName:       info.FileName.String,

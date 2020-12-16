@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/skydrive/config"
 	"github.com/skydrive/db"
-	"github.com/skydrive/meta"
 	"github.com/skydrive/response"
 	"github.com/skydrive/utils"
 	"io"
@@ -77,7 +76,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if db.SaveUserInfo(phone, BuildEncodePwd(password), time.Now().Format("2006-01-02 15:04:05")) {
 		if info, err := db.GetUserInfoByPhone(phone); err == nil {
-			response.ReturnResponse(w, config.Net_SuccessCode, "注册成功", &User{
+			response.ReturnResponse(w, config.Net_SuccessCode, "注册成功", &response.User{
 				Id:              info.Id.Int32,
 				User_name:       info.User_name.String,
 				Email:           info.Email.String,
@@ -107,7 +106,7 @@ func GetUserInfoByTokenHandler(w http.ResponseWriter, r *http.Request, utoken *d
 		return
 	}
 	if info, err := db.GetUserInfoByPhone(utoken.Phone.String); err == nil && info.Id.Int32 > 0 {
-		response.ReturnResponse(w, config.Net_SuccessCode, "获取成功", &User{
+		response.ReturnResponse(w, config.Net_SuccessCode, "获取成功", &response.User{
 			Id:              info.Id.Int32,
 			User_name:       info.User_name.String,
 			Email:           info.Email.String,
@@ -178,7 +177,7 @@ func UpdataUploadUserPhotoHandler(w http.ResponseWriter, r *http.Request, utoken
 		if error!=nil{
 			response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, fmt.Sprintf("创建文件夹出错 %s \n", error.Error()))
 		}
-		metaInfo := UserFile{
+		metaInfo := response.UserFile{
 			FileName:     fileheader.Filename,
 			Location:    	path,
 			UpdateAtTime: time.Now().Format("2006-01-02 15:04:05"),
@@ -198,9 +197,9 @@ func UpdataUploadUserPhotoHandler(w http.ResponseWriter, r *http.Request, utoken
 		}
 		metaInfo.Filesha1 = utils.GetFileSha1(newfile)
 		fmt.Println("file sha1", metaInfo.Filesha1)
-		meta.AddOrUpdateFileMeta(metaInfo)
+		response.AddOrUpdateFileMeta(metaInfo)
 		//处理文件已经存在的情况
-		_, ok := meta.GetFileMeta(metaInfo.Filesha1)
+		_, ok := response.GetFileMeta(metaInfo.Filesha1)
 		if !ok {
 			//如果不存在 先插入文件表
 			if !db.SaveFileInfo(metaInfo.Filesha1, metaInfo.FileName, metaInfo.FileSize, metaInfo.Location, minetype, ftype, videoduration) {

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/skydrive/config"
 	"github.com/skydrive/db"
-	"github.com/skydrive/meta"
 	"github.com/skydrive/response"
 	"github.com/skydrive/utils"
 	"io"
@@ -25,10 +24,10 @@ func GetUserFileListByUidHandler(w http.ResponseWriter, r *http.Request, utoken 
 		pageSize=10
 	}
 	if byuid, err ,total := db.GetUserFileListMetaByUid(utoken.Uid.Int64,pageNo,pageSize,lastId); err == nil {
-		metaFilelist := make([]UserFile, 0)
+		metaFilelist := make([]response.UserFile, 0)
 		for _, value := range byuid {
 			//fmt.Println("GetUserFileListByUidHandler",value)
-			metaFilelist = append(metaFilelist, *meta.GetUserFileObject(value))
+			metaFilelist = append(metaFilelist, *response.GetUserFileObject(value))
 		}
 		nextPageId:=metaFilelist[len(metaFilelist)-1].Id
 		//ReturnResponse(w, config.Net_SuccessCode, "get file success ", metaFilelist)
@@ -54,10 +53,10 @@ func GetUserDirFileListByPidHandler(w http.ResponseWriter, r *http.Request, utok
 		pageSize=10
 	}
 	if byuid, err,total := db.GetUserDirFileListByUidPid(utoken.Uid.Int64, pid,pageNo,pageSize,lastId); err == nil {
-		metaFilelist := make([]UserFile, 0)
+		metaFilelist := make([]response.UserFile, 0)
 		for _, value := range byuid {
 			//fmt.Println("GetUserDirFileListByPidHandler", value)
-			metaFilelist = append(metaFilelist, *meta.GetUserFileObject(value))
+			metaFilelist = append(metaFilelist, *response.GetUserFileObject(value))
 		}
 		nextPageId:=metaFilelist[len(metaFilelist)-1].Id
 		//ReturnResponse(w, config.Net_SuccessCode, "get file success ", metaFilelist)
@@ -78,10 +77,10 @@ func GetSha1ListIsExistByUidHandler(w http.ResponseWriter, r *http.Request, utok
 		}
 		split := strings.Split(value, ";")
 		if byuid, err := db.GetUserFileListBySha1s(utoken.Uid.Int64, split); err == nil {
-			metaFilelist := make([]UserFile, 0)
+			metaFilelist := make([]response.UserFile, 0)
 			for _, value := range byuid {
 				//fmt.Println("GetUserDirFileListByPidHandler", value)
-				metaFilelist = append(metaFilelist, *meta.GetUserFileObject(value))
+				metaFilelist = append(metaFilelist, *response.GetUserFileObject(value))
 			}
 			response.ReturnResponse(w, config.Net_SuccessCode, "get file success ", metaFilelist)
 			return
@@ -157,7 +156,7 @@ func AddFileDirByUidPidHandler(w http.ResponseWriter, r *http.Request, utoken *d
 	}
 	if isok, id := db.SaveUserDirInfo(utoken.Uid.Int64, pid, utoken.Phone.String, dirname); isok {
 		if value, err := db.GetUserDirInfoById(id); err == nil {
-			response.ReturnResponse(w, config.Net_SuccessCode, "file save success", *meta.GetUserFileObject(*value))
+			response.ReturnResponse(w, config.Net_SuccessCode, "file save success", *response.GetUserFileObject(*value))
 			return
 		}
 	}
@@ -178,7 +177,7 @@ func HitPassBySha1Handler(w http.ResponseWriter, r *http.Request, utoken *db.Tab
 		//查看当前用户对应文件夹是否已经保存过
 		if value, err := db.GetUserFileMetaByPidUidSha1(sha1, utoken.Uid.Int64, pid); err == nil {
 			//避免重复保存
-			response.ReturnResponse(w, config.Net_SuccessAginCode, "already save success ", *meta.GetUserFileObject(*value))
+			response.ReturnResponse(w, config.Net_SuccessAginCode, "already save success ", *response.GetUserFileObject(*value))
 			return
 		}
 		if db.SaveUserFileInfo(utoken.Uid.Int64, pid, utoken.Phone.String, metaInfo.Filesha1.String, metaInfo.FileName.String, metaInfo.FileLocation.String, metaInfo.FileSize.Int64, metaInfo.Minitype.String, int(metaInfo.Ftype.Int32), metaInfo.Video_duration.String) {
@@ -187,7 +186,7 @@ func HitPassBySha1Handler(w http.ResponseWriter, r *http.Request, utoken *db.Tab
 			//更新当前文件夹的缩略图最新
 			db.UpdateUserFileDirPreSha1ById(metaInfo.Filesha1.String, pid)
 			if value, err := db.GetUserFileInfoByUidSha1(sha1, utoken.Uid.Int64); err == nil {
-				response.ReturnResponse(w, config.Net_SuccessCode, "file save success", *meta.GetUserFileObject(*value))
+				response.ReturnResponse(w, config.Net_SuccessCode, "file save success", *response.GetUserFileObject(*value))
 				return
 			}
 		}
@@ -229,7 +228,7 @@ func UploadUserFileHandler(w http.ResponseWriter, r *http.Request, utoken *db.Ta
 		if error != nil {
 			response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, fmt.Sprintf("创建文件夹出错 %s \n", error.Error()))
 		}
-		metaInfo := UserFile{
+		metaInfo := response.UserFile{
 			FileName:     fileheader.Filename,
 			Location:     path,
 			UpdateAtTime: time.Now().Format("2006-01-02 15:04:05"),
@@ -249,9 +248,9 @@ func UploadUserFileHandler(w http.ResponseWriter, r *http.Request, utoken *db.Ta
 		}
 		metaInfo.Filesha1 = utils.GetFileSha1(newfile)
 		fmt.Println("file sha1", metaInfo.Filesha1)
-		meta.AddOrUpdateFileMeta(metaInfo)
+		response.AddOrUpdateFileMeta(metaInfo)
 		//处理文件已经存在的情况
-		_, ok := meta.GetFileMeta(metaInfo.Filesha1)
+		_, ok := response.GetFileMeta(metaInfo.Filesha1)
 		if !ok {
 			//如果不存在 先插入文件表
 
@@ -264,7 +263,7 @@ func UploadUserFileHandler(w http.ResponseWriter, r *http.Request, utoken *db.Ta
 		//查看是否已经保存过
 		if value, err := db.GetUserFileInfoByUidSha1(metaInfo.Filesha1, utoken.Uid.Int64); err == nil {
 			//避免重复保存
-			response.ReturnResponse(w, config.Net_SuccessAginCode, "already save success ", *meta.GetUserFileObject(*value))
+			response.ReturnResponse(w, config.Net_SuccessAginCode, "already save success ", *response.GetUserFileObject(*value))
 			return
 		}
 		//文件表已经插入成功,再插入用户文件表

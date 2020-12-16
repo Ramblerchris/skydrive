@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/skydrive/config"
 	"github.com/skydrive/db"
-	"github.com/skydrive/meta"
 	"github.com/skydrive/response"
 	"io"
 	"io/ioutil"
@@ -19,7 +18,7 @@ func GetFileInfoBySha1Handler(w http.ResponseWriter, r *http.Request, utoken *db
 	if r.Method == "GET" {
 		r.ParseForm()
 		sha1 := r.FormValue("sha1")
-		if metaInfo, ok := meta.GetFileMeta(sha1); ok {
+		if metaInfo, ok := response.GetFileMeta(sha1); ok {
 			response.ReturnMetaInfo(w, config.Net_SuccessCode, "file save success", metaInfo)
 			return
 		}
@@ -38,7 +37,7 @@ func OpenFile1Handler(w http.ResponseWriter, r *http.Request, utoken *db.TableUT
 		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
 		return
 	}
-	data, ok := meta.GetFileMeta(filesha1)
+	data, ok := response.GetFileMeta(filesha1)
 	if !ok {
 		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "not find filesha1:"+filesha1)
 		return
@@ -55,13 +54,13 @@ func UpdateFileInfoFileNameBySha1Handler(w http.ResponseWriter, r *http.Request,
 		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
 		return
 	}
-	data, ok := meta.GetFileMeta(filesha1)
+	data, ok := response.GetFileMeta(filesha1)
 	if !ok {
 		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "not find filesha1:"+filesha1)
 		return
 	}
 	data.FileName = newfilename
-	meta.AddOrUpdateFileMeta(*data)
+	response.AddOrUpdateFileMeta(*data)
 	response.ReturnMetaInfo(w, config.Net_SuccessCode, "update file "+data.FileName+" success ", data)
 }
 
@@ -73,7 +72,7 @@ func DeleteFileInfoBySha1Handler(w http.ResponseWriter, r *http.Request, utoken 
 		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
 		return
 	}
-	data, ok := meta.GetFileMeta(filesha1)
+	data, ok := response.GetFileMeta(filesha1)
 	if !ok {
 		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "not find filesha1:"+filesha1)
 		return
@@ -84,7 +83,7 @@ func DeleteFileInfoBySha1Handler(w http.ResponseWriter, r *http.Request, utoken 
 			ReturnResponseCodeMessage(w, Net_ErrorCode, "delete file error "+filesha1)
 			return
 		}*/
-	if meta.RemoveFileMeta(filesha1) {
+	if response.RemoveFileMeta(filesha1) {
 		response.ReturnResponseCodeMessage(w, config.Net_SuccessCode, "delete file "+data.FileName+" success ")
 	} else {
 		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "delete file error:"+filesha1)
@@ -100,7 +99,7 @@ func DownloadFileWebBySha1Handler(w http.ResponseWriter, r *http.Request, utoken
 		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
 		return
 	}
-	data, ok := meta.GetFileMeta(filesha1)
+	data, ok := response.GetFileMeta(filesha1)
 	if !ok {
 		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "not find filesha1:"+filesha1)
 		return

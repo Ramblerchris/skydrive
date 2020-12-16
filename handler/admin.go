@@ -3,7 +3,6 @@ package handler
 import (
 	"github.com/skydrive/config"
 	"github.com/skydrive/db"
-	"github.com/skydrive/meta"
 	"github.com/skydrive/response"
 	"net/http"
 	"strconv"
@@ -18,9 +17,9 @@ func GetAllUserListHandler(w http.ResponseWriter, r *http.Request, utoken *db.Ta
 		pageSize = 10
 	}
 	if alluser, err, total := db.AdminGetAllUserList(pageNo, pageSize); err == nil {
-		metaFilelist := make([]User, 0)
+		metaFilelist := make([]response.User, 0)
 		for _, value := range alluser {
-			metaFilelist = append(metaFilelist, *meta.GetUserObject(value))
+			metaFilelist = append(metaFilelist, *response.GetUserObject(value))
 		}
 		response.ReturnResponsePage(w, config.Net_SuccessCode, "get file success ", metaFilelist, pageNo, pageSize, 0, total)
 		return
@@ -36,9 +35,9 @@ func GetAllUserTokenListHandler(w http.ResponseWriter, r *http.Request, utoken *
 		pageSize = 10
 	}
 	if alluser, err, total := db.AdminGetAllUserTokenList(pageNo, pageSize); err == nil {
-		metaFilelist := make([]UToken, 0)
+		metaFilelist := make([]response.UToken, 0)
 		for _, value := range alluser {
-			metaFilelist = append(metaFilelist, *meta.GetUserTokenObject(value))
+			metaFilelist = append(metaFilelist, *response.GetUserTokenObject(value))
 		}
 		response.ReturnResponsePage(w, config.Net_SuccessCode, "get file success ", metaFilelist, pageNo, pageSize, 0, total)
 		return
@@ -54,9 +53,9 @@ func GetAllFileListHandler(w http.ResponseWriter, r *http.Request, utoken *db.Ta
 		pageSize = 10
 	}
 	if alluser, err, total := db.AdminGetAllFileList(pageNo, pageSize); err == nil {
-		metaFilelist := make([]File, 0)
+		metaFilelist := make([]response.File, 0)
 		for _, value := range alluser {
-			metaFilelist = append(metaFilelist, *meta.GetFileObject(value))
+			metaFilelist = append(metaFilelist, *response.GetFileObject(value))
 		}
 		response.ReturnResponsePage(w, config.Net_SuccessCode, "get file success ", metaFilelist, pageNo, pageSize, 0, total)
 		return
@@ -72,9 +71,9 @@ func GetAllUserFileListHandler(w http.ResponseWriter, r *http.Request, utoken *d
 		pageSize = 10
 	}
 	if alluser, err, total := db.AdminGetAllUserFileInfoList(pageNo, pageSize); err == nil {
-		metaFilelist := make([]UserFile, 0)
+		metaFilelist := make([]response.UserFile, 0)
 		for _, value := range alluser {
-			metaFilelist = append(metaFilelist, *meta.GetUserFileObject(value))
+			metaFilelist = append(metaFilelist, *response.GetUserFileObject(value))
 		}
 		response.ReturnResponsePage(w, config.Net_SuccessCode, "get file success ", metaFilelist, pageNo, pageSize, 0, total)
 		return

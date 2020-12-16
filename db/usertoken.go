@@ -21,11 +21,6 @@ func (uToken TableUToken) String() string {
 		uToken.Tid.Int64, uToken.Uid.Int64, uToken.Phone.String, uToken.User_token.String, uToken.Expiretime.Int64)
 }
 
-/*func (uToken *TableUToken) Stringer() string{
-	return fmt.Sprintf("Tid:%d Uid:%d  Phone: %s  User_token: %s  Expiretime: %d ",
-		uToken.Tid, uToken.Uid, uToken.Phone, uToken.User_token, uToken.Expiretime)
-}*/
-
 //删除token表中一条记录
 func DeleteUserTokenByTid(tid int64) bool {
 	stmt, error := mysql.DbConnect().Prepare(deleteUToken)

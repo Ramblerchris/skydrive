@@ -2,10 +2,9 @@ package handler
 
 import (
 	"fmt"
-	 "github.com/skydrive/cache/redisconn"
+	"github.com/skydrive/cache/redisconn"
 	"github.com/skydrive/config"
 	"github.com/skydrive/db"
-	"github.com/skydrive/meta"
 	"github.com/skydrive/response"
 	"github.com/skydrive/utils"
 	"math"
@@ -30,7 +29,7 @@ func InitMultipartUploadHandler(w http.ResponseWriter, r *http.Request, utoken *
 		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
 		return
 	}
-	_, ok := meta.GetFileMeta(filesha1)
+	_, ok := response.GetFileMeta(filesha1)
 	if ok {
 		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "文件已经上传:"+filesha1)
 		return
@@ -44,7 +43,7 @@ func InitMultipartUploadHandler(w http.ResponseWriter, r *http.Request, utoken *
 	client.HMSet(redisconn.CTX, "MP_"+uploadId, "filename", filename)
 	client.HMSet(redisconn.CTX, "MP_"+uploadId, "pid", pid)
 
-	response.ReturnResponse(w, config.Net_SuccessCode, "成功", &MultiPartInfo{
+	response.ReturnResponse(w, config.Net_SuccessCode, "成功", &response.MultiPartInfo{
 		UploadId:   uploadId,
 		ChunkCount: chunkcount,
 		ChunkSize:  config.CHUNK_Size,
@@ -102,7 +101,7 @@ func FinishMultipartUploadHandler(w http.ResponseWriter, r *http.Request, utoken
 		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
 		return
 	}
-	_, ok := meta.GetFileMeta(filesha1)
+	_, ok := response.GetFileMeta(filesha1)
 	if ok {
 		response.ReturnResponseCodeMessage(w, config.Net_SuccessAginCode, "文件已经上传:"+filesha1)
 		return
@@ -170,7 +169,7 @@ func FinishMultipartUploadHandler(w http.ResponseWriter, r *http.Request, utoken
 					return
 				}*/
 			}
-			response.ReturnResponse(w, int32(resultCode), errorMessage, &MultiPartInfo{
+			response.ReturnResponse(w, int32(resultCode), errorMessage, &response.MultiPartInfo{
 				UploadId:     uploadId,
 				ChunkCount:   countSum,
 				ChunkSize:    config.CHUNK_Size,

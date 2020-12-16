@@ -1,9 +1,5 @@
 package response
 
-import (
-	"github.com/skydrive/handler"
-)
-
 type BaseResponse struct {
 	Code    int32  `json:"code"`
 	Message string `json:"message"`
@@ -12,7 +8,7 @@ type BaseResponse struct {
 //组合方式
 type MetaInfoBaseResponse struct {
 	BaseResponse
-	Data handler.UserFile `json:"data"`
+	Data UserFile `json:"data"`
 }
 
 type FormatResponse struct {
@@ -38,7 +34,7 @@ func NewResponse(code int32, message string) *BaseResponse {
 }
 
 //构造
-func NewMetaInfoBaseResponse(code int32, message string, meta *handler.UserFile) *MetaInfoBaseResponse {
+func NewMetaInfoBaseResponse(code int32, message string, meta *UserFile) *MetaInfoBaseResponse {
 	metaInfoBaseResponse := &MetaInfoBaseResponse{}
 	metaInfoBaseResponse.Code = code
 	// metaInfoBaseResponse.BaseResponseData.Message=message

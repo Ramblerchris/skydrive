@@ -3,7 +3,6 @@ package response
 import (
 	"encoding/json"
 	"github.com/skydrive/config"
-	"github.com/skydrive/handler"
 	"net/http"
 )
 
@@ -26,7 +25,7 @@ func ReturnResponseCodeMessageHttpCode(w http.ResponseWriter,httpCode int, code 
 }
 
 
-func ReturnMetaInfo(w http.ResponseWriter, code int32, message string, filemeta *handler.UserFile) {
+func ReturnMetaInfo(w http.ResponseWriter, code int32, message string, filemeta *UserFile) {
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	response := NewMetaInfoBaseResponse(code, message, filemeta)
