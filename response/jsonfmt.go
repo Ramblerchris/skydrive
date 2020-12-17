@@ -15,6 +15,9 @@ func ReturnResponseCodeMessage(w http.ResponseWriter, code int32, message string
 func setResult(w http.ResponseWriter, code int,result []byte) {
 	w.Header().Add("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, GET")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	w.Header().Set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept,token")
 	w.WriteHeader(code)
 	w.Write(result)
 }
