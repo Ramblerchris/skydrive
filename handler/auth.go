@@ -37,7 +37,19 @@ func getToken(r *http.Request) string {
 
 func TokenCheckInterceptor(h HandlerFuncAuth) http.HandlerFunc {
 
+
 	return func(w http.ResponseWriter, r *http.Request) {
+
+		if r.Method == "OPTIONS" {
+			if origin := r.Header.Get("Origin"); origin != "" {
+				w.Header().Add("Access-Control-Allow-Origin", "*")
+				w.Header().Add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, HEAD, OPTIONS")
+				w.Header().Add("Access-Control-Allow-Headers", "token, Content-Type")
+				w.Header().Set("Content-Type", "application/json;charset=utf-8")
+			}
+			fmt.Println(" OPTIONS :" )
+			return
+		}
 		r.ParseForm()
 		//fmt.Println("Content-Type",contenttype)
 		if r.Method == "POST" {
