@@ -29,7 +29,10 @@ func GetUserFileListByUidHandler(w http.ResponseWriter, r *http.Request, utoken 
 			//fmt.Println("GetUserFileListByUidHandler",value)
 			metaFilelist = append(metaFilelist, *response.GetUserFileObject(value))
 		}
-		nextPageId:=metaFilelist[len(metaFilelist)-1].Id
+		nextPageId:=lastId
+		if len(metaFilelist)!=0{
+			nextPageId=metaFilelist[len(metaFilelist)-1].Id
+		}
 		//ReturnResponse(w, config.Net_SuccessCode, "get file success ", metaFilelist)
 		//pageNo ,pageSize ,total
 		response.ReturnResponsePage(w, config.Net_SuccessCode, "get file success ", metaFilelist,pageNo,pageSize,nextPageId,total)
@@ -58,7 +61,10 @@ func GetUserDirFileListByPidHandler(w http.ResponseWriter, r *http.Request, utok
 			//fmt.Println("GetUserDirFileListByPidHandler", value)
 			metaFilelist = append(metaFilelist, *response.GetUserFileObject(value))
 		}
-		nextPageId:=metaFilelist[len(metaFilelist)-1].Id
+		nextPageId:=lastId
+		if len(metaFilelist)!=0{
+			nextPageId=metaFilelist[len(metaFilelist)-1].Id
+		}
 		//ReturnResponse(w, config.Net_SuccessCode, "get file success ", metaFilelist)
 		response.ReturnResponsePage(w, config.Net_SuccessCode, "get file success ", metaFilelist,pageNo,pageSize,nextPageId,total)
 		return
