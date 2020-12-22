@@ -14,7 +14,8 @@ const (
 	selectUFileByUid                  = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,filetype,minitype,ftype,video_duration from tbl_user_file where uid=? and status=1 "
 	selectUFileByUidPage              = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,filetype,minitype,ftype,video_duration from tbl_user_file where uid=? and status=1 and id>? limit ? "
 	selectUFileByUidAndPid            = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,filetype,minitype,ftype,video_duration from tbl_user_file where uid=? and pid=? and status=1 "
-	selectUFileByUidAndPidPage        = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,filetype,minitype,ftype,video_duration from tbl_user_file where uid=? and pid=? and status=1 and id>? limit ? "
+	//selectUFileByUidAndPidPage        = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,filetype,minitype,ftype,video_duration from tbl_user_file where uid=? and pid=? and status=1 and id>? limit ? "
+	selectUFileByUidAndPidPage        = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,filetype,minitype,ftype,video_duration from tbl_user_file where uid=? and pid=? and status=1 and id<? order by id desc  limit ? "
 	selectUFileByUidAndPidAndSha1     = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,filetype,minitype,ftype,video_duration from tbl_user_file where file_sha1=? and uid=? and pid=? and status=1 limit 1 "
 	selectUFileByUidAndPidAndFileName = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,filetype,minitype,ftype,video_duration from tbl_user_file where uid=? and pid=? and file_name=? and status=1 "
 	saveUFileinfo                     = "insert into tbl_user_file(uid,pid,phone,file_sha1,file_name,file_size,file_addr,status,minitype,ftype,video_duration) values(?,?,?,?,?,?,?,?,?,?,?)"
@@ -30,6 +31,7 @@ const (
 	selectUFileCountByUid 			  = "select count(*) from tbl_user_file where  uid=? and status=1  "
 	//selectUFileCountByUidPid 		  = "select count(*) from tbl_user_file where  pid=? and uid=? and status=1 and id>? "
 	selectUFileCountByUidPid 		  = "select count(*) from tbl_user_file where  pid=? and uid=? and status=1  "
+	selectMaxIdFromUserFile 		  = "select max(id) from tbl_user_file where  pid=? and uid=? and status=1  order by id desc"
 	tAG_userfile                      = "userfile.go"
 )
 
@@ -203,6 +205,9 @@ func GetUserDirFileListByUidPid(uid, pid int64,pageNo,pageSize,lastid int64 ) (t
 		return tableUserFile, error,0
 	}
 	defer stmt.Close()
+	if lastid == -1 {
+		lastid = GetUserDirListMaxCountByUid(uid,pid)
+	}
 	rowdata, error := stmt.Query(uid, pid,lastid,pageSize)
 	if error != nil {
 		fmt.Println("failed to Exec error:", error)
@@ -233,6 +238,27 @@ func GetUserDirListCountByUidPid(uid, pid int64,lastid int64 ) (count int64) {
 	defer stmt.Close()
 	//result, err := stmt.Query(pid, uid, lastid)
 	result, err := stmt.Query(pid, uid)
+	if err != nil {
+		return 0
+	}
+	var countResult sql.NullInt64
+	if result.Next(){
+		result.Scan(&countResult)
+	}
+	return countResult.Int64
+}
+
+//查询当前用户指定文件下最大的id
+func GetUserDirListMaxCountByUid(uid , pid int64 ) (maxid int64) {
+	//目前忽略了文件类型
+	stmt, error := mysql.DbConnect().Prepare(selectMaxIdFromUserFile)
+	if error != nil {
+		fmt.Println(tAG_userfile, "failed to prepare statement error:", error)
+		return 0
+	}
+	defer stmt.Close()
+	//result, err := stmt.Query(uid, lastid)
+	result, err := stmt.Query(pid,uid)
 	if err != nil {
 		return 0
 	}
