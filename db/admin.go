@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	mysql "github.com/skydrive/db/mysqlconn"
+	"github.com/skydrive/utils"
 )
 
 
@@ -13,6 +14,8 @@ const (
 	 selectAllUTokenInfo		= "select id ,uid,phone,user_token,expiretime from tbl_user_token limit  ?,? "
 	 selectAllFile 				= "select id,file_sha1,file_name,file_size,file_addr,minitype,ftype,video_duration from tbl_file limit ?,?"
 	 selectCountByTable	 		= "select count(*) from  "
+	tAG_admin             = "admin.go sql:"
+
 )
 
 func AdminGetAllFileList(pageNo,pageSize int64 ) (tableFile []TableFile, err error, total int64) {
@@ -27,7 +30,7 @@ func AdminGetAllFileList(pageNo,pageSize int64 ) (tableFile []TableFile, err err
 		error :=rowdata.Scan(
 			&tfile.Id,&tfile.Filesha1, &tfile.FileName, &tfile.FileSize, &tfile.FileLocation, &tfile.Minitype, &tfile.Ftype, &tfile.Video_duration)
 		if error != nil {
-			fmt.Println(tAG_userfile, "failed to Query error:", error)
+			fmt.Println(tAG_admin, "failed to Query error:", error)
 			continue
 		}
 		tableFile = append(tableFile, tfile)
@@ -57,7 +60,7 @@ func AdminGetAllUserList(pageNo,pageSize int64 ) (tableUserlist []TableUser, err
 			&tUser.Profile,
 			&tUser.Status)
 		if error != nil {
-			fmt.Println(tAG_userfile, "failed to Query error:", error)
+			fmt.Println(tAG_admin, "failed to Query error:", error)
 			continue
 		}
 		tableUserlist = append(tableUserlist, tUser)
@@ -81,7 +84,7 @@ func AdminGetAllUserTokenList(pageNo,pageSize int64 ) (tableUsertokenFile []Tabl
 			&utoken.Expiretime,
 		)
 		if error != nil {
-			fmt.Println(tAG_userfile, "failed to Query error:", error)
+			fmt.Println(tAG_admin, "failed to Query error:", error)
 			continue
 		}
 		tableUsertokenFile = append(tableUsertokenFile, utoken)
@@ -100,7 +103,7 @@ func AdminGetAllUserFileInfoList(pageNo,pageSize int64 ) (tableUserFile []TableU
 		error := rowdata.Scan(
 			&tfile.Id, &tfile.PId, &tfile.Uid, &tfile.Phone, &tfile.FileHash, &tfile.FileHash_Pre, &tfile.FileName, &tfile.FileSize, &tfile.FileLocation, &tfile.Create_at, &tfile.Update_at, &tfile.Filetype, &tfile.Minitype, &tfile.Ftype, &tfile.Video_duration)
 		if error != nil {
-			fmt.Println(tAG_userfile, "failed to Query error:", error)
+			fmt.Println(tAG_admin, "failed to Query error:", error)
 			continue
 		}
 		tableUserFile = append(tableUserFile, tfile)
@@ -111,11 +114,12 @@ func AdminGetAllUserFileInfoList(pageNo,pageSize int64 ) (tableUserFile []TableU
 func getPageStmt(sql string,pageNo,pageSize int64)(*sql.Rows, error)   {
 	stmt, error := mysql.DbConnect().Prepare(sql)
 	if error != nil {
-		fmt.Println(tAG_userfile, "failed to prepare statement error:", error)
+		fmt.Println(tAG_admin, "failed to prepare statement error:", error)
 		return nil, error
 	}
 	defer stmt.Close()
 	rowdata, error := stmt.Query(pageSize*(pageNo-1),pageSize)
+	fmt.Println(tAG_admin, utils.RunFuncName(), sql,pageSize*(pageNo-1),pageSize)
 	if error != nil {
 		fmt.Println("failed to Exec error:", error)
 		return nil, error
@@ -128,11 +132,12 @@ func GetCountByTableName(tablename string ) (count int64) {
 	//目前忽略了文件类型
 	stmt, error := mysql.DbConnect().Prepare(selectCountByTable+tablename)
 	if error != nil {
-		fmt.Println(tAG_userfile, "failed to prepare statement error:", error)
+		fmt.Println(tAG_admin, "failed to prepare statement error:", error)
 		return 0
 	}
 	defer stmt.Close()
 	//result, err := stmt.Query(pid, uid, lastid)
+	fmt.Println(tAG_admin, utils.RunFuncName(), selectCountByTable+tablename)
 	result, err := stmt.Query()
 	if err != nil {
 		return 0

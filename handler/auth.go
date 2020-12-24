@@ -10,6 +10,13 @@ import (
 	"time"
 )
 
+var usertokenmap map[string]db.TableUToken
+
+func init() {
+	//生产项目推荐用缓存策略，有值淘汰，或者直接使用redis
+	usertokenmap = make(map[string]db.TableUToken)
+}
+
 func BuildEncodePwd(pwd string) string {
 	target := utils.GetStrMD5(pwd + config.Salt_MD5)
 	fmt.Printf("%s encode md5 %s\n", pwd, target)
@@ -26,12 +33,9 @@ func CheckNetIsOkHandler(w http.ResponseWriter, r *http.Request) {
 
 func getToken(r *http.Request) string {
 	token := r.FormValue("token")
-
 	if len(token) == 0 || token == "" {
 		token = r.Header.Get("token")
 	}
-	fmt.Println(" get token  :", token)
-
 	return token
 }
 
@@ -39,6 +43,7 @@ func TokenCheckInterceptor(h HandlerFuncAuth) http.HandlerFunc {
 
 
 	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("request URL",r.Method,r.RequestURI)
 
 		if r.Method == "OPTIONS" {
 			if origin := r.Header.Get("Origin"); origin != "" {
@@ -47,7 +52,6 @@ func TokenCheckInterceptor(h HandlerFuncAuth) http.HandlerFunc {
 				w.Header().Add("Access-Control-Allow-Headers", "token, Content-Type")
 				w.Header().Set("Content-Type", "application/json;charset=utf-8")
 			}
-			fmt.Println(" OPTIONS :" )
 			return
 		}
 		r.ParseForm()
@@ -73,20 +77,30 @@ func TokenCheckInterceptor(h HandlerFuncAuth) http.HandlerFunc {
 			}
 		}*/
 		if len(token) == 0 || token == "" {
-			//ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
 			response.ReturnResponseCodeMessageHttpCode(w, http.StatusUnauthorized, config.Net_ErrorCode, "bad request")
 			return
 		}
-		if byToken, err := db.GetUserTokenInfoByToken(token); err == nil && byToken.User_token.String != "" {
+		byToken, exist := usertokenmap[token]
+		if !exist {
+			if byTokenbydb, er := db.GetUserTokenInfoByToken(token); er != nil {
+				response.ReturnResponseCodeMessageHttpCode(w, http.StatusForbidden, config.Net_ErrorCode, "bad request")
+			} else {
+				byToken = byTokenbydb
+			}
+		}
+		if byToken.User_token.String != "" {
 			//todo 判断过期时间
-			fmt.Println(" Expiretime :", byToken.Expiretime.Int64, " Now:", time.Now().UnixNano()/1e6)
+			fmt.Println(token, " Expiretime :", byToken.Expiretime.Int64, " Now:", time.Now().UnixNano()/1e6)
 			if byToken.Expiretime.Int64 < time.Now().UnixNano()/1e6 {
+				delete(usertokenmap, token)
 				response.ReturnResponseCodeMessageHttpCode(w, http.StatusForbidden, config.Net_ErrorCode_Token_exprise, "token expired")
 				return
 			}
+			usertokenmap[token] = byToken
 			h(w, r, &byToken)
 			return
+		} else {
+			response.ReturnResponseCodeMessageHttpCode(w, http.StatusForbidden, config.Net_ErrorCode, "bad request")
 		}
-		response.ReturnResponseCodeMessageHttpCode(w, http.StatusForbidden, config.Net_ErrorCode, "bad request")
 	}
 }
