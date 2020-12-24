@@ -24,7 +24,7 @@ func SignInHandler(w http.ResponseWriter, r *http.Request) {
 	phone := r.FormValue("phone")
 	password := r.FormValue("password")
 	if len(phone) == 0 || phone == "" || len(password) == 0 || password == "" {
-		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
+		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.FormValueError)
 		return
 	}
 	if ok, _ := regexp.MatchString(config.Regex_MobilePhone, phone); !ok {
@@ -61,7 +61,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if len(phone) == 0 || phone == "" {
-		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
+		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.FormValueError)
 		return
 	}
 	// 验证手机号格式
@@ -102,7 +102,7 @@ func GetUserInfoByTokenHandler(w http.ResponseWriter, r *http.Request, utoken *d
 	token := getToken(r)
 
 	if len(token) == 0 || token == "" {
-		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
+		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.FormValueError)
 		return
 	}
 	if info, err := db.GetUserInfoByPhone(utoken.Phone.String); err == nil && info.Id.Int32 > 0 {
@@ -130,7 +130,7 @@ func SignOutHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUTok
 	r.ParseForm()
 	token := getToken(r)
 	if len(token) == 0 || token == "" {
-		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
+		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.FormValueError)
 		return
 	}
 	if db.DeleteUserTokenByTid(utoken.Tid.Int64) {
@@ -146,7 +146,7 @@ func UpdateUserNameByUidHandler(w http.ResponseWriter, r *http.Request, utoken *
 		//uid, _ := strconv.ParseInt(r.FormValue("uid"), 10, 64)
 		value := r.FormValue("name")
 		//if uid == 0 || value == "" {
-		//	ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
+		//	ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.FormValueError)
 		//	return
 		//}
 		if db.UpdateUserNameByUid(value, utoken.Uid.Int64) {

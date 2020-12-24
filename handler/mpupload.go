@@ -26,7 +26,7 @@ func InitMultipartUploadHandler(w http.ResponseWriter, r *http.Request, utoken *
 	pid, _ := strconv.ParseInt(r.FormValue("pid"), 10, 64)
 	println("aaa", error, filesha1)
 	if len(filesha1) == 0 || filesha1 == "" {
-		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
+		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.FormValueError)
 		return
 	}
 	_, ok := response.GetFileMeta(filesha1)
@@ -65,7 +65,7 @@ func UploadMultipartHandler(w http.ResponseWriter, r *http.Request, utoken *db.T
 	uploadId := r.FormValue("uploadId")
 	chunkindex := r.FormValue("chunkindex")
 	if len(uploadId) == 0 || uploadId == "" {
-		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
+		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.FormValueError)
 		return
 	}
 	//todo 写文件
@@ -98,7 +98,7 @@ func FinishMultipartUploadHandler(w http.ResponseWriter, r *http.Request, utoken
 	uploadId := r.FormValue("uploadId")
 	pid, _ := strconv.ParseInt(r.FormValue("pid"), 10, 64)
 	if len(filesha1) == 0 || filesha1 == "" {
-		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
+		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.FormValueError)
 		return
 	}
 	_, ok := response.GetFileMeta(filesha1)

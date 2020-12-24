@@ -35,10 +35,10 @@ func GetUserFileListByUidHandler(w http.ResponseWriter, r *http.Request, utoken 
 		}
 		//ReturnResponse(w, config.Net_SuccessCode, "get file success ", metaFilelist)
 		//pageNo ,pageSize ,total
-		response.ReturnResponsePage(w, config.Net_SuccessCode, "get file success ", metaFilelist,pageNo,pageSize,nextPageId,total)
+		response.ReturnResponsePage(w, config.Net_SuccessCode, config.Success, metaFilelist,pageNo,pageSize,nextPageId,total)
 		return
 	}
-	response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "get file success ")
+	response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.GetFileDirListError)
 }
 
 // 获取用户文件夹内的所有文件
@@ -49,7 +49,7 @@ func GetUserDirFileListByPidHandler(w http.ResponseWriter, r *http.Request, utok
 	lastId, _ := strconv.ParseInt(r.FormValue("lastId"), 10, 64)
 	pid, _ := strconv.ParseInt(r.FormValue("pid"), 10, 64)
 	if pid == 0 {
-		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
+		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.FormValueError)
 		return
 	}
 	if pageSize==0 {
@@ -66,10 +66,10 @@ func GetUserDirFileListByPidHandler(w http.ResponseWriter, r *http.Request, utok
 			nextPageId=metaFilelist[len(metaFilelist)-1].Id
 		}
 		//ReturnResponse(w, config.Net_SuccessCode, "get file success ", metaFilelist)
-		response.ReturnResponsePage(w, config.Net_SuccessCode, "get file success ", metaFilelist,pageNo,pageSize,nextPageId,total)
+		response.ReturnResponsePage(w, config.Net_SuccessCode, config.Success, metaFilelist,pageNo,pageSize,nextPageId,total)
 		return
 	}
-	response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "get file success ")
+	response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.Error)
 }
 
 //批量查询文件是否存在
@@ -78,7 +78,7 @@ func GetSha1ListIsExistByUidHandler(w http.ResponseWriter, r *http.Request, utok
 	if r.Method == "POST" {
 		value := r.FormValue("sha1s")
 		if value == "" {
-			response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
+			response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.FormValueError)
 			return
 		}
 		split := strings.Split(value, ";")
@@ -91,7 +91,7 @@ func GetSha1ListIsExistByUidHandler(w http.ResponseWriter, r *http.Request, utok
 			response.ReturnResponse(w, config.Net_SuccessCode, "get file success ", metaFilelist)
 			return
 		}
-		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "get file success ")
+		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.Error)
 	}
 }
 
@@ -101,17 +101,17 @@ func DeleteFileListBySha1sUidHandler(w http.ResponseWriter, r *http.Request, uto
 	if r.Method == "POST" {
 		value := r.FormValue("sha1s")
 		if value == "" {
-			response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
+			response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.FormValueError)
 			return
 		}
 		pid, _ := strconv.ParseInt(r.FormValue("pid"), 10, 64)
 		if pid == 0 {
-			response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
+			response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.FormValueError)
 			return
 		}
 		split := strings.Split(value, ";")
 		if db.UpdateUserFileStatusBySha1sUidPid(utoken.Uid.Int64, pid, -1, split) {
-			response.ReturnResponse(w, config.Net_SuccessCode, "delete file success ", nil)
+			response.ReturnResponse(w, config.Net_SuccessCode, config.Success, nil)
 			return
 		}
 		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "delete file success ")
@@ -125,15 +125,15 @@ func DeleteFileDirByUidHandler(w http.ResponseWriter, r *http.Request, utoken *d
 		//id, _ := strconv.ParseInt(r.FormValue("ids"), 10, 64)
 		value := r.FormValue("ids")
 		if value == "" {
-			response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
+			response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.FormValueError)
 			return
 		}
 		split := strings.Split(value, ";")
 		if db.UpdateUserFileDirStatusByIds(split, -1) {
-			response.ReturnResponseCodeMessage(w, config.Net_SuccessCode, "delete dir file success ")
+			response.ReturnResponseCodeMessage(w, config.Net_SuccessCode, config.Success)
 			return
 		}
-		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "delete dir file error ")
+		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.Error)
 	}
 }
 
@@ -152,7 +152,7 @@ func AddFileDirByUidPidHandler(w http.ResponseWriter, r *http.Request, utoken *d
 	dirname := r.FormValue("filename")
 	pid, _ := strconv.ParseInt(r.FormValue("pid"), 10, 64)
 	if len(dirname) == 0 || dirname == "" || pid == 0 {
-		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
+		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.FormValueError)
 		return
 	}
 	//todo 查询用户同级文件夹下的文件名是否存在
@@ -162,11 +162,11 @@ func AddFileDirByUidPidHandler(w http.ResponseWriter, r *http.Request, utoken *d
 	}
 	if isok, id := db.SaveUserDirInfo(utoken.Uid.Int64, pid, utoken.Phone.String, dirname); isok {
 		if value, err := db.GetUserDirInfoById(id); err == nil {
-			response.ReturnResponse(w, config.Net_SuccessCode, "file save success", *response.GetUserFileObject(*value))
+			response.ReturnResponse(w, config.Net_SuccessCode, config.Success, *response.GetUserFileObject(*value))
 			return
 		}
 	}
-	response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "创建失败")
+	response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.CreateError)
 }
 
 // 文件通过sha1 秒传
@@ -175,7 +175,7 @@ func HitPassBySha1Handler(w http.ResponseWriter, r *http.Request, utoken *db.Tab
 	sha1 := r.FormValue("sha1")
 	pid, _ := strconv.ParseInt(r.FormValue("pid"), 10, 64)
 	if len(sha1) == 0 || sha1 == "" || pid == 0 {
-		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
+		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.FormValueError)
 		return
 	}
 	if metaInfo, err := db.GetFileInfoBySha1(sha1); err == nil {
@@ -192,7 +192,7 @@ func HitPassBySha1Handler(w http.ResponseWriter, r *http.Request, utoken *db.Tab
 			//更新当前文件夹的缩略图最新
 			db.UpdateUserFileDirPreSha1ById(metaInfo.Filesha1.String, pid)
 			if value, err := db.GetUserFileInfoByUidSha1(sha1, utoken.Uid.Int64); err == nil {
-				response.ReturnResponse(w, config.Net_SuccessCode, "file save success", *response.GetUserFileObject(*value))
+				response.ReturnResponse(w, config.Net_SuccessCode, config.Success, *response.GetUserFileObject(*value))
 				return
 			}
 		}
@@ -277,9 +277,9 @@ func UploadUserFileHandler(w http.ResponseWriter, r *http.Request, utoken *db.Ta
 			//更新当前文件夹的缩略图最新
 			db.UpdateUserFileDirPreSha1ById(metaInfo.Filesha1, pid)
 			fmt.Println(" metaInfo: ", metaInfo)
-			response.ReturnMetaInfo(w, config.Net_SuccessCode, "file save success", &metaInfo)
+			response.ReturnMetaInfo(w, config.Net_SuccessCode, config.Success, &metaInfo)
 		} else {
-			response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "用户文件保存失败")
+			response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.SaveFileError)
 		}
 	}
 }

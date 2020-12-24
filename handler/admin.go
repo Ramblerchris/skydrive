@@ -21,10 +21,10 @@ func GetAllUserListHandler(w http.ResponseWriter, r *http.Request, utoken *db.Ta
 		for _, value := range alluser {
 			metaFilelist = append(metaFilelist, *response.GetUserObject(value))
 		}
-		response.ReturnResponsePage(w, config.Net_SuccessCode, "get file success ", metaFilelist, pageNo, pageSize, 0, total)
+		response.ReturnResponsePage(w, config.Net_SuccessCode, config.Success, metaFilelist, pageNo, pageSize, 0, total)
 		return
 	}
-	response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "get file success ")
+	response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.Error)
 }
 
 func GetAllUserTokenListHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
@@ -39,10 +39,10 @@ func GetAllUserTokenListHandler(w http.ResponseWriter, r *http.Request, utoken *
 		for _, value := range alluser {
 			metaFilelist = append(metaFilelist, *response.GetUserTokenObject(value))
 		}
-		response.ReturnResponsePage(w, config.Net_SuccessCode, "get file success ", metaFilelist, pageNo, pageSize, 0, total)
+		response.ReturnResponsePage(w, config.Net_SuccessCode, config.Success, metaFilelist, pageNo, pageSize, 0, total)
 		return
 	}
-	response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "get file success ")
+	response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.Error)
 }
 
 func GetAllFileListHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
@@ -57,10 +57,10 @@ func GetAllFileListHandler(w http.ResponseWriter, r *http.Request, utoken *db.Ta
 		for _, value := range alluser {
 			metaFilelist = append(metaFilelist, *response.GetFileObject(value))
 		}
-		response.ReturnResponsePage(w, config.Net_SuccessCode, "get file success ", metaFilelist, pageNo, pageSize, 0, total)
+		response.ReturnResponsePage(w, config.Net_SuccessCode, config.Success, metaFilelist, pageNo, pageSize, 0, total)
 		return
 	}
-	response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "get file success ")
+	response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.Error)
 }
 
 func GetAllUserFileListHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
@@ -75,9 +75,9 @@ func GetAllUserFileListHandler(w http.ResponseWriter, r *http.Request, utoken *d
 		for _, value := range alluser {
 			metaFilelist = append(metaFilelist, *response.GetUserFileObject(value))
 		}
-		response.ReturnResponsePage(w, config.Net_SuccessCode, "get file success ", metaFilelist, pageNo, pageSize, 0, total)
+		response.ReturnResponsePage(w, config.Net_SuccessCode, config.Success, metaFilelist, pageNo, pageSize, 0, total)
 		return
 	}
-	response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "get file success ")
+	response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.Error)
 
 }

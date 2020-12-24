@@ -34,7 +34,7 @@ func OpenFile1Handler(w http.ResponseWriter, r *http.Request, utoken *db.TableUT
 	r.ParseForm()
 	filesha1 := r.FormValue("filesha1")
 	if len(filesha1) == 0 || filesha1 == "" || len(filesha1) == 0 || filesha1 == "" {
-		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
+		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.FormValueError)
 		return
 	}
 	data, ok := response.GetFileMeta(filesha1)
@@ -51,7 +51,7 @@ func UpdateFileInfoFileNameBySha1Handler(w http.ResponseWriter, r *http.Request,
 	filesha1 := r.FormValue("filesha1")
 	newfilename := r.FormValue("filename")
 	if len(filesha1) == 0 || filesha1 == "" || len(filesha1) == 0 || filesha1 == "" {
-		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
+		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.FormValueError)
 		return
 	}
 	data, ok := response.GetFileMeta(filesha1)
@@ -69,7 +69,7 @@ func DeleteFileInfoBySha1Handler(w http.ResponseWriter, r *http.Request, utoken 
 	r.ParseForm()
 	filesha1 := r.FormValue("filesha1")
 	if len(filesha1) == 0 || filesha1 == "" {
-		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
+		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.FormValueError)
 		return
 	}
 	data, ok := response.GetFileMeta(filesha1)
@@ -96,7 +96,7 @@ func DownloadFileWebBySha1Handler(w http.ResponseWriter, r *http.Request, utoken
 	r.ParseForm()
 	filesha1 := r.FormValue("filesha1")
 	if len(filesha1) == 0 || filesha1 == "" || len(filesha1) == 0 || filesha1 == "" {
-		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "参数不合法")
+		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.FormValueError)
 		return
 	}
 	data, ok := response.GetFileMeta(filesha1)
