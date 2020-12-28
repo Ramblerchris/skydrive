@@ -1,22 +1,60 @@
 package response
 
 import (
+	"fmt"
 	"github.com/skydrive/db"
+	"github.com/skydrive/handler/cache"
+	"sync"
 	"time"
 )
 
-var fileMetas map[string]UserFile
+const TAG = "filemeta.go"
+var filecache=cache.NewFileCache()
 
-func init() {
-	fileMetas = make(map[string]UserFile)
+func init() {}
+
+type SafeMap struct {
+	sync.RWMutex
+	Map map[string]UserFile
 }
+
+func (sm *SafeMap) ReadMap(key string)(UserFile ,bool){
+	sm.RLock()
+	defer sm.RUnlock()
+	a,b:= sm.Map[key]
+	return a,b
+}
+func (sm *SafeMap) WriteMap(key string, value UserFile) {
+	sm.RLock()
+	defer sm.RUnlock()
+	sm.Map[key] = value
+}
+
+func (sm *SafeMap) DeleteMap(key string) {
+	sm.RLock()
+	defer sm.RUnlock()
+	delete(sm.Map,key)
+}
+
 func AddOrUpdateFileMeta(filemeta UserFile) {
-	fileMetas[filemeta.Filesha1] = filemeta
+	filecache.WriteFileCache(filemeta.Filesha1,filemeta)
 }
 
 func GetFileMeta(sha1 string) (*UserFile, bool) {
+	/*if userinfo ,isExist:=fileMetas[sha1];isExist{
+		fmt.Println(TAG,"缓存获取:", userinfo)
+		return &userinfo,true
+	}else{
+		fmt.Println(TAG,"缓存获取失败", userinfo,len(fileMetas),fileMetas)
+	}*/
+	if userinfo ,isExist:=filecache.ReadFileCache(sha1);isExist{
+		fmt.Println(TAG,"缓存获取:", userinfo)
+		return &userinfo,true
+	}else{
+		fmt.Println(TAG,"缓存获取失败", userinfo)
+	}
 	if meta, err := db.GetFileInfoBySha1(sha1); err == nil {
-		return &UserFile{
+		userinfo:= UserFile{
 			Id:             meta.Id.Int64,
 			Filesha1:       meta.Filesha1.String,
 			FileName:       meta.FileName.String,
@@ -26,13 +64,16 @@ func GetFileMeta(sha1 string) (*UserFile, bool) {
 			Ftype:          meta.Ftype.Int32,
 			Video_duration: meta.Video_duration.String,
 			UpdateAtTime:   "",
-		}, true
+		}
+		filecache.WriteFileCache(sha1,userinfo)
+		return &userinfo,true
 	}
 	return nil, false
 }
 
 func RemoveFileMeta(sha1 string) bool {
-	delete(fileMetas, sha1)
+	//delete(fileMetas, sha1)
+	filecache.DeleteFileCache(sha1)
 	return db.UpdateFileInfoStatusBySha1(sha1, 0)
 }
 
