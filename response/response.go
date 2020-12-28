@@ -1,12 +1,8 @@
 package response
 
-import (
-	"encoding/json"
-	"fmt"
-	"log"
-)
 
-func (response *FormatResponse) GetResponseCodeMessage(code int32, message string) {
+// Deprecated:
+/*func (response *FormatResponse) GetResponseCodeMessage(code int32, message string) {
 	response.Code = code
 	response.Message = message
 }
@@ -15,16 +11,15 @@ func (response *FormatResponse) GetResponse(code int32, message string,data inte
 	response.Code = code
 	response.Message = message
 	response.Data = data
-}
+}*/
 
-func (response *BaseResponse) GetResponseBytes()[]byte {
+/*func (response *BaseResponse) GetResponseBytes()[]byte {
 	r, err := json.Marshal(response)
 	if err != nil {
 		log.Println(err)
 	}
 	return r
 }
-
 func (response *BaseResponse) GetResponseStr()string {
 	r, err := json.Marshal(response)
 	if err != nil {
@@ -40,4 +35,5 @@ func GetJsonBytesCodeMessage(code int ,msg string ) []byte {
 func GetJsonStrCodeMessage(code int ,msg string)string  {
 	return fmt.Sprintf(`{"code":%d,"msg":"%s"}`,code ,msg)
 }
+*/
 

@@ -16,11 +16,11 @@ func NewTokenMap() *TokenCache {
 	return tm
 }
 
-func (sm *TokenCache) ReadTokenMap(key string) (db.TableUToken,bool) {
+func (sm *TokenCache) ReadTokenMap(key string) (db.TableUToken, bool) {
 	sm.RLock()
 	defer sm.RUnlock()
 	byToken, exist := sm.Map[key]
-	return byToken,exist
+	return byToken, exist
 }
 
 func (sm *TokenCache) WriteTokenMap(key string, value db.TableUToken) {

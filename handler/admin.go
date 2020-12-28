@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"github.com/skydrive/beans"
 	"github.com/skydrive/config"
 	"github.com/skydrive/db"
 	"github.com/skydrive/response"
@@ -17,9 +18,9 @@ func GetAllUserListHandler(w http.ResponseWriter, r *http.Request, utoken *db.Ta
 		pageSize = 10
 	}
 	if alluser, err, total := db.AdminGetAllUserList(pageNo, pageSize); err == nil {
-		metaFilelist := make([]response.User, 0)
+		metaFilelist := make([]beans.User, 0)
 		for _, value := range alluser {
-			metaFilelist = append(metaFilelist, *response.GetUserObject(value))
+			metaFilelist = append(metaFilelist, *beans.GetUserObject(value))
 		}
 		response.ReturnResponsePage(w, config.Net_SuccessCode, config.Success, metaFilelist, pageNo, pageSize, 0, total)
 		return
@@ -35,9 +36,9 @@ func GetAllUserTokenListHandler(w http.ResponseWriter, r *http.Request, utoken *
 		pageSize = 10
 	}
 	if alluser, err, total := db.AdminGetAllUserTokenList(pageNo, pageSize); err == nil {
-		metaFilelist := make([]response.UToken, 0)
+		metaFilelist := make([]beans.UToken, 0)
 		for _, value := range alluser {
-			metaFilelist = append(metaFilelist, *response.GetUserTokenObject(value))
+			metaFilelist = append(metaFilelist, *beans.GetUserTokenObject(value))
 		}
 		response.ReturnResponsePage(w, config.Net_SuccessCode, config.Success, metaFilelist, pageNo, pageSize, 0, total)
 		return
@@ -53,9 +54,9 @@ func GetAllFileListHandler(w http.ResponseWriter, r *http.Request, utoken *db.Ta
 		pageSize = 10
 	}
 	if alluser, err, total := db.AdminGetAllFileList(pageNo, pageSize); err == nil {
-		metaFilelist := make([]response.File, 0)
+		metaFilelist := make([]beans.File, 0)
 		for _, value := range alluser {
-			metaFilelist = append(metaFilelist, *response.GetFileObject(value))
+			metaFilelist = append(metaFilelist, *beans.GetFileObject(value))
 		}
 		response.ReturnResponsePage(w, config.Net_SuccessCode, config.Success, metaFilelist, pageNo, pageSize, 0, total)
 		return
@@ -71,9 +72,9 @@ func GetAllUserFileListHandler(w http.ResponseWriter, r *http.Request, utoken *d
 		pageSize = 10
 	}
 	if alluser, err, total := db.AdminGetAllUserFileInfoList(pageNo, pageSize); err == nil {
-		metaFilelist := make([]response.UserFile, 0)
+		metaFilelist := make([]beans.UserFile, 0)
 		for _, value := range alluser {
-			metaFilelist = append(metaFilelist, *response.GetUserFileObject(value))
+			metaFilelist = append(metaFilelist, *beans.GetUserFileObject(value))
 		}
 		response.ReturnResponsePage(w, config.Net_SuccessCode, config.Success, metaFilelist, pageNo, pageSize, 0, total)
 		return

@@ -2,6 +2,7 @@ package response
 
 import (
 	"encoding/json"
+	"github.com/skydrive/beans"
 	"github.com/skydrive/config"
 	"net/http"
 )
@@ -29,9 +30,13 @@ func ReturnResponseCodeMessageHttpCode(w http.ResponseWriter,httpCode int, code 
 }
 
 
-func ReturnMetaInfo(w http.ResponseWriter, code int32, message string, filemeta *UserFile) {
-	response := NewMetaInfoBaseResponse(code, message, filemeta)
-	jsonResult, error := json.Marshal(response)
+func ReturnMetaInfo(w http.ResponseWriter, code int32, message string, filemeta *beans.File) {
+	//response := NewMetaInfoBaseResponse(code, message, filemeta)
+	jsonResult, error := json.Marshal(&FormatResponse{
+		Code: code,
+		Message: message,
+		Data: filemeta,
+	})
 	if error != nil {
 		ReturnResponseCodeMessage(w, config.Net_ErrorCode, "internel server error ")
 		return
@@ -71,3 +76,11 @@ func ReturnResponsePage(w http.ResponseWriter, code int32, message string, data 
 	setResult(w, http.StatusOK,jsonResult)
 }
 
+
+//构造
+func NewResponse(code int32, message string) *FormatResponse {
+	return &FormatResponse{
+		Code:code,
+		Message: message,
+	}
+}

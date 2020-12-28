@@ -2,8 +2,10 @@ package handler
 
 import (
 	"fmt"
+	"github.com/skydrive/beans"
 	"github.com/skydrive/config"
 	"github.com/skydrive/db"
+	"github.com/skydrive/handler/cache"
 	"github.com/skydrive/response"
 	"github.com/skydrive/utils"
 	"io"
@@ -76,7 +78,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if db.SaveUserInfo(phone, BuildEncodePwd(password), time.Now().Format("2006-01-02 15:04:05")) {
 		if info, err := db.GetUserInfoByPhone(phone); err == nil {
-			response.ReturnResponse(w, config.Net_SuccessCode, "注册成功", &response.User{
+			response.ReturnResponse(w, config.Net_SuccessCode, "注册成功", &beans.User{
 				Id:              info.Id.Int32,
 				User_name:       info.User_name.String,
 				Email:           info.Email.String,
@@ -106,7 +108,7 @@ func GetUserInfoByTokenHandler(w http.ResponseWriter, r *http.Request, utoken *d
 		return
 	}
 	if info, err := db.GetUserInfoByPhone(utoken.Phone.String); err == nil && info.Id.Int32 > 0 {
-		response.ReturnResponse(w, config.Net_SuccessCode, "获取成功", &response.User{
+		response.ReturnResponse(w, config.Net_SuccessCode, "获取成功", &beans.User{
 			Id:              info.Id.Int32,
 			User_name:       info.User_name.String,
 			Email:           info.Email.String,
@@ -177,12 +179,13 @@ func UpdataUploadUserPhotoHandler(w http.ResponseWriter, r *http.Request, utoken
 		if error!=nil{
 			response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, fmt.Sprintf("创建文件夹出错 %s \n", error.Error()))
 		}
-		metaInfo := response.UserFile{
-			FileName:     fileheader.Filename,
-			Location:    	path,
+		metaInfo := beans.UserFile{
+			//Location:    	path,
 			UpdateAtTime: time.Now().Format("2006-01-02 15:04:05"),
 		}
-		newfile, error := os.Create(metaInfo.Location)
+		metaInfo.FileName=fileheader.Filename
+		metaInfo.FileLocation=path
+		newfile, error := os.Create(metaInfo.FileLocation)
 		if error != nil {
 			fmt.Printf("创建文件出错 %s \n", error.Error())
 			response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "file create error")
@@ -197,12 +200,13 @@ func UpdataUploadUserPhotoHandler(w http.ResponseWriter, r *http.Request, utoken
 		}
 		metaInfo.Filesha1 = utils.GetFileSha1(newfile)
 		fmt.Println("file sha1", metaInfo.Filesha1)
-		response.AddOrUpdateFileMeta(metaInfo)
+		//todo 缓存添加
+		//cache.AddOrUpdateFileMeta(metaInfo)
 		//处理文件已经存在的情况
-		_, ok := response.GetFileMeta(metaInfo.Filesha1)
+		_, ok := cache.GetFileMeta(metaInfo.Filesha1)
 		if !ok {
 			//如果不存在 先插入文件表
-			if !db.SaveFileInfo(metaInfo.Filesha1, metaInfo.FileName, metaInfo.FileSize, metaInfo.Location, minetype, ftype, videoduration) {
+			if !db.SaveFileInfo(metaInfo.Filesha1, metaInfo.FileName, metaInfo.FileSize, metaInfo.FileLocation, minetype, ftype, videoduration) {
 				//插入文件表不成功
 				response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "系统文件保存失败")
 				return
@@ -210,9 +214,9 @@ func UpdataUploadUserPhotoHandler(w http.ResponseWriter, r *http.Request, utoken
 		}
 
 		//文件表已经插入成功,再插入用户文件表
-		if db.UpdateUserPhotoByUid(metaInfo.Location, metaInfo.Filesha1, utoken.Uid.Int64) {
+		if db.UpdateUserPhotoByUid(metaInfo.FileLocation, metaInfo.Filesha1, utoken.Uid.Int64) {
 			fmt.Println(" metaInfo: ", metaInfo)
-			response.ReturnMetaInfo(w, config.Net_SuccessCode, "file save success", &metaInfo)
+			response.ReturnResponse(w, config.Net_SuccessCode, "file save success", &metaInfo)
 		} else {
 			response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "用户文件保存失败")
 		}

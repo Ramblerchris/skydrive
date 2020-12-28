@@ -1,4 +1,4 @@
-package response
+package beans
 
 import (
 	"fmt"
@@ -35,21 +35,14 @@ type File struct {
 }
 
 type UserFile struct {
-	Id               int64  `json:"id,omitempty"`
-	PId              int64  `json:"pid,omitempty"`
-	Filesha1         string `json:"sha1,omitempty"`
-	FileHash_Pre     string `json:"sha1_pre,omitempty"`
-	FileName         string `json:"filename,omitempty"`
-	FileSize         int64  `json:"size,omitempty"`
-	Location         string `json:"path,omitempty"`
+	File
 	Filetype         int32  `json:"type,omitempty"`
+	PId              int64  `json:"pid,omitempty"`
 	CreateAtTime     string `json:"createattimestr,omitempty"`
 	UpdateAtTime     string `json:"updatattimestr,omitempty"`
 	CreateAtTimeLong int64  `json:"createattimelong,omitempty"`
 	UpdateAtTimeLong int64  `json:"updatattimelong,omitempty"`
-	Minitype         string `json:"minitype,omitempty"`
-	Ftype            int32  `json:"ftype,omitempty"`
-	Video_duration   string `json:"video_duration,omitempty"`
+	FileHash_Pre     string `json:"sha1_pre,omitempty"`
 }
 
 type User struct {
@@ -73,6 +66,6 @@ type User struct {
 
 
 func (filemeta *UserFile) String() {
-	fmt.Printf("filesha1:%s filename:%s  fileSize: %d  Location: %s  UpdateAtTime: %s ", filemeta.Filesha1, filemeta.FileName, filemeta.FileSize, filemeta.Location, filemeta.UpdateAtTime)
+	fmt.Printf("filesha1:%s filename:%s  fileSize: %d  Location: %s  UpdateAtTime: %s ", filemeta.Filesha1, filemeta.FileName, filemeta.FileSize, filemeta.FileLocation, filemeta.UpdateAtTime)
 }
 
