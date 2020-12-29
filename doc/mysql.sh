@@ -31,3 +31,27 @@ service mysql start
 service mysql stop
 #重启服务
 service restart stop
+
+
+
+
+#最大链接数
+show variables like '%max_connections%';
+
+
+#查看终端的链接
+ show full processlist;
+
+#修改最大连接数
+#临时：
+set GLOBAL max_connections = 200;
+#重启后失效
+
+#永久：
+#修改配置文件：
+max_connections = 500
+
+#线程数
+show status like 'Threads%';
+
+

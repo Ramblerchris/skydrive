@@ -13,6 +13,8 @@ const (
 	DATABASE                   = "skydrive"
 	CHARSET                    = "utf8"
 	MySqlConfit                = "%s:%s@tcp(%s:%s)/%s?charset=%s"
+	MySqlConfit1                = "%s:%s@tcp(%s:%s)/%s?timeout=%dms&readTimeout=%dms&writeTimeout=%dms&charset=%s"
+//("%s:%s@tcp(%s:%d)/%s?timeout=%dms&readTimeout=%dms&writeTimeout=%dms&charset=utf8", "用户名", "密码", "hostip", 端口, "库名", 1000, 500, 500)//后面三个分别为连接超时，读超时，写超时
 	ServeLocation              = ":9996"
 	UDP_SERVER_ListenPORT      =8997
 	UDP_GroupSERVER_ListenPORT =8998
@@ -43,5 +45,5 @@ const (
 )
 
 func GetDataSourceName() string {
-	return fmt.Sprintf(MySqlConfit, USER_NAME, PASS_WORD, HOST, PORT, DATABASE, CHARSET)
+	return fmt.Sprintf(MySqlConfit1, USER_NAME, PASS_WORD, HOST, PORT, DATABASE, 1000, 500, 500,CHARSET)
 }

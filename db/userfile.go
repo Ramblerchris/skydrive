@@ -170,7 +170,8 @@ func GetUserFileInfoByUidSha1(filehash string, uid int64) (*TableUserFile, error
 	defer stmt.Close()
 	fmt.Println(tAG_userfile, utils.RunFuncName(),selectUFileBySha1)
 	tfile := TableUserFile{}
-	error = stmt.QueryRow(filehash, uid).Scan(
+	row := stmt.QueryRow(filehash, uid)
+	error = row.Scan(
 		&tfile.Id, &tfile.PId, &tfile.Uid, &tfile.Phone, &tfile.FileHash, &tfile.FileHash_Pre, &tfile.FileName, &tfile.FileSize, &tfile.FileLocation, &tfile.Create_at, &tfile.Update_at, &tfile.Filetype, &tfile.Minitype, &tfile.Ftype, &tfile.Video_duration)
 	if error != nil {
 		fmt.Println(tAG_userfile, "failed to QueryRow error:", error)
@@ -188,6 +189,7 @@ func GetUserDirListByUidPidDirName(uid, pid int64, filename string) (tableUserFi
 	}
 	defer stmt.Close()
 	rowdata, error := stmt.Query(uid, pid, filename)
+	defer  rowdata.Close()
 	fmt.Println(tAG_userfile, utils.RunFuncName(), selectUFileByUidAndPidAndFileName, uid, pid, filename)
 	if error != nil {
 		fmt.Println("failed to Exec error:", error)
