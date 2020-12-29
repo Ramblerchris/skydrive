@@ -88,6 +88,7 @@ func TokenCheckInterceptor(h HandlerFuncAuth) http.HandlerFunc {
 				response.ReturnResponseCodeMessageHttpCode(w, http.StatusForbidden, config.Net_ErrorCode, "bad request")
 			} else {
 				byToken = byTokenbydb
+				tokenmap.WriteTokenMap(token, byToken)
 			}
 		} else {
 			fmt.Println(TAG, "缓存获取用户:", byToken)
@@ -100,7 +101,6 @@ func TokenCheckInterceptor(h HandlerFuncAuth) http.HandlerFunc {
 				response.ReturnResponseCodeMessageHttpCode(w, http.StatusForbidden, config.Net_ErrorCode_Token_exprise, "token expired")
 				return
 			}
-			tokenmap.WriteTokenMap(token, byToken)
 			h(w, r, &byToken)
 			return
 		} else {

@@ -48,6 +48,7 @@ func SaveUserDirInfo(uid, pid int64, phone, dirName string) (bool, int64) {
 		pid = -1
 	}
 	//filetype 文件夹1 文件-1
+	fmt.Println(tAG_userfile, utils.RunFuncName(),"start")
 	exec, error := stmt.Exec(uid, pid, phone, dirName, 1, 1)
 	fmt.Println(tAG_userfile, utils.RunFuncName(),saveUFileDirinfo,uid, pid, phone, dirName, 1, 1)
 	if error != nil {
@@ -77,6 +78,8 @@ func SaveUserFileInfo(uid, pid int64, phone, filehash, filename, location string
 	if pid == 0 {
 		pid = -1
 	}
+	fmt.Println(tAG_userfile, utils.RunFuncName(),"start")
+
 	exec, error := stmt.Exec(uid, pid, phone, filehash, filename, filesize, location, 1, minitype, ftype, video_duration)
 	fmt.Println(tAG_userfile, utils.RunFuncName(), saveUFileinfo,uid, pid, phone, filehash, filename, filesize, location, 1, minitype, ftype, video_duration)
 	if error != nil {
@@ -100,9 +103,10 @@ func UpdateUserFileInfoStatusBySha1(filehash string, filestatus int8) bool {
 		fmt.Println(tAG_userfile, "failed to prepare statement error:", error.Error())
 		return false
 	}
-	fmt.Println(tAG_userfile, utils.RunFuncName(), updateUFileInfo)
+	fmt.Println(tAG_userfile, utils.RunFuncName(),"start")
 	defer stmt.Close()
 	exec, error := stmt.Exec(filestatus, filehash)
+	fmt.Println(tAG_userfile, utils.RunFuncName(), updateUFileInfo)
 	if error != nil {
 		fmt.Println(tAG_userfile, "failed Exec error:", error)
 		return false
@@ -216,6 +220,7 @@ func GetUserDirFileListByUidPid(uid, pid int64, pageNo, pageSize, lastid int64) 
 		lastid = GetUserDirListMaxCountByUid(uid, pid)
 	}
 	rowdata, error := stmt.Query(uid, pid, lastid, pageSize)
+	defer  rowdata.Close()
 	fmt.Println(tAG_userfile, utils.RunFuncName(), selectUFileByUidAndPidPage, uid, pid, lastid, pageSize)
 	if error != nil {
 		fmt.Println("failed to Exec error:", error)
@@ -232,6 +237,7 @@ func GetUserDirFileListByUidPid(uid, pid int64, pageNo, pageSize, lastid int64) 
 		}
 		tableUserFile = append(tableUserFile, tfile)
 	}
+
 	return tableUserFile, nil, GetUserDirListCountByUidPid(uid, pid, lastid)
 }
 
@@ -268,6 +274,7 @@ func GetUserDirListMaxCountByUid(uid, pid int64) (maxid int64) {
 	defer stmt.Close()
 	//result, err := stmt.Query(uid, lastid)
 	result, err := stmt.Query(pid, uid)
+	defer  result.Close()
 	fmt.Println(tAG_userfile, utils.RunFuncName(),selectMaxIdFromUserFile, pid, uid)
 	if err != nil {
 		return 0
