@@ -48,7 +48,6 @@ func UpdateFileInfoStatusBySha1(filehash string, filestatus int8) bool {
 	defer stmt.Close()
 	exec, error := stmt.Exec(filestatus, filehash)
 	fmt.Println(tAG_file, utils.RunFuncName(), updateFileInfo,filestatus, filehash)
-
 	if error != nil {
 		fmt.Println(tAG_file,"failed Exec error:", error)
 		return false
@@ -73,7 +72,8 @@ func GetFileInfoBySha1(filehash string) (*TableFile, error) {
 	defer stmt.Close()
 	tfile := TableFile{}
 	//file_sha1,file_name,file_size,file_addr
-	error =stmt.QueryRow(filehash).Scan(
+	row := stmt.QueryRow(filehash)
+	error =row.Scan(
 		&tfile.Id,&tfile.Filesha1, &tfile.FileName, &tfile.FileSize, &tfile.FileLocation, &tfile.Minitype, &tfile.Ftype, &tfile.Video_duration)
 	fmt.Println(tAG_file, utils.RunFuncName(), selectFile, filehash)
 

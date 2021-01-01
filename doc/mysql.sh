@@ -1,5 +1,6 @@
 #login mysql
 mysql -h192.168.1.105 -uroot -p
+mysql -hlocalhost -uroot -p
 create database skydrive;
 show databases;
 use skydrive

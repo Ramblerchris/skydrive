@@ -131,7 +131,8 @@ func GetUserDirInfoById(id int64) (*TableUserFile, error) {
 	defer stmt.Close()
 	fmt.Println(tAG_userfile, utils.RunFuncName(), selectUFileByid)
 	tfile := TableUserFile{}
-	error = stmt.QueryRow(id).Scan(
+	row := stmt.QueryRow(id)
+	error = row.Scan(
 		&tfile.Id, &tfile.PId, &tfile.Uid, &tfile.Phone, &tfile.FileHash, &tfile.FileHash_Pre, &tfile.FileName, &tfile.FileSize, &tfile.FileLocation, &tfile.Create_at, &tfile.Update_at, &tfile.Filetype, &tfile.Minitype, &tfile.Ftype, &tfile.Video_duration)
 	if error != nil {
 		fmt.Println(tAG_userfile, "failed to QueryRow error:", error)
@@ -254,6 +255,7 @@ func GetUserDirListCountByUidPid(uid, pid int64, lastid int64) (count int64) {
 	defer stmt.Close()
 	//result, err := stmt.Query(pid, uid, lastid)
 	result, err := stmt.Query(pid, uid)
+	defer result.Close()
 	fmt.Println(tAG_userfile, utils.RunFuncName(), selectUFileCountByUidPid, pid, uid)
 	if err != nil {
 		return 0
@@ -299,6 +301,7 @@ func GetUserDirListCountByUid(uid, lastid int64) (count int64) {
 	defer stmt.Close()
 	//result, err := stmt.Query(uid, lastid)
 	result, err := stmt.Query(uid)
+	defer result.Close()
 	fmt.Println(tAG_userfile, utils.RunFuncName(), selectUFileCountByUid, uid)
 	if err != nil {
 		return 0
@@ -319,6 +322,7 @@ func GetUserFileListMetaByUid(uid int64, pageNo, pageSize, lastid int64) (tableU
 	}
 	defer stmt.Close()
 	rowdata, error := stmt.Query(uid, lastid, pageSize)
+	defer rowdata.Close()
 	fmt.Println(tAG_userfile, utils.RunFuncName(), selectUFileByUidPage, uid, lastid, pageSize)
 	if error != nil {
 		fmt.Println("failed to Exec error:", error)
@@ -347,6 +351,7 @@ func GetUserFileAllSha1ListByUid(uid int64) (sha1s []string, err error) {
 	}
 	defer stmt.Close()
 	rowdata, error := stmt.Query(uid)
+	defer rowdata.Close()
 	fmt.Println(tAG_userfile, utils.RunFuncName(),selectUFileAllsha1s, uid)
 	if error != nil {
 		fmt.Println("failed to Exec error:", error)
@@ -378,6 +383,7 @@ func GetUserFileListBySha1s(uid int64, sha1s []string) (tableUserFile []TableUse
 	}
 	defer stmt.Close()
 	rowdata, error := stmt.Query(uid)
+	defer rowdata.Close()
 	fmt.Println(tAG_userfile, utils.RunFuncName(), sprintf, uid)
 	if error != nil {
 		fmt.Println("failed to Exec error:", error)

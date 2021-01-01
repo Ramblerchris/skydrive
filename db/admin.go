@@ -20,6 +20,7 @@ const (
 
 func AdminGetAllFileList(pageNo,pageSize int64 ) (tableFile []TableFile, err error, total int64) {
 	rowdata, err := getPageStmt(selectAllFile, pageNo, pageSize)
+	defer rowdata.Close()
 	if err != nil {
 		return tableFile, err,0
 	}
@@ -40,6 +41,7 @@ func AdminGetAllFileList(pageNo,pageSize int64 ) (tableFile []TableFile, err err
 
 func AdminGetAllUserList(pageNo,pageSize int64 ) (tableUserlist []TableUser, err error, total int64) {
 	rowdata, err := getPageStmt(selectAllUserInfo, pageNo, pageSize)
+	defer rowdata.Close()
 	if err != nil {
 		return tableUserlist, err,0
 	}
@@ -70,6 +72,7 @@ func AdminGetAllUserList(pageNo,pageSize int64 ) (tableUserlist []TableUser, err
 
 func AdminGetAllUserTokenList(pageNo,pageSize int64 ) (tableUsertokenFile []TableUToken,  err error, total int64) {
 	rowdata, err := getPageStmt(selectAllUTokenInfo, pageNo, pageSize)
+	defer rowdata.Close()
 	if err != nil {
 		return tableUsertokenFile, err,0
 	}
@@ -94,6 +97,7 @@ func AdminGetAllUserTokenList(pageNo,pageSize int64 ) (tableUsertokenFile []Tabl
 
 func AdminGetAllUserFileInfoList(pageNo,pageSize int64 ) (tableUserFile []TableUserFile, err error, total int64) {
 	rowdata, err := getPageStmt(selectAllUserFile, pageNo, pageSize)
+	defer rowdata.Close()
 	if err != nil {
 		return tableUserFile, err,0
 	}
@@ -119,6 +123,7 @@ func getPageStmt(sql string,pageNo,pageSize int64)(*sql.Rows, error)   {
 	}
 	defer stmt.Close()
 	rowdata, error := stmt.Query(pageSize*(pageNo-1),pageSize)
+	defer rowdata.Close()
 	fmt.Println(tAG_admin, utils.RunFuncName(), sql,pageSize*(pageNo-1),pageSize)
 	if error != nil {
 		fmt.Println("failed to Exec error:", error)
@@ -131,14 +136,15 @@ func getPageStmt(sql string,pageNo,pageSize int64)(*sql.Rows, error)   {
 func GetCountByTableName(tablename string ) (count int64) {
 	//目前忽略了文件类型
 	stmt, error := mysql.DbConnect().Prepare(selectCountByTable+tablename)
+	defer stmt.Close()
 	if error != nil {
 		fmt.Println(tAG_admin, "failed to prepare statement error:", error)
 		return 0
 	}
-	defer stmt.Close()
 	//result, err := stmt.Query(pid, uid, lastid)
 	fmt.Println(tAG_admin, utils.RunFuncName(), selectCountByTable+tablename)
 	result, err := stmt.Query()
+	result.Close()
 	if err != nil {
 		return 0
 	}
