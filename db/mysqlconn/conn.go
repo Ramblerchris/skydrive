@@ -22,7 +22,7 @@ func init() {
 		return
 	}
 	//最大链接数
-	mysqldb.SetMaxOpenConns(10)
+	mysqldb.SetMaxOpenConns(50)
 	//空闲连接数
 	mysqldb.SetMaxIdleConns(10)
 	//最大连接周期
