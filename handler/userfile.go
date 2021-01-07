@@ -232,7 +232,7 @@ func UploadUserFileHandler(w http.ResponseWriter, r *http.Request, utoken *db.Ta
 			response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, fmt.Sprintf("获取文件出错 %s \n", error.Error()))
 			return
 		}
-		error, path := utils.CreateDirbySha1(sha1, fileheader.Filename, utoken.Uid.Int64)
+		error, path := utils.CreateDirbySha1(config.SaveFileRoot,sha1, fileheader.Filename, utoken.Uid.Int64)
 		if error != nil {
 			response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, fmt.Sprintf("创建文件夹出错 %s \n", error.Error()))
 		}

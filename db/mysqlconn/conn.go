@@ -26,7 +26,7 @@ func init() {
 	//空闲连接数
 	mysqldb.SetMaxIdleConns(10)
 	//最大连接周期
-	mysqldb.SetConnMaxLifetime(1 * time.Second)
+	mysqldb.SetConnMaxLifetime(5 * time.Second)
 	if pingerror := mysqldb.Ping(); pingerror != nil {
 		fmt.Println(" connect mysql failed", pingerror)
 		return

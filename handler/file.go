@@ -5,13 +5,16 @@ import (
 	"github.com/skydrive/config"
 	"github.com/skydrive/db"
 	"github.com/skydrive/handler/cache"
+	"github.com/skydrive/media"
 	"github.com/skydrive/response"
+	"github.com/skydrive/utils"
 	"io"
 	"io/ioutil"
 	"mime"
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 )
 
 //通过文件sha1获取文件的详细信息
@@ -34,6 +37,7 @@ func GetFileInfoBySha1Handler(w http.ResponseWriter, r *http.Request, utoken *db
 func OpenFile1Handler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	filesha1 := r.FormValue("filesha1")
+	q, _ := strconv.ParseInt(r.FormValue("q"), 10, 64)
 	if len(filesha1) == 0 || filesha1 == "" || len(filesha1) == 0 || filesha1 == "" {
 		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.FormValueError)
 		return
@@ -42,6 +46,20 @@ func OpenFile1Handler(w http.ResponseWriter, r *http.Request, utoken *db.TableUT
 	if !ok {
 		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "not find filesha1:"+filesha1)
 		return
+	}
+	//只针对图片压缩
+	if q != 0 && data.Ftype == 0 {
+		err, target := utils.CreateThumbDir(config.SaveFileRoot_thumbnail, filesha1,strconv.FormatInt(q,10),data.FileName)
+		if err==nil{
+			//_, error := os.Open(data.FileLocation)
+			exists, _ := utils.PathExists(target)
+			if !exists  &&media.ScaleImageQuality(data.FileLocation,target,config.Thumbnail_Quality){
+				http.ServeFile(w, r, target)
+			}else{
+				http.ServeFile(w, r, target)
+			}
+			return
+		}
 	}
 	http.ServeFile(w, r, data.FileLocation)
 }

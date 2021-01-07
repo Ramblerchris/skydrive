@@ -42,6 +42,12 @@ const (
 	Regex_MobilePhone=`^(1[3|4|5|8][0-9]\d{4,8})$`
 	Salt_MD5="&%)&%A3t8C"
 
+	SaveFileRoot="temp"
+	SaveFileRoot_thumbnail="thumbnail"
+	Thumbnail_Quality=2
+
+
+
 )
 
 func GetDataSourceName() string {

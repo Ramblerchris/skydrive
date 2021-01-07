@@ -33,19 +33,46 @@ func FileMerge(chunkpath string, newfile string) bool {
 	}
 	return true
 }
-
-func CreateDirbySha1( sha, filename string,uid int64) (error, string) {
+//创建文件存储路径
+func CreateDirbySha1(rootpath, sha, filename string,uid int64) (error, string) {
 	if sha == "" {
 		sha = filename
 	}
 	code := HashCode(sha)
-	dir := fmt.Sprintf("%s/%d/%d/%d/%d/%d", "temp", code&0xf, (code>>4)&0xf, (code>>8)&0xf, (code>>12)&0xf, (code>>16)&0xf)
+	dir := fmt.Sprintf("%s/%d/%d/%d/%d/%d", rootpath, code&0xf, (code>>4)&0xf, (code>>8)&0xf, (code>>12)&0xf, (code>>16)&0xf)
 	err := os.MkdirAll(dir, os.ModePerm)
 	if err!=nil{
 		return err,""
 	}
 	filename=fmt.Sprintf("%d_%s_%s", uid, BuildUUID(), filename)
 	return nil, fmt.Sprintf("%s/%s", dir,  filename)
+}
+
+//文件是否存在
+func PathExists(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return false, err
+}
+
+//创建缩略图
+func CreateThumbDir(rootpath, sha, q,filename string) (error, string) {
+	if sha == "" {
+		sha = filename
+	}
+	code := HashCode(sha)
+	//dir := fmt.Sprintf("%s/%d/%d/%d/%d/%d", rootpath, code&0xf, (code>>4)&0xf, (code>>8)&0xf, (code>>12)&0xf, (code>>16)&0xf)
+	dir := fmt.Sprintf("%s/%d/%d", rootpath, code&0xf, (code>>4)&0xf)
+	err := os.MkdirAll(dir, os.ModePerm)
+	if err!=nil{
+		return err,""
+	}
+	return nil, fmt.Sprintf("%s/%s_%s_%s", dir, q, sha,filename)
 }
 
 
