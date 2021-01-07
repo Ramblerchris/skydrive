@@ -46,7 +46,7 @@ func ScaleImageQuality(p string, target string,quality int ) (isSuccess bool) {
 		draw.Draw(newImg, newImg.Bounds(), &image.Uniform{C: color.White}, image.Point{}, draw.Src)
 		draw.Draw(newImg, newImg.Bounds(), decode, decode.Bounds().Min, draw.Over)
 
-		err = jpeg.Encode(&buf, newImg, &jpeg.Options{Quality: 20})
+		err = jpeg.Encode(&buf, newImg, &jpeg.Options{Quality: quality})
 		if err != nil {
 			return false
 		}

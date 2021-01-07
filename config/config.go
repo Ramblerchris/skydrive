@@ -44,7 +44,7 @@ const (
 
 	SaveFileRoot="temp"
 	SaveFileRoot_thumbnail="thumbnail"
-	Thumbnail_Quality=2
+	Thumbnail_Quality=40
 
 
 
