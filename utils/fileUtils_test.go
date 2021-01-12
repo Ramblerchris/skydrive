@@ -13,7 +13,13 @@ const  chunkSize  = 1<<(10*2) //1kB
 const filepath="/Users/mac/Desktop/testfile/vue.mp4"
 const New_filepath="/Users/mac/Desktop/testfile/vue2.mp4"
 const filechunkpath="/Users/mac/Desktop/testfile/chunk/"
+
+
 func Test_File(t *testing.T) {
+	println(HashCode("842ca630956535c83eca7400e32429eca147d6bf"))
+	println(HashCode("842ca630956535c83eca7400e32429eca147d6bf"))
+	println(HashCode("842ca630956535c83eca7400e32429eca147d6bf"))
+	println(HashCode("842ca630956535c83eca7400e32429eca147d6bf"))
 	/*fileinfo,error:=os.Stat(filepath)
 	if error!=nil{
 		panic(error)

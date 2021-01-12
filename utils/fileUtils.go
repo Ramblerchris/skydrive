@@ -38,14 +38,13 @@ func CreateDirbySha1(rootpath, sha, filename string,uid int64) (error, string) {
 	if sha == "" {
 		sha = filename
 	}
-	code := HashCode(sha)
-	dir := fmt.Sprintf("%s/%d/%d/%d/%d/%d", rootpath, code&0xf, (code>>4)&0xf, (code>>8)&0xf, (code>>12)&0xf, (code>>16)&0xf)
-	err := os.MkdirAll(dir, os.ModePerm)
+	path := getDirPath(rootpath, sha)
+	err := os.MkdirAll(path, os.ModePerm)
 	if err!=nil{
 		return err,""
 	}
 	filename=fmt.Sprintf("%d_%s_%s", uid, BuildUUID(), filename)
-	return nil, fmt.Sprintf("%s/%s", dir,  filename)
+	return nil, fmt.Sprintf("%s/%s", path,  filename)
 }
 
 //文件是否存在
@@ -60,19 +59,23 @@ func PathExists(path string) (bool, error) {
 	return false, err
 }
 
+func getDirPath(rootpath string, data string) string {
+	code := HashCode(data)
+	fmt.Println("file sha1", data,"code ",code)
+	return fmt.Sprintf("%s/%d/%d/%d/%d/%d", rootpath, code&0xf, (code>>4)&0xf, (code>>8)&0xf, (code>>12)&0xf, (code>>16)&0xf)
+}
+
 //创建缩略图
-func CreateThumbDir(rootpath, sha, q,filename string) (error, string) {
+func CreateThumbDir(rootpath, sha, q, filename string) (error, string) {
 	if sha == "" {
 		sha = filename
 	}
-	code := HashCode(sha)
-	//dir := fmt.Sprintf("%s/%d/%d/%d/%d/%d", rootpath, code&0xf, (code>>4)&0xf, (code>>8)&0xf, (code>>12)&0xf, (code>>16)&0xf)
-	dir := fmt.Sprintf("%s/%d/%d", rootpath, code&0xf, (code>>4)&0xf)
-	err := os.MkdirAll(dir, os.ModePerm)
-	if err!=nil{
-		return err,""
+	path := getDirPath(rootpath, sha)
+	err := os.MkdirAll(path, os.ModePerm)
+	if err != nil {
+		return err, ""
 	}
-	return nil, fmt.Sprintf("%s/%s_%s_%s", dir, q, sha,filename)
+	return nil, fmt.Sprintf("%s/%s_%s_%s", path, q, sha, filename)
 }
 
 

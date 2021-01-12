@@ -220,7 +220,7 @@ func GetUserDirFileListByUidPid(uid, pid int64, pageNo, pageSize, lastid int64) 
 	}
 	defer stmt.Close()
 	if lastid == -1 {
-		lastid = GetUserDirListMaxCountByUid(uid, pid)
+		lastid = GetUserDirListMaxCountByUid(uid, pid)+1
 	}
 	rowdata, error := stmt.Query(uid, pid, lastid, pageSize)
 	defer  rowdata.Close()

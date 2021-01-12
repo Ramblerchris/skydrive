@@ -219,8 +219,8 @@ func UploadUserFileHandler(w http.ResponseWriter, r *http.Request, utoken *db.Ta
 		//http.ServeFile(w, r, "./static/view/index.html")
 		io.WriteString(w, string("<h1>请下载客户端<h1>"))
 	} else */if r.Method == "POST" {
-		sha1 := r.FormValue("sha1")
-		minetype := r.FormValue("minetype")
+		sha1, _ := strconv.Unquote(r.FormValue("sha1"))
+		minetype,_ := strconv.Unquote(r.FormValue("minetype"))
 		file, fileheader, error := r.FormFile("file")
 		pid, _ := strconv.ParseInt(r.FormValue("pid"), 10, 64)
 		isVideo, _ := strconv.ParseBool(r.FormValue("isVideo"))
@@ -256,7 +256,7 @@ func UploadUserFileHandler(w http.ResponseWriter, r *http.Request, utoken *db.Ta
 			return
 		}
 		metaInfo.Filesha1 = utils.GetFileSha1(newfile)
-		fmt.Println("file sha1", metaInfo.Filesha1)
+		//fmt.Println("file sha1", metaInfo.Filesha1)
 		//todo 缓存添加
 		//cache.AddOrUpdateFileMeta(metaInfo)
 		//处理文件已经存在的情况
