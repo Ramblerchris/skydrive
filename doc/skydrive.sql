@@ -83,3 +83,78 @@ CREATE TABLE `tbl_user_token`
     KEY `idx_uid` (`uid`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
+
+-- 视频类型表 ：类型表:剧情，恐怖，纪实，励志，情感，战争，青春，动作，历史，喜剧，人文，搞笑，古装
+CREATE TABLE `tbl_film_type`
+(
+    `film_type_id`        int(11)     NOT NULL AUTO_INCREMENT,
+    `type_id`   int(11)     NOT NULL COMMENT '类型id',
+    `type_name` varchar(64) NOT NULL COMMENT '视频类型表名称',
+    `status`    tinyint     NOT NULL COMMENT '状态( 1 启用/ 2 禁用/ -1 标记删除等)',
+    PRIMARY KEY (`film_type_id`),
+    KEY `type_id` (`type_id`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4;
+
+
+-- 视频分类表 ：电影，电视剧，纪录片，综艺
+CREATE TABLE `tbl_film_classfy`
+(
+    `film_classfy_id`         int(11)     NOT NULL AUTO_INCREMENT,
+    `class_id`   int(11)     NOT NULL COMMENT '分类id',
+    `class_name` varchar(64) NOT NULL COMMENT '视频分类表',
+    `status`     tinyint     NOT NULL COMMENT '状态( 1 启用/ 2 禁用/ -1 标记删除等)',
+    PRIMARY KEY (`film_classfy_id`),
+    KEY `class_id` (`class_id`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4;
+
+
+-- 剧基本信息表:  名称，上映时间，简介，封面，导演，主演，国家，评分，语言，分类（分类表），类型（类型表），查询关键字，搜索关键字，图片资料，电影路径
+CREATE TABLE `tbl_film_info`
+(
+    `film_info_id`         int(11)       NOT NULL AUTO_INCREMENT,
+    `film_name`            varchar(256)  NOT NULL DEFAULT '' COMMENT '视频名称',
+    `brief_introduction`   varchar(1024) NOT NULL DEFAULT '' COMMENT '简介',
+    `film_cover`           varchar(256)  NOT NULL DEFAULT '' COMMENT '剧封面',
+    `film_classfy_id`      int(11)       NOT NULL DEFAULT '0' COMMENT '分类id',
+    `film_type_id`         int(11)       NOT NULL DEFAULT '0' COMMENT '类型id',
+    `director_name`        varchar(256)  NOT NULL DEFAULT '' COMMENT '导演',
+    `country`              varchar(50)   NOT NULL DEFAULT '' COMMENT '国家',
+    `language`             varchar(50)   NOT NULL DEFAULT '' COMMENT '语言',
+    `act_the_leading_role` varchar(256)  NOT NULL DEFAULT '' COMMENT '主演',
+    `search_key`           varchar(256)  NOT NULL DEFAULT '' COMMENT '搜索关键字',
+    `score`                int(11)       NOT NULL DEFAULT '0' COMMENT '评分',
+    `show_at`              datetime               default NOW() COMMENT '上映时间',
+    `create_at`            datetime               default NOW() COMMENT '添加时间',
+    `status`               tinyint       NOT NULL COMMENT '状态( 1 可以查询/ 2不可查询/ -1 标记删除等)',
+    `film_duration`        time          NOT NULL DEFAULT '0' COMMENT '视频时长',
+    `photo_addr`           varchar(1024) NOT NULL DEFAULT '' COMMENT '图片资料，多张用;分割',
+    PRIMARY KEY (`film_info_id`),
+    KEY `idx_status` (`status`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4;
+
+
+-- 剧播放文件列表
+CREATE TABLE `tbl_video_playlist`
+(
+    `video_id`                 int(11)       NOT NULL AUTO_INCREMENT,
+    `film_info_id`             int(11)       NOT NULL DEFAULT '0' COMMENT '剧基本信息表id',
+    `video_name`               varchar(256)  NOT NULL DEFAULT '' COMMENT '单个视频名称',
+    `video_brief_introduction` varchar(1024) NOT NULL DEFAULT '' COMMENT '单个视频简介',
+    `video_cover`              varchar(256)  NOT NULL DEFAULT '' COMMENT '单个视频剧封面',
+    `video_duration`           time          NOT NULL DEFAULT '0' COMMENT '单个视频时长',
+    `score`                    int(11)       NOT NULL DEFAULT '0' COMMENT '单个视频评分',
+    `create_at`                datetime               default NOW() COMMENT '添加时间',
+    `status`                   tinyint       NOT NULL COMMENT '状态( 1 可以查询/ 2不可查询/ -1 标记删除等)',
+    `file_addr`                varchar(1024) NOT NULL DEFAULT '' COMMENT '文件存储位置',
+    PRIMARY KEY (`video_id`),
+    KEY `idx_status` (`status`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4;
+
+
+
+
+
