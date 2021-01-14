@@ -1,4 +1,4 @@
--- 创建文件表
+-- 创建文件表基本表，用于秒传，逻辑关联 用户媒体表，用户云盘表格，用户剧集表
 CREATE TABLE `tbl_file`
 (
     `id`             int(11)       NOT NULL AUTO_INCREMENT,
@@ -19,7 +19,7 @@ CREATE TABLE `tbl_file`
   DEFAULT CHARSET = utf8mb4;
 
 
--- 创建用户文件表(包含文件夹）
+-- 创建用户媒体表(包含文件夹）
 CREATE TABLE `tbl_user_file`
 (
     `id`             int(11)       NOT NULL AUTO_INCREMENT,
@@ -83,3 +83,32 @@ CREATE TABLE `tbl_user_token`
     KEY `idx_uid` (`uid`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
+
+
+
+-- 云盘文件表(包含文件夹）为了和媒体文件分开，
+CREATE TABLE `tbl_cloud_disk`
+(
+    `id`             int(11)       NOT NULL AUTO_INCREMENT,
+    `pid`            int(11)       NOT NULL DEFAULT '-1' COMMENT '父文件夹id(-1为第一级)',
+    `uid`            int(11)       NOT NULL DEFAULT '0',
+    `phone`          varchar(128)           DEFAULT '' COMMENT '手机号',
+    `file_sha1`      char(40)      NOT NULL DEFAULT '' COMMENT '文件hash',
+    `file_sha1_pre`  char(40)      NOT NULL DEFAULT '' COMMENT '预览图文件hash(文件为空，文件夹为最新一张的预览图)',
+    `file_name`      varchar(256)  NOT NULL DEFAULT '' COMMENT '文件名',
+    `file_addr`      varchar(1024) NOT NULL DEFAULT '' COMMENT '文件存储位置',
+    `file_size`      bigint(20)             DEFAULT '0' COMMENT '文件大小',
+    `create_at`      datetime               default NOW() COMMENT '创建日期',
+    `update_at`      datetime               default NOW() on update current_timestamp() COMMENT '更新日期',
+    `delete_at`      datetime               default NOW() COMMENT '删除日期（回收站保留30天功能）',
+    `status`         tinyint       NOT NULL DEFAULT '0' COMMENT '状态( 1 可用/ 2 禁用/ -1 已删除等状态)',
+    `filetype`       tinyint       NOT NULL DEFAULT '-1' COMMENT '文件类型(文件夹 1/文件-1)',
+    `minitype`       char(40)      NOT NULL DEFAULT '' COMMENT '文件类型',
+    `ftype`          tinyint       NOT NULL DEFAULT '0' COMMENT '文件状态(0图片/1视频/2音乐/3文档/4压缩包)',
+    `video_duration` time          NOT NULL DEFAULT '0' COMMENT '视频时长',
+    PRIMARY KEY (`id`),
+    KEY `idx_status` (`status`)
+) ENGINE = InnoDB
+  AUTO_INCREMENT = 5
+  DEFAULT CHARSET = utf8mb4;
+
