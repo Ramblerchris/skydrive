@@ -9,29 +9,29 @@ import (
 )
 
 const (
-	selectUDiskFileBySha1      = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at,filetype,minitype,ftype,video_duration from tbl_user_file where file_sha1=? and uid=? and status=1 limit 1"
-	selectUDiskFileByid        = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at,filetype,minitype,ftype,video_duration from tbl_user_file where id=?  and status=1 limit 1"
-	selectUDiskFileByUid       = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,filetype,minitype,ftype,video_duration from tbl_user_file where uid=? and status=1 "
-	selectUDiskFileByUidPage   = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,filetype,minitype,ftype,video_duration from tbl_user_file where uid=? and status=1 and id>? limit ? "
-	selectUDiskFileByUidAndPid = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,filetype,minitype,ftype,video_duration from tbl_user_file where uid=? and pid=? and status=1 "
-	//selectUDiskFileByUidAndPidPage        = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,filetype,minitype,ftype,video_duration from tbl_user_file where uid=? and pid=? and status=1 and id>? limit ? "
-	selectUDiskFileByUidAndPidPage        = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,filetype,minitype,ftype,video_duration from tbl_user_file where uid=? and pid=? and status=1 and id<? order by id desc  limit ? "
-	selectUDiskFileByUidAndPidAndSha1     = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,filetype,minitype,ftype,video_duration from tbl_user_file where file_sha1=? and uid=? and pid=? and status=1 limit 1 "
-	selectUDiskFileByUidAndPidAndFileName = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,filetype,minitype,ftype,video_duration from tbl_user_file where uid=? and pid=? and file_name=? and status=1 "
-	saveUDiskFileinfo                     = "insert into tbl_user_file(uid,pid,phone,file_sha1,file_name,file_size,file_addr,status,minitype,ftype,video_duration) values(?,?,?,?,?,?,?,?,?,?,?)"
-	saveUDiskFileDirinfo                  = "insert into tbl_user_file(uid,pid,phone,file_name,status,filetype) values(?,?,?,?,?,?)"
-	updateUDiskFileInfo                   = "update tbl_user_file set status=? where file_sha1=?"
-	updateUDiskFileStatus                 = "update tbl_user_file set status=? where uid=? and  pid=? and file_sha1 in('%s')"
-	updateUDiskFileDirStatus              = "update tbl_user_file set status=? where id=? "
-	updateUDiskFileDirfile_sha1_pre       = "update tbl_user_file set file_sha1_pre=? where id=? "
-	updateUDiskFileDirsStatus             = "update tbl_user_file set status=? where id in('%s')"
-	selectUDiskFileBysha1s                = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at,filetype,minitype,ftype,video_duration from tbl_user_file where uid=? and file_sha1 in('%s') "
-	selectUDiskFileAllsha1s               = "select file_sha1 from tbl_user_file where uid=?"
-	//selectUDiskFileCountByUid 			  = "select count(*) from tbl_user_file where  uid=? and status=1 and id>? "
-	selectUDiskFileCountByUid = "select count(*) from tbl_user_file where  uid=? and status=1  "
-	//selectUDiskFileCountByUidPid 		  = "select count(*) from tbl_user_file where  pid=? and uid=? and status=1 and id>? "
-	selectUDiskFileCountByUidPid = "select count(*) from tbl_user_file where  pid=? and uid=? and status=1  "
-	selectMaxIdFromUserDiskFile  = "select max(id) from tbl_user_file where  pid=? and uid=? and status=1  order by id desc"
+	selectUDiskFileBySha1      = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at,filetype,minitype,ftype,video_duration from tbl_cloud_disk where file_sha1=? and uid=? and status=1 limit 1"
+	selectUDiskFileByid        = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at,filetype,minitype,ftype,video_duration from tbl_cloud_disk where id=?  and status=1 limit 1"
+	selectUDiskFileByUid       = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,filetype,minitype,ftype,video_duration from tbl_cloud_disk where uid=? and status=1 "
+	selectUDiskFileByUidPage   = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,filetype,minitype,ftype,video_duration from tbl_cloud_disk where uid=? and status=1 and id>? limit ? "
+	selectUDiskFileByUidAndPid = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,filetype,minitype,ftype,video_duration from tbl_cloud_disk where uid=? and pid=? and status=1 "
+	//selectUDiskFileByUidAndPidPage        = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,filetype,minitype,ftype,video_duration from tbl_cloud_disk where uid=? and pid=? and status=1 and id>? limit ? "
+	selectUDiskFileByUidAndPidPage        = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,filetype,minitype,ftype,video_duration from tbl_cloud_disk where uid=? and pid=? and status=1 and id<? order by id desc  limit ? "
+	selectUDiskFileByUidAndPidAndSha1     = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,filetype,minitype,ftype,video_duration from tbl_cloud_disk where file_sha1=? and uid=? and pid=? and status=1 limit 1 "
+	selectUDiskFileByUidAndPidAndFileName = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,filetype,minitype,ftype,video_duration from tbl_cloud_disk where uid=? and pid=? and file_name=? and status=1 "
+	saveUDiskFileinfo                     = "insert into tbl_cloud_disk(uid,pid,phone,file_sha1,file_name,file_size,file_addr,status,minitype,ftype,video_duration) values(?,?,?,?,?,?,?,?,?,?,?)"
+	saveUDiskFileDirinfo                  = "insert into tbl_cloud_disk(uid,pid,phone,file_name,status,filetype) values(?,?,?,?,?,?)"
+	updateUDiskFileInfo                   = "update tbl_cloud_disk set status=? where file_sha1=?"
+	updateUDiskFileStatus                 = "update tbl_cloud_disk set status=? where uid=? and  pid=? and file_sha1 in('%s')"
+	updateUDiskFileDirStatus              = "update tbl_cloud_disk set status=? where id=? "
+	updateUDiskFileDirfile_sha1_pre       = "update tbl_cloud_disk set file_sha1_pre=? where id=? "
+	updateUDiskFileDirsStatus             = "update tbl_cloud_disk set status=? where id in('%s')"
+	selectUDiskFileBysha1s                = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at,filetype,minitype,ftype,video_duration from tbl_cloud_disk where uid=? and file_sha1 in('%s') "
+	selectUDiskFileAllsha1s               = "select file_sha1 from tbl_cloud_disk where uid=?"
+	//selectUDiskFileCountByUid 			  = "select count(*) from tbl_cloud_disk where  uid=? and status=1 and id>? "
+	selectUDiskFileCountByUid = "select count(*) from tbl_cloud_disk where  uid=? and status=1  "
+	//selectUDiskFileCountByUidPid 		  = "select count(*) from tbl_cloud_disk where  pid=? and uid=? and status=1 and id>? "
+	selectUDiskFileCountByUidPid = "select count(*) from tbl_cloud_disk where  pid=? and uid=? and status=1  "
+	selectMaxIdFromUserDiskFile  = "select max(id) from tbl_cloud_disk where  pid=? and uid=? and status=1  order by id desc"
 	tAG_userDiskfile             = "diskfile.go：sql"
 )
 
@@ -97,7 +97,7 @@ func SaveDiskFileInfo(uid, pid int64, phone, filehash, filename, location string
 }
 
 //修改所有用户的这个文件状态
-func UpdateUserDiskInfoStatusBySha1(filehash string, filestatus int8) bool {
+func UpdateDiskUserInfoStatusBySha1(filehash string, filestatus int8) bool {
 	stmt, error := mysql.DbConnect().Prepare(updateUDiskFileInfo)
 	if error != nil {
 		fmt.Println(tAG_userDiskfile, "failed to prepare statement error:", error.Error())
@@ -122,7 +122,7 @@ func UpdateUserDiskInfoStatusBySha1(filehash string, filestatus int8) bool {
 }
 
 //查看单个文件具体信息
-func GetUserDiskInfoById(id int64) (*TableUserFile, error) {
+func GetDiskFileInfoById(id int64) (*TableUserFile, error) {
 	stmt, error := mysql.DbConnect().Prepare(selectUDiskFileByid)
 	if error != nil {
 		fmt.Println(tAG_userDiskfile, "failed to prepare statement error:", error)
@@ -143,7 +143,7 @@ func GetUserDiskInfoById(id int64) (*TableUserFile, error) {
 
 
 //查看当前用户是否已经存储filehash对应的文件
-func GetUserDiskMetaByPidUidSha1(filehash string, uid, pid int64) (*TableUserFile, error) {
+func GetDiskFileMetaByPidUidSha1(filehash string, uid, pid int64) (*TableUserFile, error) {
 	stmt, error := mysql.DbConnect().Prepare(selectUDiskFileByUidAndPidAndSha1)
 	if error != nil {
 		fmt.Println(tAG_userDiskfile, "failed to prepare statement error:", error)
@@ -163,7 +163,7 @@ func GetUserDiskMetaByPidUidSha1(filehash string, uid, pid int64) (*TableUserFil
 }
 
 //查看当前用户是否已经存储filehash对应的文件
-func GetUserDiskInfoByUidSha1(filehash string, uid int64) (*TableUserFile, error) {
+func GetDiskFileInfoByUidSha1(filehash string, uid int64) (*TableUserFile, error) {
 	stmt, error := mysql.DbConnect().Prepare(selectUDiskFileBySha1)
 	if error != nil {
 		fmt.Println(tAG_userDiskfile, "failed to prepare statement error:", error)
@@ -183,7 +183,7 @@ func GetUserDiskInfoByUidSha1(filehash string, uid int64) (*TableUserFile, error
 }
 
 //查询用户同级文件夹下相同文件名的文件夹列表
-func GetUserDiskListByUidPidDirName(uid, pid int64, filename string) (tableUserFile []TableUserFile, err error) {
+func GetDiskFileInfoListByUidPidDirName(uid, pid int64, filename string) (tableUserFile []TableUserFile, err error) {
 	stmt, error := mysql.DbConnect().Prepare(selectUDiskFileByUidAndPidAndFileName)
 	if error != nil {
 		fmt.Println(tAG_userDiskfile, "failed to prepare statement error:", error)
@@ -212,7 +212,7 @@ func GetUserDiskListByUidPidDirName(uid, pid int64, filename string) (tableUserF
 }
 
 //查看当前用户 pid 对应子目录所有文件列表，包括文件列表
-func GetUserDiskFileListByUidPid(uid, pid int64, pageNo, pageSize, lastid int64) (tableUserFile []TableUserFile, err error, total int64) {
+func GetDiskFileListByUidPid(uid, pid int64, pageNo, pageSize, lastid int64) (tableUserFile []TableUserFile, err error, total int64) {
 	//目前忽略了文件类型
 	stmt, error := mysql.DbConnect().Prepare(selectUDiskFileByUidAndPidPage)
 	if error != nil {
@@ -221,7 +221,7 @@ func GetUserDiskFileListByUidPid(uid, pid int64, pageNo, pageSize, lastid int64)
 	}
 	defer stmt.Close()
 	if lastid == -1 {
-		lastid = GetUserDirListMaxCountByUid(uid, pid)+1
+		lastid = GetUserDiskListMaxCountByUid(uid, pid)+1
 	}
 	rowdata, error := stmt.Query(uid, pid, lastid, pageSize)
 	defer  rowdata.Close()
@@ -242,11 +242,11 @@ func GetUserDiskFileListByUidPid(uid, pid int64, pageNo, pageSize, lastid int64)
 		tableUserFile = append(tableUserFile, tfile)
 	}
 
-	return tableUserFile, nil, GetUserDirListCountByUidPid(uid, pid, lastid)
+	return tableUserFile, nil, GetUserDiskFileListCountByUidPid(uid, pid, lastid)
 }
 
 //查询当前用户指定文件下的文件数
-func GetUserDiskListCountByUidPid(uid, pid int64, lastid int64) (count int64) {
+func GetUserDiskFileListCountByUidPid(uid, pid int64, lastid int64) (count int64) {
 	//目前忽略了文件类型
 	stmt, error := mysql.DbConnect().Prepare(selectUDiskFileCountByUidPid)
 	if error != nil {
@@ -293,7 +293,7 @@ func GetUserDiskListMaxCountByUid(uid, pid int64) (maxid int64) {
 
 
 //查询当前用户指定文件下的文件数
-func GetUserDiskListCountByUid(uid, lastid int64) (count int64) {
+func GetUserDiskDirFileListCountByUid(uid, lastid int64) (count int64) {
 	//目前忽略了文件类型
 	stmt, error := mysql.DbConnect().Prepare(selectUDiskFileCountByUid)
 	if error != nil {
@@ -341,69 +341,7 @@ func GetUserDiskFileListMetaByUid(uid int64, pageNo, pageSize, lastid int64) (ta
 		}
 		tableUserFile = append(tableUserFile, tfile)
 	}
-	return tableUserFile, nil, GetUserDirListCountByUid(uid, lastid)
-}
-
-//查询用户所有的文件
-func GetUserDiskFileAllSha1ListByUid(uid int64) (sha1s []string, err error) {
-	stmt, error := mysql.DbConnect().Prepare(selectUDiskFileAllsha1s)
-	if error != nil {
-		fmt.Println(tAG_userDiskfile, "failed to prepare statement error:", error)
-		return nil, error
-	}
-	defer stmt.Close()
-	rowdata, error := stmt.Query(uid)
-	defer rowdata.Close()
-	fmt.Println(tAG_userDiskfile, utils.RunFuncName(),selectUDiskFileAllsha1s, uid)
-	if error != nil {
-		fmt.Println("failed to Exec error:", error)
-		return sha1s, error
-	}
-	sha1s = make([]string, 0)
-	for rowdata.Next() {
-		var sha1 string
-		error = rowdata.Scan(&sha1)
-		if error != nil {
-			fmt.Println(tAG_userDiskfile, "failed to Query error:", error)
-			continue
-		}
-		if sha1 != "" {
-			sha1s = append(sha1s, sha1)
-		}
-	}
-	return sha1s, nil
-}
-
-
-//查询用户所有的文件
-func GetUserDiskFileListBySha1s(uid int64, sha1s []string) (tableUserFile []TableUserFile, err error) {
-	sha1sJoin := strings.Join(sha1s, "','")
-	sprintf := fmt.Sprintf(selectUDiskFileBysha1s, sha1sJoin)
-	stmt, error := mysql.DbConnect().Prepare(sprintf)
-	if error != nil {
-		fmt.Println(tAG_userDiskfile, "failed to prepare statement error:", error)
-		return nil, error
-	}
-	defer stmt.Close()
-	rowdata, error := stmt.Query(uid)
-	defer rowdata.Close()
-	fmt.Println(tAG_userDiskfile, utils.RunFuncName(), sprintf, uid)
-	if error != nil {
-		fmt.Println("failed to Exec error:", error)
-		return tableUserFile, error
-	}
-	tableUserFile = make([]TableUserFile, 0)
-	for rowdata.Next() {
-		tfile := TableUserFile{}
-		error = rowdata.Scan(
-			&tfile.Id, &tfile.PId, &tfile.Uid, &tfile.Phone, &tfile.FileHash, &tfile.FileHash_Pre, &tfile.FileName, &tfile.FileSize, &tfile.FileLocation, &tfile.Create_at, &tfile.Update_at, &tfile.Filetype, &tfile.Minitype, &tfile.Ftype, &tfile.Video_duration)
-		if error != nil {
-			fmt.Println(tAG_userDiskfile, "failed to Query error:", error)
-			continue
-		}
-		tableUserFile = append(tableUserFile, tfile)
-	}
-	return tableUserFile, nil
+	return tableUserFile, nil, GetUserDiskDirFileListCountByUid(uid, lastid)
 }
 
 //批量修改当前用户文件状态

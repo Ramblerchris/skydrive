@@ -16,33 +16,6 @@ import (
 	"time"
 )
 
-//获取用户文件列表
-func GetDiskFileListByUidHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
-	r.ParseForm()
-	pageNo, _ := strconv.ParseInt(r.FormValue("pageNo"), 10, 64)
-	pageSize, _ := strconv.ParseInt(r.FormValue("pageSize"), 10, 64)
-	lastId, _ := strconv.ParseInt(r.FormValue("lastId"), 10, 64)
-	if pageSize==0 {
-		pageSize=10
-	}
-	if byuid, err ,total := db.GetUserDiskFileListMetaByUid(utoken.Uid.Int64,pageNo,pageSize,lastId); err == nil {
-		metaFilelist := make([]beans.UserFile, 0)
-		for _, value := range byuid {
-			//fmt.Println("GetUserFileListByUidHandler",value)
-			metaFilelist = append(metaFilelist, *beans.GetUserFileObject(value))
-		}
-		nextPageId:=lastId
-		if len(metaFilelist)!=0{
-			nextPageId=metaFilelist[len(metaFilelist)-1].Id
-		}
-		//ReturnResponse(w, config.Net_SuccessCode, "get file success ", metaFilelist)
-		//pageNo ,pageSize ,total
-		response.ReturnResponsePage(w, config.Net_SuccessCode, config.Success, metaFilelist,pageNo,pageSize,nextPageId,total)
-		return
-	}
-	response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.GetFileDirListError)
-}
-
 // 获取用户文件夹内的所有文件
 func GetDiskDirFileListByPidHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
@@ -57,7 +30,7 @@ func GetDiskDirFileListByPidHandler(w http.ResponseWriter, r *http.Request, utok
 	if pageSize==0 {
 		pageSize=10
 	}
-	if byuid, err,total := db.GetUserDiskFileListByUidPid(utoken.Uid.Int64, pid,pageNo,pageSize,lastId); err == nil {
+	if byuid, err,total := db.GetDiskFileListByUidPid(utoken.Uid.Int64, pid,pageNo,pageSize,lastId); err == nil {
 		metaFilelist := make([]beans.UserFile, 0)
 		for _, value := range byuid {
 			//fmt.Println("GetUserDirFileListByPidHandler", value)
@@ -127,12 +100,12 @@ func AddDiskFileDirByUidPidHandler(w http.ResponseWriter, r *http.Request, utoke
 		return
 	}
 	//todo 查询用户同级文件夹下的文件名是否存在
-	if data, err := db.GetUserDiskListByUidPidDirName(utoken.Uid.Int64, pid, dirname); err == nil && len(data) != 0 {
+	if data, err := db.GetDiskFileInfoListByUidPidDirName(utoken.Uid.Int64, pid, dirname); err == nil && len(data) != 0 {
 		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, dirname+"文件夹已经存在")
 		return
 	}
 	if isok, id := db.SaveDiskDirInfo(utoken.Uid.Int64, pid, utoken.Phone.String, dirname); isok {
-		if value, err := db.GetUserDiskInfoById(id); err == nil {
+		if value, err := db.GetDiskFileInfoById(id); err == nil {
 			response.ReturnResponse(w, config.Net_SuccessCode, config.Success, *beans.GetUserFileObject(*value))
 			return
 		}
@@ -152,7 +125,7 @@ func HitPassDiskBySha1Handler(w http.ResponseWriter, r *http.Request, utoken *db
 	if metaInfo, err := db.GetFileInfoBySha1(sha1); err == nil {
 		//if metaInfo, err := db.GetUserFileMetaByPidUidSha1(sha1,utoken.Uid.Int64,pid); err == nil {
 		//查看当前用户对应文件夹是否已经保存过
-		if value, err := db.GetUserDiskMetaByPidUidSha1(sha1, utoken.Uid.Int64, pid); err == nil {
+		if value, err := db.GetDiskFileMetaByPidUidSha1(sha1, utoken.Uid.Int64, pid); err == nil {
 			//避免重复保存
 			response.ReturnResponse(w, config.Net_SuccessAginCode, "already save success ", *beans.GetUserFileObject(*value))
 			return
@@ -162,7 +135,7 @@ func HitPassDiskBySha1Handler(w http.ResponseWriter, r *http.Request, utoken *db
 			fmt.Printf("保存文件 成功，大小 %d \n", metaInfo.FileSize)
 			//更新当前文件夹的缩略图最新
 			db.UpdateUserDiskFileDirPreSha1ById(metaInfo.Filesha1.String, pid)
-			if value, err := db.GetUserDiskInfoByUidSha1(sha1, utoken.Uid.Int64); err == nil {
+			if value, err := db.GetDiskFileInfoByUidSha1(sha1, utoken.Uid.Int64); err == nil {
 				response.ReturnResponse(w, config.Net_SuccessCode, config.Success, *beans.GetUserFileObject(*value))
 				return
 			}
@@ -239,7 +212,7 @@ func UploadDiskFileHandler(w http.ResponseWriter, r *http.Request, utoken *db.Ta
 			}
 		}
 		//查看是否已经保存过
-		if value, err := db.GetUserDiskInfoByUidSha1(metaInfo.Filesha1, utoken.Uid.Int64); err == nil {
+		if value, err := db.GetDiskFileInfoByUidSha1(metaInfo.Filesha1, utoken.Uid.Int64); err == nil {
 			//避免重复保存
 			response.ReturnResponse(w, config.Net_SuccessAginCode, "already save success ", *beans.GetUserFileObject(*value))
 			return
