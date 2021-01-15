@@ -46,7 +46,7 @@ func dealRead(conn *net.UDPConn) {
 	upper := strings.ToUpper(strData)
 	//10s 后给客户端再回复消息
 	//time.Sleep(time.Second*1)
-	rAddr.Port=config.UDP_SERVER_SendPORT
+	rAddr.Port=config.UdpServerSendport
 	_, err = conn.WriteToUDP([]byte("pong "+upper), rAddr)
 	if err != nil {
 		fmt.Println(err)

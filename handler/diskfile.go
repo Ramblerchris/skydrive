@@ -27,48 +27,24 @@ func GetDiskDirFileListByPidHandler(w http.ResponseWriter, r *http.Request, utok
 		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.FormValueError)
 		return
 	}
-	if pageSize==0 {
-		pageSize=10
+	if pageSize == 0 {
+		pageSize = 10
 	}
-	if byuid, err,total := db.GetDiskFileListByUidPid(utoken.Uid.Int64, pid,pageNo,pageSize,lastId); err == nil {
+	if byuid, err, total := db.GetDiskFileListByUidPid(utoken.Uid.Int64, pid, pageNo, pageSize, lastId); err == nil {
 		metaFilelist := make([]beans.UserFile, 0)
 		for _, value := range byuid {
 			//fmt.Println("GetUserDirFileListByPidHandler", value)
 			metaFilelist = append(metaFilelist, *beans.GetUserFileObject(value))
 		}
-		nextPageId:=lastId
-		if len(metaFilelist)!=0{
-			nextPageId=metaFilelist[len(metaFilelist)-1].Id
+		nextPageId := lastId
+		if len(metaFilelist) != 0 {
+			nextPageId = metaFilelist[len(metaFilelist)-1].Id
 		}
 		//ReturnResponse(w, config.Net_SuccessCode, "get file success ", metaFilelist)
-		response.ReturnResponsePage(w, config.Net_SuccessCode, config.Success, metaFilelist,pageNo,pageSize,nextPageId,total)
+		response.ReturnResponsePage(w, config.Net_SuccessCode, config.Success, metaFilelist, pageNo, pageSize, nextPageId, total)
 		return
 	}
 	response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.Error)
-}
-
-
-//批量删除文件
-func DeleteDiskFileListBySha1sUidHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
-	r.ParseForm()
-	if r.Method == "POST" {
-		value := r.FormValue("sha1s")
-		if value == "" {
-			response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.FormValueError)
-			return
-		}
-		pid, _ := strconv.ParseInt(r.FormValue("pid"), 10, 64)
-		if pid == 0 {
-			response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.FormValueError)
-			return
-		}
-		split := strings.Split(value, ";")
-		if db.UpdateUserDiskFileStatusBySha1sUidPid(utoken.Uid.Int64, pid, -1, split) {
-			response.ReturnResponse(w, config.Net_SuccessCode, config.Success, nil)
-			return
-		}
-		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "delete file success ")
-	}
 }
 
 //批量删除指定文件夹
@@ -82,11 +58,11 @@ func DeleteDiskFileDirByUidHandler(w http.ResponseWriter, r *http.Request, utoke
 			return
 		}
 		split := strings.Split(value, ";")
-		if db.UpdateUserDiskFileDirStatusByIds(split, -1) {
-			response.ReturnResponseCodeMessage(w, config.Net_SuccessCode, config.Success)
-			return
+		if success,row:=db.UpdateUserDiskFileDirStatusByIds(split, -1);success {
+			response.ReturnResponseCodeMessage(w, config.Net_SuccessCode, fmt.Sprintf("修改成功%d行",row))
+		} else {
+			response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.ErrorAlreadyupdate)
 		}
-		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.Error)
 	}
 }
 
@@ -162,7 +138,7 @@ func UploadDiskFileHandler(w http.ResponseWriter, r *http.Request, utoken *db.Ta
 		io.WriteString(w, string("<h1>请下载客户端<h1>"))
 	} else */if r.Method == "POST" {
 		sha1, _ := strconv.Unquote(r.FormValue("sha1"))
-		minetype,_ := strconv.Unquote(r.FormValue("minetype"))
+		minetype, _ := strconv.Unquote(r.FormValue("minetype"))
 		file, fileheader, error := r.FormFile("file")
 		pid, _ := strconv.ParseInt(r.FormValue("pid"), 10, 64)
 		isVideo, _ := strconv.ParseBool(r.FormValue("isVideo"))
@@ -174,7 +150,7 @@ func UploadDiskFileHandler(w http.ResponseWriter, r *http.Request, utoken *db.Ta
 			response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, fmt.Sprintf("获取文件出错 %s \n", error.Error()))
 			return
 		}
-		error, path := utils.CreateDirbySha1(config.SaveFileRoot,sha1, fileheader.Filename, utoken.Uid.Int64)
+		error, path := utils.CreateDirbySha1(config.SaveFileRoot, sha1, fileheader.Filename, utoken.Uid.Int64)
 		if error != nil {
 			response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, fmt.Sprintf("创建文件夹出错 %s \n", error.Error()))
 		}
@@ -182,8 +158,8 @@ func UploadDiskFileHandler(w http.ResponseWriter, r *http.Request, utoken *db.Ta
 			//Location:     path,
 			UpdateAtTime: time.Now().Format("2006-01-02 15:04:05"),
 		}
-		metaInfo.FileName=fileheader.Filename
-		metaInfo.FileLocation=path
+		metaInfo.FileName = fileheader.Filename
+		metaInfo.FileLocation = path
 		newfile, error := os.Create(metaInfo.FileLocation)
 		if error != nil {
 			fmt.Printf("创建文件出错 %s \n", error.Error())

@@ -373,30 +373,35 @@ func UpdateUserDiskFileStatusBySha1sUidPid(uid, pid int64, filestatus int8, sha1
 
 
 //当前用户文件状态批量修改
-func UpdateUserDiskFileDirStatusByIds(ids []string, filestatus int8) bool {
+func UpdateUserDiskFileDirStatusByIds(ids []string, filestatus int8) (issuccess bool,rows int64 ) {
 	sha1sJoin := strings.Join(ids, "','")
 	sprintf := fmt.Sprintf(updateUDiskFileDirsStatus, sha1sJoin)
 	stmt, error := mysql.DbConnect().Prepare(sprintf)
 	if error != nil {
 		fmt.Println(tAG_userDiskfile, "failed to prepare statement error:", error)
-		return false
+		issuccess = false
+		rows = 0
 	}
 	defer stmt.Close()
 	exec, error := stmt.Exec(filestatus)
-	fmt.Println(tAG_userDiskfile,  utils.RunFuncName(), updateUDiskFileDirsStatus, filestatus)
+	fmt.Println(tAG_userDiskfile, utils.RunFuncName(), updateUDiskFileDirsStatus, filestatus)
 
 	if error != nil {
 		fmt.Println(tAG_userDiskfile, "failed Exec error:", error)
-		return false
+		issuccess = false
+		rows = 0
 	}
-	if rows, error := exec.RowsAffected(); error == nil {
+	if rows, error = exec.RowsAffected(); error != nil {
 		if rows <= 0 {
 			//执行成功，修改未成功，
 			fmt.Printf(tAG_userDiskfile, "failed with hash:%s has been upload\n", error)
-			return false
+			issuccess = false
+			rows = 0
 		}
+	} else {
+		issuccess = true
 	}
-	return true
+	return issuccess, rows
 }
 
 //当前用户文件预览图

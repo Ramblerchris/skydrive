@@ -86,6 +86,7 @@ func TokenCheckInterceptor(h HandlerFuncAuth) http.HandlerFunc {
 		if !exist {
 			if byTokenbydb, er := db.GetUserTokenInfoByToken(token); er != nil {
 				response.ReturnResponseCodeMessageHttpCode(w, http.StatusForbidden, config.Net_ErrorCode, "bad request")
+				return
 			} else {
 				byToken = byTokenbydb
 				tokenmap.WriteTokenMap(token, byToken)

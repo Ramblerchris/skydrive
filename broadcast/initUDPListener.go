@@ -6,5 +6,5 @@ import "github.com/skydrive/config"
 func InitUDP()  {
 	go StartUDPServerV2(config.UDP_SERVER_ListenPORT)
 	//go broadcast.StartUDPGroup(config.UDP_SERVER_ListenPORT)
-	go StartUDPGroupV2(config.UDP_GroupSERVER_SendPORT,config.UDP_GroupSERVER_ListenPORT)
+	go StartUDPGroupV2(config.UdpGroupserverSendport,config.UDP_GroupSERVER_ListenPORT)
 }

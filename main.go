@@ -51,8 +51,7 @@ func httpServer() {
 	http.HandleFunc("/userfile/uploadmultipartinfo", handler.TokenCheckInterceptor(handler.UploadMultipartHandler))
 
 	http.HandleFunc("/disk/upload", handler.TokenCheckInterceptor(handler.UploadDiskFileHandler))
-	http.HandleFunc("/disk/deletefiles", handler.TokenCheckInterceptor(handler.DeleteDiskFileListBySha1sUidHandler))
-	http.HandleFunc("/disk/deleteDir", handler.TokenCheckInterceptor(handler.DeleteDiskFileDirByUidHandler))
+	http.HandleFunc("/disk/delete", handler.TokenCheckInterceptor(handler.DeleteDiskFileDirByUidHandler))
 	http.HandleFunc("/disk/hitpass", handler.TokenCheckInterceptor(handler.HitPassDiskBySha1Handler))
 	http.HandleFunc("/disk/adddir", handler.TokenCheckInterceptor(handler.AddDiskFileDirByUidPidHandler))
 	http.HandleFunc("/disk/dirlist", handler.TokenCheckInterceptor(handler.GetDiskDirFileListByPidHandler))
