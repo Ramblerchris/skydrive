@@ -25,8 +25,8 @@ func GetUserFileObject(value db.TableUserFile) *UserFile {
 		Filetype:         value.Filetype.Int32,
 		CreateAtTime:     value.Create_at.String,
 		UpdateAtTime:     value.Update_at.String,
-		CreateAtTimeLong: createlong.UnixNano(),
-		UpdateAtTimeLong: updatelong.UnixNano(),
+		CreateAtTimeLong: createlong.UnixNano()/1e6,
+		UpdateAtTimeLong: updatelong.UnixNano()/1e6,
 	}
 }
 
@@ -56,12 +56,15 @@ func GetUserTokenObject(info db.TableUToken) *UToken {
 }
 
 func GetFileObject(info db.TableFile) *File {
+	createlong, _ := time.Parse("2006-01-02 15:04:05", info.Create_at.String)
 	return &File{
 		Id:             info.Id.Int64,
 		Filesha1:       info.Filesha1.String,
 		FileName:       info.FileName.String,
 		FileLocation:   info.FileLocation.String,
 		FileSize:       info.FileSize.Int64,
+		CreateAtTime:     info.Create_at.String,
+		CreateAtTimeLong: createlong.UnixNano()/1e6,
 		Minitype:       info.Minitype.String,
 		Ftype:          info.Ftype.Int32,
 		Video_duration: info.Video_duration.String,

@@ -8,6 +8,7 @@ type TableFile struct {
 	Filesha1       sql.NullString
 	FileName       sql.NullString
 	FileLocation   sql.NullString
+	Create_at      sql.NullString
 	FileSize       sql.NullInt64
 	Minitype       sql.NullString
 	Ftype          sql.NullInt32

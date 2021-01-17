@@ -28,6 +28,8 @@ type File struct {
 	Filesha1        string `json:"sha1,omitempty"`
 	FileName       	string `json:"filename,omitempty"`
 	FileLocation   	string `json:"path,omitempty"`
+	CreateAtTime     string `json:"createattimestr,omitempty"`
+	CreateAtTimeLong int64  `json:"createattimelong,omitempty"`
 	FileSize       	int64  `json:"size,omitempty"`
 	Minitype       	string `json:"minitype,omitempty"`
 	Ftype          	int32  `json:"ftype,omitempty"`

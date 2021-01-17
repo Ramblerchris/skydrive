@@ -12,7 +12,7 @@ const (
 	 selectAllUserInfo 			= "select id ,user_name,user_pwd,photo_addr,photo_file_sha1,email,phone,email_validated,phone_validated,signup_at,last_active,profile,status from tbl_user  limit ?,?"
 	 selectAllUserFile          = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at,filetype,minitype,ftype,video_duration from tbl_user_file  limit  ?,?"
 	 selectAllUTokenInfo		= "select id ,uid,phone,user_token,expiretime from tbl_user_token limit  ?,? "
-	 selectAllFile 				= "select id,file_sha1,file_name,file_size,file_addr,minitype,ftype,video_duration from tbl_file limit ?,?"
+	 selectAllFile 				= "select id,file_sha1,file_name,file_size,file_addr,minitype,ftype,video_duration,create_at from tbl_file limit ?,?"
 	 selectCountByTable	 		= "select count(*) from  "
 	tAG_admin             = "admin.go sql:"
 
@@ -29,7 +29,7 @@ func AdminGetAllFileList(pageNo,pageSize int64 ) (tableFile []TableFile, err err
 		tfile := TableFile{}
 		//file_sha1,file_name,file_size,file_addr
 		error :=rowdata.Scan(
-			&tfile.Id,&tfile.Filesha1, &tfile.FileName, &tfile.FileSize, &tfile.FileLocation, &tfile.Minitype, &tfile.Ftype, &tfile.Video_duration)
+			&tfile.Id,&tfile.Filesha1, &tfile.FileName, &tfile.FileSize, &tfile.FileLocation, &tfile.Minitype, &tfile.Ftype, &tfile.Video_duration, &tfile.Create_at)
 		if error != nil {
 			fmt.Println(tAG_admin, "failed to Query error:", error)
 			continue
@@ -143,7 +143,7 @@ func GetCountByTableName(tablename string ) (count int64) {
 	//result, err := stmt.Query(pid, uid, lastid)
 	fmt.Println(tAG_admin, utils.RunFuncName(), selectCountByTable+tablename)
 	result, err := stmt.Query()
-	result.Close()
+	defer result.Close()
 	if err != nil {
 		return 0
 	}
