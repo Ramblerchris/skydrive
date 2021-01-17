@@ -123,7 +123,6 @@ func getPageStmt(sql string,pageNo,pageSize int64)(*sql.Rows, error)   {
 	}
 	defer stmt.Close()
 	rowdata, error := stmt.Query(pageSize*(pageNo-1),pageSize)
-	defer rowdata.Close()
 	fmt.Println(tAG_admin, utils.RunFuncName(), sql,pageSize*(pageNo-1),pageSize)
 	if error != nil {
 		fmt.Println("failed to Exec error:", error)
