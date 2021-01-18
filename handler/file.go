@@ -48,20 +48,50 @@ func OpenFile1Handler(w http.ResponseWriter, r *http.Request, utoken *db.TableUT
 		return
 	}
 	//只针对图片压缩
+	setHeaderFileName(w, data.FileName,nil)
 	if q != 0 && data.Ftype == 0 {
-		err, target := utils.CreateThumbDir(config.SaveFileRoot_thumbnail, filesha1,strconv.FormatInt(q,10),data.FileName)
-		if err==nil{
+		err, target := utils.CreateThumbDir(config.SaveFileRoot_thumbnail, filesha1, strconv.FormatInt(q, 10), data.FileName)
+		if err == nil {
 			//_, error := os.Open(data.FileLocation)
 			exists, _ := utils.PathExists(target)
-			if !exists  &&media.ScaleImageQuality(data.FileLocation,target,config.Thumbnail_Quality){
+			if !exists && media.ScaleImageQuality(data.FileLocation, target, config.Thumbnail_Quality) {
 				http.ServeFile(w, r, target)
-			}else{
+			} else {
 				http.ServeFile(w, r, target)
 			}
 			return
 		}
 	}
 	http.ServeFile(w, r, data.FileLocation)
+}
+
+func setHeaderFileName(w http.ResponseWriter, fileName string,file *os.File) {
+	ctype := mime.TypeByExtension(filepath.Ext(fileName))
+	if ctype == "" && file!=nil {
+		// read a chunk to decide between utf-8 text and binary
+		var buf [512]byte
+		n, _ := io.ReadFull(file, buf[:])
+		ctype = http.DetectContentType(buf[:n])
+		file.Seek(0, io.SeekStart) // rewind to output whole file
+	}
+	w.Header().Set("Content-Type", ctype)
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", fileName))
+	/*ctype := mime.TypeByExtension(filepath.Ext(data.FileName))
+	if ctype == "" {
+		// read a chunk to decide between utf-8 text and binary
+		var buf [512]byte
+		n, _ := io.ReadFull(file, buf[:])
+		ctype = http.DetectContentType(buf[:n])
+		file.Seek(0, io.SeekStart) // rewind to output whole file
+
+	}
+	w.Header().Set("Content-Type", ctype)
+	// w.Header().Set("Content-Type", "application/octect-stream")
+	// w.Header().Set("Content-Description", "attachment; filename=\""+url.QueryEscape(data.FileName)+"\";charset=UTF-8")
+	// w.Header().Set("Content-Description", fmt.pr("attachment;filename=%s", data.FileName))
+	// w.Header().Set("Content-Description", "attachment;filename=\""+data.FileName+"\"; charset=UTF-8")
+	// w.Header().Set("Content-Description", "attachment; filename* = UTF-8''"+url.QueryEscape(data.FileName))
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", data.FileName))*/
 }
 
 //获取文件信息,暂时不支持
@@ -108,7 +138,6 @@ func DeleteFileInfoBySha1Handler(w http.ResponseWriter, r *http.Request, utoken 
 	} else {
 		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "delete file error:"+filesha1)
 	}
-
 }
 
 //浏览器打开直接下载文件
@@ -136,23 +165,7 @@ func DownloadFileWebBySha1Handler(w http.ResponseWriter, r *http.Request, utoken
 	}
 	// w.Header().Set("Content-Type", "application/octect-stream")
 	// w.Header().Set("Content-Description", "attachment;filename=\""+fm.FileName+"\"")
-	ctype := mime.TypeByExtension(filepath.Ext(data.FileName))
-	if ctype == "" {
-		// read a chunk to decide between utf-8 text and binary
-		var buf [512]byte
-		n, _ := io.ReadFull(file, buf[:])
-		ctype = http.DetectContentType(buf[:n])
-		file.Seek(0, io.SeekStart) // rewind to output whole file
-
-	}
-	w.Header().Set("Content-Type", ctype)
-	// w.Header().Set("Content-Type", "application/octect-stream")
-	// w.Header().Set("Content-Description", "attachment; filename=\""+url.QueryEscape(data.FileName)+"\";charset=UTF-8")
-	// w.Header().Set("Content-Description", fmt.pr("attachment;filename=%s", data.FileName))
-	// w.Header().Set("Content-Description", "attachment;filename=\""+data.FileName+"\"; charset=UTF-8")
-	// w.Header().Set("Content-Description", "attachment; filename* = UTF-8''"+url.QueryEscape(data.FileName))
-	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", data.FileName))
-
+	setHeaderFileName(w,data.FileName,file)
 	w.Write(byteData)
 
 }
