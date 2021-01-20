@@ -2,8 +2,8 @@ package db
 
 import (
 	"database/sql"
-	"fmt"
 	mysql "github.com/skydrive/db/mysqlconn"
+	"github.com/skydrive/logger"
 	"github.com/skydrive/utils"
 )
 
@@ -31,7 +31,7 @@ func AdminGetAllFileList(pageNo,pageSize int64 ) (tableFile []TableFile, err err
 		error :=rowdata.Scan(
 			&tfile.Id,&tfile.Filesha1, &tfile.FileName, &tfile.FileSize, &tfile.FileLocation, &tfile.Minitype, &tfile.Ftype, &tfile.Video_duration, &tfile.Create_at)
 		if error != nil {
-			fmt.Println(tAG_admin, "failed to Query error:", error)
+			logger.Error(tAG_admin, "failed to Query error:", error)
 			continue
 		}
 		tableFile = append(tableFile, tfile)
@@ -62,7 +62,7 @@ func AdminGetAllUserList(pageNo,pageSize int64 ) (tableUserlist []TableUser, err
 			&tUser.Profile,
 			&tUser.Status)
 		if error != nil {
-			fmt.Println(tAG_admin, "failed to Query error:", error)
+			logger.Error(tAG_admin, "failed to Query error:", error)
 			continue
 		}
 		tableUserlist = append(tableUserlist, tUser)
@@ -87,7 +87,7 @@ func AdminGetAllUserTokenList(pageNo,pageSize int64 ) (tableUsertokenFile []Tabl
 			&utoken.Expiretime,
 		)
 		if error != nil {
-			fmt.Println(tAG_admin, "failed to Query error:", error)
+			logger.Error(tAG_admin, "failed to Query error:", error)
 			continue
 		}
 		tableUsertokenFile = append(tableUsertokenFile, utoken)
@@ -107,7 +107,7 @@ func AdminGetAllUserFileInfoList(pageNo,pageSize int64 ) (tableUserFile []TableU
 		error := rowdata.Scan(
 			&tfile.Id, &tfile.PId, &tfile.Uid, &tfile.Phone, &tfile.FileHash, &tfile.FileHash_Pre, &tfile.FileName, &tfile.FileSize, &tfile.FileLocation, &tfile.Create_at, &tfile.Update_at, &tfile.Filetype, &tfile.Minitype, &tfile.Ftype, &tfile.Video_duration)
 		if error != nil {
-			fmt.Println(tAG_admin, "failed to Query error:", error)
+			logger.Error(tAG_admin, "failed to Query error:", error)
 			continue
 		}
 		tableUserFile = append(tableUserFile, tfile)
@@ -118,14 +118,14 @@ func AdminGetAllUserFileInfoList(pageNo,pageSize int64 ) (tableUserFile []TableU
 func getPageStmt(sql string,pageNo,pageSize int64)(*sql.Rows, error)   {
 	stmt, error := mysql.DbConnect().Prepare(sql)
 	if error != nil {
-		fmt.Println(tAG_admin, "failed to prepare statement error:", error)
+		logger.Error(tAG_admin, "failed to prepare statement error:", error)
 		return nil, error
 	}
 	defer stmt.Close()
 	rowdata, error := stmt.Query(pageSize*(pageNo-1),pageSize)
-	fmt.Println(tAG_admin, utils.RunFuncName(), sql,pageSize*(pageNo-1),pageSize)
+	logger.Info(tAG_admin, utils.RunFuncName(), sql,pageSize*(pageNo-1),pageSize)
 	if error != nil {
-		fmt.Println("failed to Exec error:", error)
+		logger.Error("failed to Exec error:", error)
 		return nil, error
 	}
 	return rowdata,nil
@@ -137,11 +137,11 @@ func GetCountByTableName(tablename string ) (count int64) {
 	stmt, error := mysql.DbConnect().Prepare(selectCountByTable+tablename)
 	defer stmt.Close()
 	if error != nil {
-		fmt.Println(tAG_admin, "failed to prepare statement error:", error)
+		logger.Error(tAG_admin, "failed to prepare statement error:", error)
 		return 0
 	}
 	//result, err := stmt.Query(pid, uid, lastid)
-	fmt.Println(tAG_admin, utils.RunFuncName(), selectCountByTable+tablename)
+	logger.Info(tAG_admin, utils.RunFuncName(), selectCountByTable+tablename)
 	result, err := stmt.Query()
 	defer result.Close()
 	if err != nil {

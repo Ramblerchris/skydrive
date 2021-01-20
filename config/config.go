@@ -6,6 +6,7 @@ import (
 )
 
 const (
+	Debug    = true
 	USER_NAME    = "root"
 	PASS_WORD    = "nihao@123456"
 	HOST         = "localhost"
@@ -41,6 +42,8 @@ const (
 	SaveFileRoot           = "temp"
 	SaveFileRoot_thumbnail = "thumbnail"
 	Thumbnail_Quality      = 40
+	Log_FILE_PATH      = "temp/log/"
+	LOG_FILE_NAME      = "logfile.log"
 )
 
 func GetDataSourceName() string {

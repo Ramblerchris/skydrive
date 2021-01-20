@@ -4,6 +4,7 @@ package media
 import (
 	"fmt"
 	"github.com/nfnt/resize"
+	"github.com/skydrive/logger"
 	"io"
 	"os"
 	"log"
@@ -28,7 +29,7 @@ func imageCompress(
 	file_origin, err := getDecodeFile()
 	defer file_origin.Close()
 	if err != nil {
-		fmt.Println("os.Open(file)错误");
+		logger.Info("os.Open(file)错误");
 		log.Fatal(err)
 		return false
 	}
@@ -38,7 +39,7 @@ func imageCompress(
 	/** 读取尺寸 */
 	temp, err = getReadSizeFile()
 	if err != nil {
-		fmt.Println("os.Open(temp)");
+		logger.Info("os.Open(temp)");
 		log.Fatal(err)
 		return false
 	}
@@ -49,38 +50,38 @@ func imageCompress(
 		typeImage = 1
 		origin, err = jpeg.Decode(file_origin)
 		if err != nil {
-			fmt.Println("jpeg.Decode(file_origin)");
+			logger.Info("jpeg.Decode(file_origin)");
 			log.Fatal(err)
 			return false
 		}
 		temp, err = getReadSizeFile()
 		if err != nil {
-			fmt.Println("os.Open(temp)");
+			logger.Info("os.Open(temp)");
 			log.Fatal(err)
 			return false
 		}
 		config,err = jpeg.DecodeConfig(temp);
 		if err != nil {
-			fmt.Println("jpeg.DecodeConfig(temp)");
+			logger.Info("jpeg.DecodeConfig(temp)");
 			return false
 		}
 	}else if format=="png" {
 		typeImage = 0
 		origin, err = png.Decode(file_origin)
 		if err != nil {
-			fmt.Println("png.Decode(file_origin)");
+			logger.Info("png.Decode(file_origin)");
 			log.Fatal(err)
 			return false
 		}
 		temp, err = getReadSizeFile()
 		if err != nil {
-			fmt.Println("os.Open(temp)");
+			logger.Info("os.Open(temp)");
 			log.Fatal(err)
 			return false
 		}
 		config,err = png.DecodeConfig(temp);
 		if err != nil {
-			fmt.Println("png.DecodeConfig(temp)");
+			logger.Info("png.DecodeConfig(temp)");
 			return false
 		}
 	}
@@ -98,13 +99,13 @@ func imageCompress(
 	if typeImage==0 {
 		err = png.Encode(file_out, canvas)
 		if err!=nil {
-			fmt.Println("压缩图片失败");
+			logger.Info("压缩图片失败");
 			return false
 		}
 	}else{
 		err = jpeg.Encode(file_out, canvas, &jpeg.Options{Quality})
 		if err!=nil {
-			fmt.Println("压缩图片失败");
+			logger.Info("压缩图片失败");
 			return false
 		}
 	}
@@ -146,9 +147,9 @@ func getFilelist(path string) {
 				inputArgs.Quality,
 				inputArgs.Width,
 				format) {
-				fmt.Println("生成缩略图失败")
+				logger.Info("生成缩略图失败")
 			}else{
-				fmt.Println("生成缩略图成功 "+outputPath)
+				logger.Info("生成缩略图成功 "+outputPath)
 			}
 		}
 		return nil
@@ -168,7 +169,7 @@ func isPictureFormat(path string) (string,string,string) {
 	mapRule["jpg"]  = 1
 	mapRule["png"]  = 1
 	mapRule["jpeg"] = 1
-	// fmt.Println(temp[1]+"---")
+	// logger.Info(temp[1]+"---")
 	/** 添加其他格式 */
 	if mapRule[temp[1]] == 1  {
 		println(temp[1])
@@ -201,7 +202,7 @@ func execute()  {
 	if pathTemp == "" {
 		/** 目录 */
 		/** 如果输入目录，那么是批量 */
-		fmt.Println("开始批量压缩...")
+		logger.Info("开始批量压缩...")
 		rs := []rune(inputArgs.LocalPath)
 		end := len(rs)
 		substr := string(rs[end-1:end])
@@ -217,11 +218,11 @@ func execute()  {
 			inputArgs.OutputPath = string(rs[0:endIndex])+"/LghImageCompress/";
 		}
 		getFilelist(inputArgs.LocalPath)
-		fmt.Println("图片保存在文件夹 "+inputArgs.OutputPath)
+		logger.Info("图片保存在文件夹 "+inputArgs.OutputPath)
 	}else{
 		/** 单个 */
 		/** 如果输入文件，那么是单个，允许自定义路径 */
-		fmt.Println("开始单张压缩...") //C:\Users\lzq\Desktop\Apk.jpg 75 200
+		logger.Info("开始单张压缩...") //C:\Users\lzq\Desktop\Apk.jpg 75 200
 		inputArgs.OutputPath = top+"_compress."+format
 		if !imageCompress(
 			func() (io.Reader,error){
@@ -234,9 +235,9 @@ func execute()  {
 			inputArgs.Quality,
 			inputArgs.Width,
 			format) {
-			fmt.Println("生成缩略图失败")
+			logger.Info("生成缩略图失败")
 		}else{
-			fmt.Println("生成缩略图成功 "+inputArgs.OutputPath)
+			logger.Info("生成缩略图成功 "+inputArgs.OutputPath)
 			finish()
 		}
 	}
@@ -265,7 +266,7 @@ func showTips()  {
 		if i == itemLen -1 {
 			fmt.Printf(tips[i])
 		}else{
-			fmt.Println(tips[i])
+			logger.Info(tips[i])
 		}
 	}
 }

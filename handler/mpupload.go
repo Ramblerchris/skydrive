@@ -7,6 +7,7 @@ import (
 	"github.com/skydrive/config"
 	"github.com/skydrive/db"
 	"github.com/skydrive/handler/cache"
+	"github.com/skydrive/logger"
 	"github.com/skydrive/response"
 	"github.com/skydrive/utils"
 	"math"
@@ -26,7 +27,7 @@ func InitMultipartUploadHandler(w http.ResponseWriter, r *http.Request, utoken *
 	filename := r.FormValue("filename")
 	filesize, error := strconv.Atoi(r.FormValue("filesize"))
 	pid, _ := strconv.ParseInt(r.FormValue("pid"), 10, 64)
-	println("aaa", error, filesha1)
+	logger.Info("aaa", error, filesha1)
 	if len(filesha1) == 0 || filesha1 == "" {
 		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.FormValueError)
 		return
@@ -59,7 +60,7 @@ func InitMultipartUploadHandler(w http.ResponseWriter, r *http.Request, utoken *
 //分块上传部分
 func UploadMultipartHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
-	fmt.Println(r.Method)
+	logger.Info(r.Method)
 	if r.Method != "POST" {
 		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "bad request")
 		return
@@ -129,7 +130,7 @@ func FinishMultipartUploadHandler(w http.ResponseWriter, r *http.Request, utoken
 		successCount := 0
 		countSum := 0
 		filename := ""
-		fmt.Println("result", result)
+		logger.Info("result", result)
 		for key, value := range result {
 			if strings.HasPrefix(key, "chunk_index") && value == "1" {
 				successCount++
@@ -145,7 +146,7 @@ func FinishMultipartUploadHandler(w http.ResponseWriter, r *http.Request, utoken
 				pids, _ = strconv.ParseInt(value, 10, 64)
 			}
 		}
-		fmt.Println(pids)
+		logger.Info(pids)
 		resultCode := config.Net_SuccessCode
 		errorMessage := "成功"
 		if countSum != successCount {

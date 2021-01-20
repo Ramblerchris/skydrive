@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	mysql "github.com/skydrive/db/mysqlconn"
+	"github.com/skydrive/logger"
 	"github.com/skydrive/utils"
 	"strings"
 )
@@ -40,7 +41,7 @@ func SaveUserDirInfo(uid, pid int64, phone, dirName string) (bool, int64) {
 	//stmt ,error:=mysql.DbConnect().Prepare(saveFile)
 	stmt, error := mysql.DbConnect().Prepare(saveUFileDirinfo)
 	if error != nil {
-		fmt.Println(tAG_userfile, "failed to prepare statement error:", error.Error())
+		logger.Error(tAG_userfile, "failed to prepare statement error:", error.Error())
 		return false, -1
 	}
 	defer stmt.Close()
@@ -48,11 +49,11 @@ func SaveUserDirInfo(uid, pid int64, phone, dirName string) (bool, int64) {
 		pid = -1
 	}
 	//filetype 文件夹1 文件-1
-	fmt.Println(tAG_userfile, utils.RunFuncName(),"start")
+	logger.Info(tAG_userfile, utils.RunFuncName(),"start")
 	exec, error := stmt.Exec(uid, pid, phone, dirName, 1, 1)
-	fmt.Println(tAG_userfile, utils.RunFuncName(),saveUFileDirinfo,uid, pid, phone, dirName, 1, 1)
+	logger.Info(tAG_userfile, utils.RunFuncName(),saveUFileDirinfo,uid, pid, phone, dirName, 1, 1)
 	if error != nil {
-		fmt.Println(tAG_userfile, "failed to Exec error:", error)
+		logger.Error(tAG_userfile, "failed to Exec error:", error)
 		return false, -1
 	}
 	lastinsertId, _ := exec.LastInsertId()
@@ -60,7 +61,7 @@ func SaveUserDirInfo(uid, pid int64, phone, dirName string) (bool, int64) {
 	if rows, error := exec.RowsAffected(); error == nil {
 		if rows <= 0 {
 			//执行成功，但未添加，
-			fmt.Printf(tAG_userfile, "failed with hash has been upload", error)
+			logger.Error(tAG_userfile, "failed with hash has been upload", error)
 			return false, -1
 		}
 	}
@@ -71,25 +72,25 @@ func SaveUserDirInfo(uid, pid int64, phone, dirName string) (bool, int64) {
 func SaveUserFileInfo(uid, pid int64, phone, filehash, filename, location string, filesize int64, minitype string, ftype int, video_duration string) bool {
 	stmt, error := mysql.DbConnect().Prepare(saveUFileinfo)
 	if error != nil {
-		fmt.Println(tAG_userfile, "failed to prepare statement error:", error.Error())
+		logger.Error(tAG_userfile, "failed to prepare statement error:", error.Error())
 		return false
 	}
 	defer stmt.Close()
 	if pid == 0 {
 		pid = -1
 	}
-	fmt.Println(tAG_userfile, utils.RunFuncName(),"start")
+	logger.Info(tAG_userfile, utils.RunFuncName(),"start")
 
 	exec, error := stmt.Exec(uid, pid, phone, filehash, filename, filesize, location, 1, minitype, ftype, video_duration)
-	fmt.Println(tAG_userfile, utils.RunFuncName(), saveUFileinfo,uid, pid, phone, filehash, filename, filesize, location, 1, minitype, ftype, video_duration)
+	logger.Info(tAG_userfile, utils.RunFuncName(), saveUFileinfo,uid, pid, phone, filehash, filename, filesize, location, 1, minitype, ftype, video_duration)
 	if error != nil {
-		fmt.Println(tAG_userfile, "failed to Exec error:", error)
+		logger.Error(tAG_userfile, "failed to Exec error:", error)
 		return false
 	}
 	if rows, error := exec.RowsAffected(); error == nil {
 		if rows <= 0 {
 			//执行成功，但未添加，
-			fmt.Printf(tAG_userfile, "failed with hash:%s has been upload", error)
+			logger.Error(tAG_userfile, "failed with hash:%s has been upload", error)
 			return false
 		}
 	}
@@ -100,21 +101,21 @@ func SaveUserFileInfo(uid, pid int64, phone, filehash, filename, location string
 func UpdateUserFileInfoStatusBySha1(filehash string, filestatus int8) bool {
 	stmt, error := mysql.DbConnect().Prepare(updateUFileInfo)
 	if error != nil {
-		fmt.Println(tAG_userfile, "failed to prepare statement error:", error.Error())
+		logger.Error(tAG_userfile, "failed to prepare statement error:", error.Error())
 		return false
 	}
-	fmt.Println(tAG_userfile, utils.RunFuncName(),"start")
+	logger.Info(tAG_userfile, utils.RunFuncName(),"start")
 	defer stmt.Close()
 	exec, error := stmt.Exec(filestatus, filehash)
-	fmt.Println(tAG_userfile, utils.RunFuncName(), updateUFileInfo)
+	logger.Info(tAG_userfile, utils.RunFuncName(), updateUFileInfo)
 	if error != nil {
-		fmt.Println(tAG_userfile, "failed Exec error:", error)
+		logger.Error(tAG_userfile, "failed Exec error:", error)
 		return false
 	}
 	if rows, error := exec.RowsAffected(); error == nil {
 		if rows <= 0 {
 			//执行成功，修改未成功，
-			fmt.Printf(tAG_userfile, "failed with hash:%s has been upload", error)
+			logger.Error(tAG_userfile, "failed with hash:%s has been upload", error)
 			return false
 		}
 	}
@@ -125,17 +126,17 @@ func UpdateUserFileInfoStatusBySha1(filehash string, filestatus int8) bool {
 func GetUserDirInfoById(id int64) (*TableUserFile, error) {
 	stmt, error := mysql.DbConnect().Prepare(selectUFileByid)
 	if error != nil {
-		fmt.Println(tAG_userfile, "failed to prepare statement error:", error)
+		logger.Error(tAG_userfile, "failed to prepare statement error:", error)
 		return nil, error
 	}
 	defer stmt.Close()
-	fmt.Println(tAG_userfile, utils.RunFuncName(), selectUFileByid)
+	logger.Info(tAG_userfile, utils.RunFuncName(), selectUFileByid)
 	tfile := TableUserFile{}
 	row := stmt.QueryRow(id)
 	error = row.Scan(
 		&tfile.Id, &tfile.PId, &tfile.Uid, &tfile.Phone, &tfile.FileHash, &tfile.FileHash_Pre, &tfile.FileName, &tfile.FileSize, &tfile.FileLocation, &tfile.Create_at, &tfile.Update_at, &tfile.Filetype, &tfile.Minitype, &tfile.Ftype, &tfile.Video_duration)
 	if error != nil {
-		fmt.Println(tAG_userfile, "failed to QueryRow error:", error)
+		logger.Error(tAG_userfile, "failed to QueryRow error:", error)
 		return nil, error
 	}
 	return &tfile, nil
@@ -145,17 +146,17 @@ func GetUserDirInfoById(id int64) (*TableUserFile, error) {
 func GetUserFileMetaByPidUidSha1(filehash string, uid, pid int64) (*TableUserFile, error) {
 	stmt, error := mysql.DbConnect().Prepare(selectUFileByUidAndPidAndSha1)
 	if error != nil {
-		fmt.Println(tAG_userfile, "failed to prepare statement error:", error)
+		logger.Error(tAG_userfile, "failed to prepare statement error:", error)
 		return nil, error
 	}
 	defer stmt.Close()
 	tfile := TableUserFile{}
 	row := stmt.QueryRow(filehash, uid, pid)
-	fmt.Println(tAG_userfile, utils.RunFuncName(), selectUFileByUidAndPidAndSha1,filehash, uid, pid)
+	logger.Info(tAG_userfile, utils.RunFuncName(), selectUFileByUidAndPidAndSha1,filehash, uid, pid)
 	error = row.Scan(
 		&tfile.Id, &tfile.PId, &tfile.Uid, &tfile.Phone, &tfile.FileHash, &tfile.FileHash_Pre, &tfile.FileName, &tfile.FileSize, &tfile.FileLocation, &tfile.Create_at, &tfile.Update_at, &tfile.Filetype, &tfile.Minitype, &tfile.Ftype, &tfile.Video_duration)
 	if error != nil {
-		fmt.Println(tAG_userfile, "failed to QueryRow error:", error)
+		logger.Error(tAG_userfile, "failed to QueryRow error:", error)
 		return nil, error
 	}
 	return &tfile, nil
@@ -165,17 +166,17 @@ func GetUserFileMetaByPidUidSha1(filehash string, uid, pid int64) (*TableUserFil
 func GetUserFileInfoByUidSha1(filehash string, uid int64) (*TableUserFile, error) {
 	stmt, error := mysql.DbConnect().Prepare(selectUFileBySha1)
 	if error != nil {
-		fmt.Println(tAG_userfile, "failed to prepare statement error:", error)
+		logger.Error(tAG_userfile, "failed to prepare statement error:", error)
 		return nil, error
 	}
 	defer stmt.Close()
-	fmt.Println(tAG_userfile, utils.RunFuncName(),selectUFileBySha1)
+	logger.Info(tAG_userfile, utils.RunFuncName(),selectUFileBySha1)
 	tfile := TableUserFile{}
 	row := stmt.QueryRow(filehash, uid)
 	error = row.Scan(
 		&tfile.Id, &tfile.PId, &tfile.Uid, &tfile.Phone, &tfile.FileHash, &tfile.FileHash_Pre, &tfile.FileName, &tfile.FileSize, &tfile.FileLocation, &tfile.Create_at, &tfile.Update_at, &tfile.Filetype, &tfile.Minitype, &tfile.Ftype, &tfile.Video_duration)
 	if error != nil {
-		fmt.Println(tAG_userfile, "failed to QueryRow error:", error)
+		logger.Error(tAG_userfile, "failed to QueryRow error:", error)
 		return nil, error
 	}
 	return &tfile, nil
@@ -185,15 +186,15 @@ func GetUserFileInfoByUidSha1(filehash string, uid int64) (*TableUserFile, error
 func GetUserDirListByUidPidDirName(uid, pid int64, filename string) (tableUserFile []TableUserFile, err error) {
 	stmt, error := mysql.DbConnect().Prepare(selectUFileByUidAndPidAndFileName)
 	if error != nil {
-		fmt.Println(tAG_userfile, "failed to prepare statement error:", error)
+		logger.Error(tAG_userfile, "failed to prepare statement error:", error)
 		return nil, error
 	}
 	defer stmt.Close()
 	rowdata, error := stmt.Query(uid, pid, filename)
 	defer  rowdata.Close()
-	fmt.Println(tAG_userfile, utils.RunFuncName(), selectUFileByUidAndPidAndFileName, uid, pid, filename)
+	logger.Info(tAG_userfile, utils.RunFuncName(), selectUFileByUidAndPidAndFileName, uid, pid, filename)
 	if error != nil {
-		fmt.Println("failed to Exec error:", error)
+		logger.Error("failed to Exec error:", error)
 		return tableUserFile, error
 	}
 	tableUserFile = make([]TableUserFile, 0)
@@ -202,7 +203,7 @@ func GetUserDirListByUidPidDirName(uid, pid int64, filename string) (tableUserFi
 		error = rowdata.Scan(
 			&tfile.Id, &tfile.PId, &tfile.Uid, &tfile.Phone, &tfile.FileHash, &tfile.FileHash_Pre, &tfile.FileName, &tfile.FileSize, &tfile.FileLocation, &tfile.Create_at, &tfile.Update_at, &tfile.Filetype, &tfile.Minitype, &tfile.Ftype, &tfile.Video_duration)
 		if error != nil {
-			fmt.Println(tAG_userfile, "failed to Query error:", error)
+			logger.Error(tAG_userfile, "failed to Query error:", error)
 			continue
 		}
 		tableUserFile = append(tableUserFile, tfile)
@@ -215,7 +216,7 @@ func GetUserDirFileListByUidPid(uid, pid int64, pageNo, pageSize, lastid int64) 
 	//目前忽略了文件类型
 	stmt, error := mysql.DbConnect().Prepare(selectUFileByUidAndPidPage)
 	if error != nil {
-		fmt.Println(tAG_userfile, "failed to prepare statement error:", error)
+		logger.Error(tAG_userfile, "failed to prepare statement error:", error)
 		return tableUserFile, error, 0
 	}
 	defer stmt.Close()
@@ -224,9 +225,9 @@ func GetUserDirFileListByUidPid(uid, pid int64, pageNo, pageSize, lastid int64) 
 	}
 	rowdata, error := stmt.Query(uid, pid, lastid, pageSize)
 	defer  rowdata.Close()
-	fmt.Println(tAG_userfile, utils.RunFuncName(), selectUFileByUidAndPidPage, uid, pid, lastid, pageSize)
+	logger.Info(tAG_userfile, utils.RunFuncName(), selectUFileByUidAndPidPage, uid, pid, lastid, pageSize)
 	if error != nil {
-		fmt.Println("failed to Exec error:", error)
+		logger.Error("failed to Exec error:", error)
 		return tableUserFile, error, 0
 	}
 	tableUserFile = make([]TableUserFile, 0)
@@ -235,7 +236,7 @@ func GetUserDirFileListByUidPid(uid, pid int64, pageNo, pageSize, lastid int64) 
 		error = rowdata.Scan(
 			&tfile.Id, &tfile.PId, &tfile.Uid, &tfile.Phone, &tfile.FileHash, &tfile.FileHash_Pre, &tfile.FileName, &tfile.FileSize, &tfile.FileLocation, &tfile.Create_at, &tfile.Update_at, &tfile.Filetype, &tfile.Minitype, &tfile.Ftype, &tfile.Video_duration)
 		if error != nil {
-			fmt.Println(tAG_userfile, "failed to Query error:", error)
+			logger.Error(tAG_userfile, "failed to Query error:", error)
 			continue
 		}
 		tableUserFile = append(tableUserFile, tfile)
@@ -249,14 +250,14 @@ func GetUserDirListCountByUidPid(uid, pid int64, lastid int64) (count int64) {
 	//目前忽略了文件类型
 	stmt, error := mysql.DbConnect().Prepare(selectUFileCountByUidPid)
 	if error != nil {
-		fmt.Println(tAG_userfile, "failed to prepare statement error:", error)
+		logger.Error(tAG_userfile, "failed to prepare statement error:", error)
 		return 0
 	}
 	defer stmt.Close()
 	//result, err := stmt.Query(pid, uid, lastid)
 	result, err := stmt.Query(pid, uid)
 	defer result.Close()
-	fmt.Println(tAG_userfile, utils.RunFuncName(), selectUFileCountByUidPid, pid, uid)
+	logger.Info(tAG_userfile, utils.RunFuncName(), selectUFileCountByUidPid, pid, uid)
 	if err != nil {
 		return 0
 	}
@@ -272,14 +273,14 @@ func GetUserDirListMaxCountByUid(uid, pid int64) (maxid int64) {
 	//目前忽略了文件类型
 	stmt, error := mysql.DbConnect().Prepare(selectMaxIdFromUserFile)
 	if error != nil {
-		fmt.Println(tAG_userfile, "failed to prepare statement error:", error)
+		logger.Error(tAG_userfile, "failed to prepare statement error:", error)
 		return 0
 	}
 	defer stmt.Close()
 	//result, err := stmt.Query(uid, lastid)
 	result, err := stmt.Query(pid, uid)
 	defer  result.Close()
-	fmt.Println(tAG_userfile, utils.RunFuncName(),selectMaxIdFromUserFile, pid, uid)
+	logger.Info(tAG_userfile, utils.RunFuncName(),selectMaxIdFromUserFile, pid, uid)
 	if err != nil {
 		return 0
 	}
@@ -295,14 +296,14 @@ func GetUserDirListCountByUid(uid, lastid int64) (count int64) {
 	//目前忽略了文件类型
 	stmt, error := mysql.DbConnect().Prepare(selectUFileCountByUid)
 	if error != nil {
-		fmt.Println(tAG_userfile, "failed to prepare statement error:", error)
+		logger.Error(tAG_userfile, "failed to prepare statement error:", error)
 		return 0
 	}
 	defer stmt.Close()
 	//result, err := stmt.Query(uid, lastid)
 	result, err := stmt.Query(uid)
 	defer result.Close()
-	fmt.Println(tAG_userfile, utils.RunFuncName(), selectUFileCountByUid, uid)
+	logger.Info(tAG_userfile, utils.RunFuncName(), selectUFileCountByUid, uid)
 	if err != nil {
 		return 0
 	}
@@ -317,15 +318,15 @@ func GetUserDirListCountByUid(uid, lastid int64) (count int64) {
 func GetUserFileListMetaByUid(uid int64, pageNo, pageSize, lastid int64) (tableUserFile []TableUserFile, err error, total int64) {
 	stmt, error := mysql.DbConnect().Prepare(selectUFileByUidPage)
 	if error != nil {
-		fmt.Println(tAG_userfile, "failed to prepare statement error:", error)
+		logger.Error(tAG_userfile, "failed to prepare statement error:", error)
 		return nil, error, 0
 	}
 	defer stmt.Close()
 	rowdata, error := stmt.Query(uid, lastid, pageSize)
 	defer rowdata.Close()
-	fmt.Println(tAG_userfile, utils.RunFuncName(), selectUFileByUidPage, uid, lastid, pageSize)
+	logger.Info(tAG_userfile, utils.RunFuncName(), selectUFileByUidPage, uid, lastid, pageSize)
 	if error != nil {
-		fmt.Println("failed to Exec error:", error)
+		logger.Error("failed to Exec error:", error)
 		return tableUserFile, error, 0
 	}
 	tableUserFile = make([]TableUserFile, 0)
@@ -334,7 +335,7 @@ func GetUserFileListMetaByUid(uid int64, pageNo, pageSize, lastid int64) (tableU
 		error = rowdata.Scan(
 			&tfile.Id, &tfile.PId, &tfile.Uid, &tfile.Phone, &tfile.FileHash, &tfile.FileHash_Pre, &tfile.FileName, &tfile.FileSize, &tfile.FileLocation, &tfile.Create_at, &tfile.Update_at, &tfile.Filetype, &tfile.Minitype, &tfile.Ftype, &tfile.Video_duration)
 		if error != nil {
-			fmt.Println(tAG_userfile, "failed to Query error:", error)
+			logger.Error(tAG_userfile, "failed to Query error:", error)
 			continue
 		}
 		tableUserFile = append(tableUserFile, tfile)
@@ -346,15 +347,15 @@ func GetUserFileListMetaByUid(uid int64, pageNo, pageSize, lastid int64) (tableU
 func GetUserFileAllSha1ListByUid(uid int64) (sha1s []string, err error) {
 	stmt, error := mysql.DbConnect().Prepare(selectUFileAllsha1s)
 	if error != nil {
-		fmt.Println(tAG_userfile, "failed to prepare statement error:", error)
+		logger.Error(tAG_userfile, "failed to prepare statement error:", error)
 		return nil, error
 	}
 	defer stmt.Close()
 	rowdata, error := stmt.Query(uid)
 	defer rowdata.Close()
-	fmt.Println(tAG_userfile, utils.RunFuncName(),selectUFileAllsha1s, uid)
+	logger.Info(tAG_userfile, utils.RunFuncName(),selectUFileAllsha1s, uid)
 	if error != nil {
-		fmt.Println("failed to Exec error:", error)
+		logger.Error("failed to Exec error:", error)
 		return sha1s, error
 	}
 	sha1s = make([]string, 0)
@@ -362,7 +363,7 @@ func GetUserFileAllSha1ListByUid(uid int64) (sha1s []string, err error) {
 		var sha1 string
 		error = rowdata.Scan(&sha1)
 		if error != nil {
-			fmt.Println(tAG_userfile, "failed to Query error:", error)
+			logger.Error(tAG_userfile, "failed to Query error:", error)
 			continue
 		}
 		if sha1 != "" {
@@ -378,15 +379,15 @@ func GetUserFileListBySha1s(uid int64, sha1s []string) (tableUserFile []TableUse
 	sprintf := fmt.Sprintf(selectUFileBysha1s, sha1sJoin)
 	stmt, error := mysql.DbConnect().Prepare(sprintf)
 	if error != nil {
-		fmt.Println(tAG_userfile, "failed to prepare statement error:", error)
+		logger.Error(tAG_userfile, "failed to prepare statement error:", error)
 		return nil, error
 	}
 	defer stmt.Close()
 	rowdata, error := stmt.Query(uid)
 	defer rowdata.Close()
-	fmt.Println(tAG_userfile, utils.RunFuncName(), sprintf, uid)
+	logger.Info(tAG_userfile, utils.RunFuncName(), sprintf, uid)
 	if error != nil {
-		fmt.Println("failed to Exec error:", error)
+		logger.Error("failed to Exec error:", error)
 		return tableUserFile, error
 	}
 	tableUserFile = make([]TableUserFile, 0)
@@ -395,7 +396,7 @@ func GetUserFileListBySha1s(uid int64, sha1s []string) (tableUserFile []TableUse
 		error = rowdata.Scan(
 			&tfile.Id, &tfile.PId, &tfile.Uid, &tfile.Phone, &tfile.FileHash, &tfile.FileHash_Pre, &tfile.FileName, &tfile.FileSize, &tfile.FileLocation, &tfile.Create_at, &tfile.Update_at, &tfile.Filetype, &tfile.Minitype, &tfile.Ftype, &tfile.Video_duration)
 		if error != nil {
-			fmt.Println(tAG_userfile, "failed to Query error:", error)
+			logger.Error(tAG_userfile, "failed to Query error:", error)
 			continue
 		}
 		tableUserFile = append(tableUserFile, tfile)
@@ -409,21 +410,21 @@ func UpdateUserFileStatusBySha1sUidPid(uid, pid int64, filestatus int8, sha1s []
 	sprintf := fmt.Sprintf(updateUFileStatus, sha1sJoin)
 	stmt, error := mysql.DbConnect().Prepare(sprintf)
 	if error != nil {
-		fmt.Println(tAG_userfile, "failed to prepare statement error:", error)
+		logger.Error(tAG_userfile, "failed to prepare statement error:", error)
 		return false
 	}
 	defer stmt.Close()
 	exec, error := stmt.Exec(filestatus, uid, pid)
-	fmt.Println(tAG_userfile, utils.RunFuncName(),sprintf, filestatus, uid, pid)
+	logger.Info(tAG_userfile, utils.RunFuncName(),sprintf, filestatus, uid, pid)
 
 	if error != nil {
-		fmt.Println(tAG_userfile, "failed Exec error:", error)
+		logger.Error(tAG_userfile, "failed Exec error:", error)
 		return false
 	}
 	if rows, error := exec.RowsAffected(); error == nil {
 		if rows <= 0 {
 			//执行成功，修改未成功，
-			fmt.Printf(tAG_userfile, "failed with hash:%s has been upload", error)
+			logger.Error(tAG_userfile, "failed with hash has been upload", error)
 			return false
 		}
 	}
@@ -436,21 +437,21 @@ func UpdateUserFileDirStatusByIds(ids []string, filestatus int8) bool {
 	sprintf := fmt.Sprintf(updateUFileDirsStatus, sha1sJoin)
 	stmt, error := mysql.DbConnect().Prepare(sprintf)
 	if error != nil {
-		fmt.Println(tAG_userfile, "failed to prepare statement error:", error)
+		logger.Error(tAG_userfile, "failed to prepare statement error:", error)
 		return false
 	}
 	defer stmt.Close()
 	exec, error := stmt.Exec(filestatus)
-	fmt.Println(tAG_userfile,  utils.RunFuncName(), updateUFileDirsStatus, filestatus)
+	logger.Info(tAG_userfile,  utils.RunFuncName(), updateUFileDirsStatus, filestatus)
 
 	if error != nil {
-		fmt.Println(tAG_userfile, "failed Exec error:", error)
+		logger.Error(tAG_userfile, "failed Exec error:", error)
 		return false
 	}
 	if rows, error := exec.RowsAffected(); error == nil {
 		if rows <= 0 {
 			//执行成功，修改未成功，
-			fmt.Printf(tAG_userfile, "failed with hash:%s has been upload\n", error)
+			logger.Error(tAG_userfile, "failed with hash has been upload\n", error)
 			return false
 		}
 	}
@@ -461,14 +462,14 @@ func UpdateUserFileDirStatusByIds(ids []string, filestatus int8) bool {
 func UpdateUserFileDirPreSha1ById(sha1 string, id int64) bool {
 	stmt, error := mysql.DbConnect().Prepare(updateUFileDirfile_sha1_pre)
 	if error != nil {
-		fmt.Println(tAG_userfile, "failed to prepare statement error:", error)
+		logger.Error(tAG_userfile, "failed to prepare statement error:", error)
 		return false
 	}
 	defer stmt.Close()
 	exec, error := stmt.Exec(sha1, id)
-	fmt.Println(tAG_userfile,  utils.RunFuncName(), updateUFileDirfile_sha1_pre, sha1, id)
+	logger.Info(tAG_userfile,  utils.RunFuncName(), updateUFileDirfile_sha1_pre, sha1, id)
 	if error != nil {
-		fmt.Println(tAG_userfile, "failed Exec error:", error)
+		logger.Error(tAG_userfile, "failed Exec error:", error)
 		return false
 	}
 	if rows, error := exec.RowsAffected(); error == nil {

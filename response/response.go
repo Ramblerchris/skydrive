@@ -16,14 +16,14 @@ func (response *FormatResponse) GetResponse(code int32, message string,data inte
 /*func (response *BaseResponse) GetResponseBytes()[]byte {
 	r, err := json.Marshal(response)
 	if err != nil {
-		log.Println(err)
+		logger.Println(err)
 	}
 	return r
 }
 func (response *BaseResponse) GetResponseStr()string {
 	r, err := json.Marshal(response)
 	if err != nil {
-		log.Println(err)
+		logger.Println(err)
 	}
 	return string(r)
 }

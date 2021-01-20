@@ -1,7 +1,7 @@
 package broadcast
 
 import (
-	"fmt"
+	"github.com/skydrive/logger"
 	"net"
 	"os"
 	"strconv"
@@ -13,12 +13,12 @@ func StartUDPServer(UDPListenPort int )  {
 	address :=  ":" + strconv.Itoa(UDPListenPort)
 	addr, err := net.ResolveUDPAddr("udp", address)
 	if err != nil {
-		fmt.Println(err)
+		logger.Error(err)
 		os.Exit(1)
 	}
 	conn, err := net.ListenUDP("udp", addr)
 	if err != nil {
-		fmt.Println(err)
+		logger.Error(err)
 		os.Exit(1)
 	}
 	defer conn.Close()
@@ -26,23 +26,23 @@ func StartUDPServer(UDPListenPort int )  {
 		data := make([]byte, 65507)
 		_, rAddr, err := conn.ReadFromUDP(data)
 		if err != nil {
-			fmt.Println(err)
+			logger.Error(err)
 			continue
 		}
 		strData := string(data)
-		fmt.Println("Received:", strData, rAddr)
+		logger.Info("Received:", strData, rAddr)
 		//指定客户端端口
 		//rAddr.Port=SEND_PORT
 		upper := strings.ToUpper(strData)
 		//10s 后给客户端再回复消息
 		//time.Sleep(time.Second*10)
-		fmt.Println("aaa:", len(upper))
+		logger.Info("aaa:", len(upper))
 		_, err = conn.WriteToUDP([]byte("pong"), rAddr)
 		if err != nil {
-			fmt.Println(err)
+			logger.Error(err)
 			continue
 		}
-		fmt.Println("Send:", upper)
+		logger.Info("Send:", upper)
 	}
 
 }

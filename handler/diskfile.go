@@ -6,6 +6,7 @@ import (
 	"github.com/skydrive/config"
 	"github.com/skydrive/db"
 	"github.com/skydrive/handler/cache"
+	"github.com/skydrive/logger"
 	"github.com/skydrive/response"
 	"github.com/skydrive/utils"
 	"io"
@@ -33,7 +34,7 @@ func GetDiskDirFileListByPidHandler(w http.ResponseWriter, r *http.Request, utok
 	if byuid, err, total := db.GetDiskFileListByUidPid(utoken.Uid.Int64, pid, pageNo, pageSize, lastId); err == nil {
 		metaFilelist := make([]beans.UserFile, 0)
 		for _, value := range byuid {
-			//fmt.Println("GetUserDirFileListByPidHandler", value)
+			//logger.Error("GetUserDirFileListByPidHandler", value)
 			metaFilelist = append(metaFilelist, *beans.GetUserFileObject(value))
 		}
 		nextPageId := lastId
@@ -107,8 +108,8 @@ func HitPassDiskBySha1Handler(w http.ResponseWriter, r *http.Request, utoken *db
 			return
 		}
 		if db.SaveDiskFileInfo(utoken.Uid.Int64, pid, utoken.Phone.String, metaInfo.Filesha1.String, metaInfo.FileName.String, metaInfo.FileLocation.String, metaInfo.FileSize.Int64, metaInfo.Minitype.String, int(metaInfo.Ftype.Int32), metaInfo.Video_duration.String) {
-			fmt.Println(" metaInfo: ", metaInfo)
-			fmt.Printf("保存文件 成功，大小 %d \n", metaInfo.FileSize)
+			logger.Info(" metaInfo: ", metaInfo)
+			logger.Info("保存文件 成功，大小 %d \n", metaInfo.FileSize)
 			//更新当前文件夹的缩略图最新
 			db.UpdateUserDiskFileDirPreSha1ById(metaInfo.Filesha1.String, pid)
 			if value, err := db.GetDiskFileInfoByUidSha1(sha1, utoken.Uid.Int64); err == nil {
@@ -145,7 +146,7 @@ func UploadDiskFileHandler(w http.ResponseWriter, r *http.Request, utoken *db.Ta
 		videoduration, _ := strconv.ParseInt(r.FormValue("videoduration"), 10, 64)
 		ftype := utils.GetFType(minetype, isVideo)
 		if error != nil {
-			fmt.Printf("获取文件出错 %s \n", error.Error())
+			logger.Error("获取文件出错 %s \n", error.Error())
 			//ReturnResponseCodeMessage(w, config.Net_ErrorCode, "internel server error ")
 			response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, fmt.Sprintf("获取文件出错 %s \n", error.Error()))
 			return
@@ -162,19 +163,19 @@ func UploadDiskFileHandler(w http.ResponseWriter, r *http.Request, utoken *db.Ta
 		metaInfo.FileLocation = path
 		newfile, error := os.Create(metaInfo.FileLocation)
 		if error != nil {
-			fmt.Printf("创建文件出错 %s \n", error.Error())
+			logger.Error("创建文件出错 %s \n", error.Error())
 			response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "file create error")
 			return
 		}
 		defer newfile.Close()
 		metaInfo.FileSize, error = io.Copy(newfile, file)
 		if error != nil {
-			fmt.Printf("保存文件出错 %s \n", error.Error())
+			logger.Error("保存文件出错 %s \n", error.Error())
 			response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "file copy error")
 			return
 		}
 		metaInfo.Filesha1 = utils.GetFileSha1(newfile)
-		//fmt.Println("file sha1", metaInfo.Filesha1)
+		//logger.Error("file sha1", metaInfo.Filesha1)
 		//todo 缓存添加
 		//cache.AddOrUpdateFileMeta(metaInfo)
 		//处理文件已经存在的情况
@@ -197,7 +198,7 @@ func UploadDiskFileHandler(w http.ResponseWriter, r *http.Request, utoken *db.Ta
 		if db.SaveDiskFileInfo(utoken.Uid.Int64, pid, utoken.Phone.String, metaInfo.Filesha1, metaInfo.FileName, metaInfo.FileLocation, metaInfo.FileSize, minetype, ftype, utils.GetTimeStr(int(videoduration))) {
 			//更新当前文件夹的缩略图最新
 			db.UpdateUserDiskFileDirPreSha1ById(metaInfo.Filesha1, pid)
-			fmt.Println(" metaInfo: ", metaInfo)
+			logger.Info(" metaInfo: ", metaInfo)
 			response.ReturnResponse(w, config.Net_SuccessCode, config.Success, &metaInfo)
 		} else {
 			response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.SaveFileError)

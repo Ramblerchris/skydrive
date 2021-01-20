@@ -6,6 +6,7 @@ import (
 	"github.com/skydrive/config"
 	"github.com/skydrive/db"
 	"github.com/skydrive/handler/cache"
+	"github.com/skydrive/logger"
 	"github.com/skydrive/response"
 	"github.com/skydrive/utils"
 	"io"
@@ -199,7 +200,7 @@ func UpdataUploadUserPhotoHandler(w http.ResponseWriter, r *http.Request, utoken
 			return
 		}
 		metaInfo.Filesha1 = utils.GetFileSha1(newfile)
-		fmt.Println("file sha1", metaInfo.Filesha1)
+		logger.Info("file sha1", metaInfo.Filesha1)
 		//todo 缓存添加
 		//cache.AddOrUpdateFileMeta(metaInfo)
 		//处理文件已经存在的情况
@@ -215,7 +216,7 @@ func UpdataUploadUserPhotoHandler(w http.ResponseWriter, r *http.Request, utoken
 
 		//文件表已经插入成功,再插入用户文件表
 		if db.UpdateUserPhotoByUid(metaInfo.FileLocation, metaInfo.Filesha1, utoken.Uid.Int64) {
-			fmt.Println(" metaInfo: ", metaInfo)
+			logger.Info(" metaInfo: ", metaInfo)
 			response.ReturnResponse(w, config.Net_SuccessCode, "file save success", &metaInfo)
 		} else {
 			response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "用户文件保存失败")

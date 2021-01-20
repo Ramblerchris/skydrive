@@ -1,8 +1,8 @@
 package broadcast
 
 import (
-	"fmt"
 	"github.com/skydrive/config"
+	"github.com/skydrive/logger"
 	"net"
 	"os"
 	"strconv"
@@ -17,12 +17,12 @@ func StartUDPServerV2(UDPListenPort int) {
 	address := ":" + strconv.Itoa(UDPListenPort)
 	addr, err := net.ResolveUDPAddr("udp", address)
 	if err != nil {
-		fmt.Println(err)
+		logger.Error(err)
 		os.Exit(1)
 	}
 	conn, err := net.ListenUDP("udp", addr)
 	if err != nil {
-		fmt.Println(err)
+		logger.Error(err)
 		os.Exit(1)
 	}
 	defer conn.Close()
@@ -37,11 +37,11 @@ func dealRead(conn *net.UDPConn) {
 	data := make([]byte, 65507)
 	n, rAddr, err := conn.ReadFromUDP(data)
 	if err != nil {
-		fmt.Println(err)
+		logger.Error(err)
 	}
 
 	strData := string(data[:n])
-	fmt.Println("Received:", strData, rAddr)
+	logger.Info("Received:", strData, rAddr)
 	//指定客户端端口
 	upper := strings.ToUpper(strData)
 	//10s 后给客户端再回复消息
@@ -49,8 +49,8 @@ func dealRead(conn *net.UDPConn) {
 	rAddr.Port=config.UdpServerSendport
 	_, err = conn.WriteToUDP([]byte("pong "+upper), rAddr)
 	if err != nil {
-		fmt.Println(err)
+		logger.Error(err)
 	}
-	fmt.Println("Send:", upper)
+	logger.Info("Send:", upper)
 	<-connlist
 }

@@ -32,8 +32,8 @@ func ScaleImageQuality(p string, target string,quality int ) (isSuccess bool) {
 	}
 
 	buf := bytes.Buffer{}
-	fmt.Println(s)
-	fmt.Println(strings.TrimSuffix(filepath.Base(open.Name()), filepath.Ext(open.Name())))
+	//logger.Info(s)
+	//logger.Info(strings.TrimSuffix(filepath.Base(open.Name()), filepath.Ext(open.Name())))
 	//suffix := strings.TrimSuffix(filepath.Base(open.Name()), filepath.Ext(open.Name()))
 
 	if s == "jpg" || s == "jpeg" {

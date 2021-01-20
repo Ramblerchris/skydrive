@@ -6,6 +6,7 @@ import (
 	"github.com/skydrive/config"
 	"github.com/skydrive/db"
 	"github.com/skydrive/handler/cache"
+	"github.com/skydrive/logger"
 	"github.com/skydrive/response"
 	"github.com/skydrive/utils"
 	"io"
@@ -28,7 +29,7 @@ func GetUserFileListByUidHandler(w http.ResponseWriter, r *http.Request, utoken 
 	if byuid, err ,total := db.GetUserFileListMetaByUid(utoken.Uid.Int64,pageNo,pageSize,lastId); err == nil {
 		metaFilelist := make([]beans.UserFile, 0)
 		for _, value := range byuid {
-			//fmt.Println("GetUserFileListByUidHandler",value)
+			//logger.Info("GetUserFileListByUidHandler",value)
 			metaFilelist = append(metaFilelist, *beans.GetUserFileObject(value))
 		}
 		nextPageId:=lastId
@@ -60,7 +61,7 @@ func GetUserDirFileListByPidHandler(w http.ResponseWriter, r *http.Request, utok
 	if byuid, err,total := db.GetUserDirFileListByUidPid(utoken.Uid.Int64, pid,pageNo,pageSize,lastId); err == nil {
 		metaFilelist := make([]beans.UserFile, 0)
 		for _, value := range byuid {
-			//fmt.Println("GetUserDirFileListByPidHandler", value)
+			//logger.Info("GetUserDirFileListByPidHandler", value)
 			metaFilelist = append(metaFilelist, *beans.GetUserFileObject(value))
 		}
 		nextPageId:=lastId
@@ -87,7 +88,7 @@ func GetSha1ListIsExistByUidHandler(w http.ResponseWriter, r *http.Request, utok
 		if byuid, err := db.GetUserFileListBySha1s(utoken.Uid.Int64, split); err == nil {
 			metaFilelist := make([]beans.UserFile, 0)
 			for _, value := range byuid {
-				//fmt.Println("GetUserDirFileListByPidHandler", value)
+				//logger.Info("GetUserDirFileListByPidHandler", value)
 				metaFilelist = append(metaFilelist, *beans.GetUserFileObject(value))
 			}
 			response.ReturnResponse(w, config.Net_SuccessCode, "get file success ", metaFilelist)
@@ -189,8 +190,8 @@ func HitPassBySha1Handler(w http.ResponseWriter, r *http.Request, utoken *db.Tab
 			return
 		}
 		if db.SaveUserFileInfo(utoken.Uid.Int64, pid, utoken.Phone.String, metaInfo.Filesha1.String, metaInfo.FileName.String, metaInfo.FileLocation.String, metaInfo.FileSize.Int64, metaInfo.Minitype.String, int(metaInfo.Ftype.Int32), metaInfo.Video_duration.String) {
-			fmt.Println(" metaInfo: ", metaInfo)
-			fmt.Printf("保存文件 成功，大小 %d \n", metaInfo.FileSize)
+			logger.Info(" metaInfo: ", metaInfo)
+			logger.Info("保存文件 成功，大小 %d \n", metaInfo.FileSize)
 			//更新当前文件夹的缩略图最新
 			db.UpdateUserFileDirPreSha1ById(metaInfo.Filesha1.String, pid)
 			if value, err := db.GetUserFileInfoByUidSha1(sha1, utoken.Uid.Int64); err == nil {
@@ -251,12 +252,12 @@ func UploadUserFileHandler(w http.ResponseWriter, r *http.Request, utoken *db.Ta
 		defer newfile.Close()
 		metaInfo.FileSize, error = io.Copy(newfile, file)
 		if error != nil {
-			fmt.Printf("保存文件出错 %s \n", error.Error())
+			logger.Info("保存文件出错 %s \n", error.Error())
 			response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "file copy error")
 			return
 		}
 		metaInfo.Filesha1 = utils.GetFileSha1(newfile)
-		//fmt.Println("file sha1", metaInfo.Filesha1)
+		//logger.Info("file sha1", metaInfo.Filesha1)
 		//todo 缓存添加
 		//cache.AddOrUpdateFileMeta(metaInfo)
 		//处理文件已经存在的情况
@@ -279,7 +280,7 @@ func UploadUserFileHandler(w http.ResponseWriter, r *http.Request, utoken *db.Ta
 		if db.SaveUserFileInfo(utoken.Uid.Int64, pid, utoken.Phone.String, metaInfo.Filesha1, metaInfo.FileName, metaInfo.FileLocation, metaInfo.FileSize, minetype, ftype, utils.GetTimeStr(int(videoduration))) {
 			//更新当前文件夹的缩略图最新
 			db.UpdateUserFileDirPreSha1ById(metaInfo.Filesha1, pid)
-			fmt.Println(" metaInfo: ", metaInfo)
+			logger.Info(" metaInfo: ", metaInfo)
 			response.ReturnResponse(w, config.Net_SuccessCode, config.Success, &metaInfo)
 		} else {
 			response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.SaveFileError)

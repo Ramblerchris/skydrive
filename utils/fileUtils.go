@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"github.com/skydrive/logger"
 	"hash/crc32"
 	"io/ioutil"
 	"math"
@@ -13,7 +14,7 @@ import (
 func FileMerge(chunkpath string, newfile string) bool {
 	dirfiles, _ := ioutil.ReadDir(chunkpath)
 	err := os.Remove(newfile)
-	fmt.Println(err)
+	logger.Info(err)
 	fill, error := os.OpenFile(newfile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, os.ModePerm)
 	if error != nil {
 		println(error)
@@ -61,7 +62,7 @@ func PathExists(path string) (bool, error) {
 
 func getDirPath(rootpath string, data string) string {
 	code := HashCode(data)
-	fmt.Println("file sha1", data,"code ",code)
+	logger.Info("file sha1", data,"code ",code)
 	return fmt.Sprintf("%s/%d/%d/%d/%d/%d", rootpath, code&0xf, (code>>4)&0xf, (code>>8)&0xf, (code>>12)&0xf, (code>>16)&0xf)
 }
 

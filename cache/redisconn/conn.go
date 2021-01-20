@@ -2,9 +2,9 @@ package redisconn
 
 import (
 	"context"
-	"fmt"
 	"github.com/go-redis/redis/v8"
 	_ "github.com/go-redis/redis/v8"
+	"github.com/skydrive/logger"
 )
 
 var (
@@ -23,9 +23,9 @@ func init() {
 
 	pong, err := client.Ping(CTX).Result()
 	if err == nil {
-		fmt.Println("redis client init  success", pong)
+		logger.Info("redis client init  success", pong)
 	} else {
-		fmt.Println("redis client init error", err)
+		logger.Error("redis client init error", err)
 	}
 }
 

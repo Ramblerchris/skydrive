@@ -5,6 +5,7 @@ import (
 	"github.com/skydrive/config"
 	"github.com/skydrive/db"
 	"github.com/skydrive/handler/cache"
+	"github.com/skydrive/logger"
 	"github.com/skydrive/response"
 	"github.com/skydrive/utils"
 	"net/http"
@@ -22,7 +23,7 @@ func init() {
 
 func BuildEncodePwd(pwd string) string {
 	target := utils.GetStrMD5(pwd + config.Salt_MD5)
-	fmt.Printf("%s encode md5 %s\n", pwd, target)
+	logger.Info(fmt.Sprintf("%s encode md5 %s\n", pwd, target))
 	return target
 }
 
@@ -31,7 +32,7 @@ type HandlerFuncAuth func(http.ResponseWriter, *http.Request, *db.TableUToken)
 //测试网络是否连通，
 func CheckNetIsOkHandler(w http.ResponseWriter, r *http.Request) {
 	response.ReturnResponseCodeMessage(w, config.Net_SuccessCode, "连接成功")
-	fmt.Println(" CheckNetIsOkHandler :", " Now:", time.Now().UnixNano()/1e6)
+	logger.Info(" CheckNetIsOkHandler :", " Now:", time.Now().UnixNano()/1e6)
 }
 
 func getToken(r *http.Request) string {
@@ -45,7 +46,7 @@ func getToken(r *http.Request) string {
 func TokenCheckInterceptor(h HandlerFuncAuth) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("request URL", r.Method, r.RequestURI)
+		logger.Info("request URL", r.Method, r.RequestURI)
 
 		if r.Method == "OPTIONS" {
 			if origin := r.Header.Get("Origin"); origin != "" {
@@ -57,7 +58,7 @@ func TokenCheckInterceptor(h HandlerFuncAuth) http.HandlerFunc {
 			return
 		}
 		r.ParseForm()
-		//fmt.Println("Content-Type",contenttype)
+		//logger.Error("Content-Type",contenttype)
 		if r.Method == "POST" {
 			r.ParseMultipartForm(32 << 20)
 		}
@@ -92,11 +93,11 @@ func TokenCheckInterceptor(h HandlerFuncAuth) http.HandlerFunc {
 				tokenmap.WriteTokenMap(token, byToken)
 			}
 		} else {
-			fmt.Println(TAG, "缓存获取用户:", byToken)
+			logger.Info(TAG, "缓存获取用户:", byToken)
 		}
 		if byToken.User_token.String != "" {
 			//todo 判断过期时间
-			fmt.Println(token, " Expiretime :", byToken.Expiretime.Int64, " Now:", time.Now().UnixNano()/1e6)
+			logger.Info(token, " Expiretime :", byToken.Expiretime.Int64, " Now:", time.Now().UnixNano()/1e6)
 			if byToken.Expiretime.Int64 < time.Now().UnixNano()/1e6 {
 				tokenmap.DeleteTokenMap(token)
 				response.ReturnResponseCodeMessageHttpCode(w, http.StatusForbidden, config.Net_ErrorCode_Token_exprise, "token expired")

@@ -6,6 +6,7 @@ import (
 	"github.com/skydrive/cache/redisconn"
 	"github.com/skydrive/config"
 	"github.com/skydrive/handler"
+	"github.com/skydrive/logger"
 	"github.com/skydrive/media"
 	"github.com/skydrive/utils"
 	"net/http"
@@ -15,6 +16,7 @@ import (
 )
 
 func main() {
+	logger.Setup()
 	broadcast.InitUDP()
 	redisconn.GetRedisClient()
 	httpServer()
@@ -61,10 +63,9 @@ func httpServer() {
 	http.HandleFunc("/admin/allFileList", handler.TokenCheckInterceptor(handler.GetAllFileListHandler))
 	http.HandleFunc("/admin/allUserFileList", handler.TokenCheckInterceptor(handler.GetAllUserFileListHandler))
 
-
-	fmt.Printf("开始启动本地服务 地址为 %s \r\n", config.ServeLocation)
+	logger.Info(fmt.Sprintf("开始启动本地服务 地址为 %s \r\n", config.ServeLocation))
 	if error := http.ListenAndServe(config.ServeLocation, nil); error != nil {
-		fmt.Printf("启动错误 error:%s \r\n", error.Error())
+		logger.Error(fmt.Sprintf("启动错误 error:%s \r\n", error.Error()))
 	}
 }
 

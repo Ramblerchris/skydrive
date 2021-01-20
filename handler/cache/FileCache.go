@@ -1,9 +1,9 @@
 package cache
 
 import (
-	"fmt"
 	"github.com/skydrive/beans"
 	"github.com/skydrive/db"
+	"github.com/skydrive/logger"
 	"sync"
 )
 
@@ -49,11 +49,11 @@ func AddOrUpdateFileMeta(filemeta beans.File) {
 func GetFileMeta(sha1 string) (*beans.File, bool) {
 	if userinfo, isExist := filecache.ReadFileCache(sha1); isExist {
 		hitTargetCount++
-		fmt.Println(TAG, "文件缓存获取成功次数:", hitTargetCount, userinfo)
+		logger.Info(TAG, "文件缓存获取成功次数:", hitTargetCount, userinfo)
 		return &userinfo, true
 	}
 	//else {
-	//	fmt.Println(TAG, "缓存获取失败", userinfo)
+	//	logger.Error(TAG, "缓存获取失败", userinfo)
 	//}
 	if meta, err := db.GetFileInfoBySha1(sha1); err == nil {
 		userinfo := beans.GetFileObject(*meta)

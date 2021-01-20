@@ -1,7 +1,7 @@
 package beans
 
 import (
-	"fmt"
+	"github.com/skydrive/logger"
 )
 
 type MultiPartInfo struct {
@@ -68,6 +68,6 @@ type User struct {
 
 
 func (filemeta *UserFile) String() {
-	fmt.Printf("filesha1:%s filename:%s  fileSize: %d  Location: %s  UpdateAtTime: %s ", filemeta.Filesha1, filemeta.FileName, filemeta.FileSize, filemeta.FileLocation, filemeta.UpdateAtTime)
+	logger.Info("filesha1:%s filename:%s  fileSize: %d  Location: %s  UpdateAtTime: %s ", filemeta.Filesha1, filemeta.FileName, filemeta.FileSize, filemeta.FileLocation, filemeta.UpdateAtTime)
 }
 

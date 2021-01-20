@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/skydrive/config"
 	mysql "github.com/skydrive/db/mysqlconn"
+	"github.com/skydrive/logger"
 	"github.com/skydrive/utils"
 	"time"
 )
@@ -27,20 +28,20 @@ func (uToken TableUToken) String() string {
 func DeleteUserTokenByTid(tid int64) bool {
 	stmt, error := mysql.DbConnect().Prepare(deleteUToken)
 	if error != nil {
-		fmt.Println("failed to prepare statement error:", error.Error())
+		logger.Error("failed to prepare statement error:", error.Error())
 		return false
 	}
 	defer stmt.Close()
 	exec, error := stmt.Exec(tid)
-	fmt.Println(tAG_UserToken, utils.RunFuncName(),deleteUToken,tid)
+	logger.Info(tAG_UserToken, utils.RunFuncName(),deleteUToken,tid)
 	if error != nil {
-		fmt.Println("failed to Exec error:", error)
+		logger.Error("failed to Exec error:", error)
 		return false
 	}
 	if rows, error := exec.RowsAffected(); error == nil {
 		if rows <= 0 {
 			//执行成功，但未添加，
-			fmt.Println("failed  exec", error)
+			logger.Error("failed  exec", error)
 			return false
 		}
 	}
@@ -49,11 +50,11 @@ func DeleteUserTokenByTid(tid int64) bool {
 func GetUserTokenInfoByToken(token string) (utoken TableUToken, err error) {
 	stmt, error := mysql.DbConnect().Prepare(selectUTokenInfoByToken)
 	if error != nil {
-		fmt.Println("failed to prepare statement error:", error.Error())
+		logger.Error("failed to prepare statement error:", error.Error())
 		return utoken, error
 	}
 	defer stmt.Close()
-	fmt.Println(tAG_UserToken, utils.RunFuncName(), selectUTokenInfoByToken,token)
+	logger.Info(tAG_UserToken, utils.RunFuncName(), selectUTokenInfoByToken,token)
 	utoken = TableUToken{}
 	error = stmt.QueryRow(token).Scan(
 		&utoken.Tid,
@@ -63,25 +64,25 @@ func GetUserTokenInfoByToken(token string) (utoken TableUToken, err error) {
 		&utoken.Expiretime,
 	)
 	if error != nil {
-		fmt.Println("failed to QueryRow error:", error)
+		logger.Error("failed to QueryRow error:", error)
 		return utoken, error
 	}
-	fmt.Println("token data :",utoken)
+	logger.Info("token data :",utoken)
 	return utoken, nil
 }
 
 func GetUserTokenInfoListByUid(uid int32) (tokenlist []TableUToken, err error) {
 	stmt, error := mysql.DbConnect().Prepare(selectUTokenInfoByUId)
 	if error != nil {
-		fmt.Println("failed to prepare statement error:", error.Error())
+		logger.Error("failed to prepare statement error:", error.Error())
 		return tokenlist, error
 	}
 	defer stmt.Close()
 	rows, error := stmt.Query(uid)
-	fmt.Println(tAG_UserToken, utils.RunFuncName(), selectUTokenInfoByUId,uid)
+	logger.Info(tAG_UserToken, utils.RunFuncName(), selectUTokenInfoByUId,uid)
 
 	if error != nil {
-		fmt.Println("failed to Exec error:", error)
+		logger.Error("failed to Exec error:", error)
 		return tokenlist, error
 	}
 	tokenlist = make([]TableUToken, 0)
@@ -89,12 +90,12 @@ func GetUserTokenInfoListByUid(uid int32) (tokenlist []TableUToken, err error) {
 	for rows.Next() {
 		var utoken TableUToken
 		if error := rows.Scan(&utoken.Tid, &utoken.Uid, &utoken.Phone, &utoken.User_token); error != nil {
-			fmt.Println("error is", error)
+			logger.Error("error is", error)
 			continue
 		}
 		tokenlist = append(tokenlist, utoken)
 	}
-	fmt.Println("token list data", tokenlist)
+	logger.Info("token list data", tokenlist)
 	return tokenlist, nil
 }
 
@@ -102,7 +103,7 @@ func GetUserTokenInfoListByUid(uid int32) (tokenlist []TableUToken, err error) {
 func CreateUserTokenByUidPhone(uid int32, phone string) (token string, err error) {
 	stmt, error := mysql.DbConnect().Prepare(saveUToken)
 	if error != nil {
-		fmt.Println("failed to prepare statement error:", error.Error())
+		logger.Error("failed to prepare statement error:", error.Error())
 		return token, error
 	}
 	defer stmt.Close()
@@ -110,17 +111,17 @@ func CreateUserTokenByUidPhone(uid int32, phone string) (token string, err error
 	//毫秒
 	//haomiao := time.Now().AddDate(0, 0, 7).UnixNano()/1e6
 	haomiao := time.Now().Add(config.Token_ExpriseTime).UnixNano()/1e6
-	fmt.Println(" Expiretime :", haomiao)
+	logger.Info(" Expiretime :", haomiao)
 	exec, error := stmt.Exec(uid, phone, uuid, haomiao)
-	fmt.Println(tAG_UserToken, utils.RunFuncName(), saveUToken,uid, phone, uuid, haomiao)
+	logger.Info(tAG_UserToken, utils.RunFuncName(), saveUToken,uid, phone, uuid, haomiao)
 	if error != nil {
-		fmt.Println("failed to Exec error:", error)
+		logger.Error("failed to Exec error:", error)
 		return token, error
 	}
 	if rows, error := exec.RowsAffected(); error == nil {
 		if rows <= 0 {
 			//执行成功，但未添加，
-			fmt.Println("failed  exec", error)
+			logger.Error("failed  exec", error)
 			return token, error
 		}
 	}

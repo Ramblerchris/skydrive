@@ -1,8 +1,8 @@
 package db
 
 import (
-	"fmt"
 	mysql "github.com/skydrive/db/mysqlconn"
+	"github.com/skydrive/logger"
 	"github.com/skydrive/utils"
 )
 
@@ -17,20 +17,20 @@ const (
 )
 
 func (t *TableUser) String() {
-	fmt.Printf("Id:%s User_name:%s User_pwd :%s Email:%s Phone:%s Email_validated:%s Phone_validated:%s Signup_at :%s Last_active:%s Profile:%s Status:%s",t.Id,t.User_name,t.User_pwd,t.Email,t.Phone,t.Email_validated,t.Phone_validated,t.Signup_at,t.Last_active,t.Profile,t.Status)
+	logger.Info("Id:%s User_name:%s User_pwd :%s Email:%s Phone:%s Email_validated:%s Phone_validated:%s Signup_at :%s Last_active:%s Profile:%s Status:%s",t.Id,t.User_name,t.User_pwd,t.Email,t.Phone,t.Email_validated,t.Phone_validated,t.Signup_at,t.Last_active,t.Profile,t.Status)
 }
 
 func SaveUserInfo(phone string, password string, time string) bool {
 	stmt, error := mysql.DbConnect().Prepare(saveUserinfo)
 	if error != nil {
-		fmt.Println("failed to prepare statement error:", error.Error())
+		logger.Error("failed to prepare statement error:", error.Error())
 		return false
 	}
 	defer stmt.Close()
 	exec, error := stmt.Exec(password, phone, time, 1, phone)
-	fmt.Println(tAG_user,utils.RunFuncName(),saveUserinfo,password, phone, time, 1, phone)
+	logger.Info(tAG_user,utils.RunFuncName(),saveUserinfo,password, phone, time, 1, phone)
 	if error != nil {
-		fmt.Println("failed to Exec error:", error)
+		logger.Error("failed to Exec error:", error)
 		return false
 	}
 	if _, error := exec.RowsAffected(); error == nil {
@@ -42,7 +42,7 @@ func SaveUserInfo(phone string, password string, time string) bool {
 func GetUserInfoByPhone(phone string) (*TableUser, error) {
 	stmt, error := mysql.DbConnect().Prepare(selectUserInfo)
 	if error != nil {
-		fmt.Println("failed to prepare statement error:", error)
+		logger.Error("failed to prepare statement error:", error)
 		return nil, error
 	}
 	defer stmt.Close()
@@ -61,28 +61,28 @@ func GetUserInfoByPhone(phone string) (*TableUser, error) {
 		&tUser.Last_active,
 		&tUser.Profile,
 		&tUser.Status)
-	fmt.Println(tAG_user, utils.RunFuncName(), saveUserinfo,phone)
+	logger.Info(tAG_user, utils.RunFuncName(), saveUserinfo,phone)
 
 	if error != nil {
-		fmt.Println("failed to QueryRow error:", error)
+		logger.Error("failed to QueryRow error:", error)
 		return nil, error
 	}
-	fmt.Println("GetUserInfoByPhone:",tUser)
+	logger.Info("GetUserInfoByPhone:",tUser)
 	return &tUser, nil
 }
 
 func UpdateUserPhotoByUid(photoAddr string,filesha1 string, uid  int64) bool {
 	stmt, error := mysql.DbConnect().Prepare(updateUserPhoto)
 	if error != nil {
-		fmt.Println("failed to prepare statement error:", error)
+		logger.Error("failed to prepare statement error:", error)
 		return false
 	}
 	defer stmt.Close()
 	exec, error := stmt.Exec(photoAddr,filesha1, uid)
-	fmt.Println(tAG_user, utils.RunFuncName(), updateUserPhoto,photoAddr,filesha1, uid)
+	logger.Info(tAG_user, utils.RunFuncName(), updateUserPhoto,photoAddr,filesha1, uid)
 
 	if error != nil {
-		fmt.Println(tAG_user, "failed Exec error:", error)
+		logger.Error(tAG_user, "failed Exec error:", error)
 		return false
 	}
 	if _, error := exec.RowsAffected(); error == nil {
@@ -94,15 +94,15 @@ func UpdateUserPhotoByUid(photoAddr string,filesha1 string, uid  int64) bool {
 func UpdateUserNameByUid(userName string, uid  int64) bool {
 	stmt, error := mysql.DbConnect().Prepare(updateUserName)
 	if error != nil {
-		fmt.Println("failed to prepare statement error:", error)
+		logger.Error("failed to prepare statement error:", error)
 		return false
 	}
 	defer stmt.Close()
 	exec, error := stmt.Exec(userName, uid)
-	fmt.Println(tAG_user, utils.RunFuncName(), updateUserName,userName, uid)
+	logger.Info(tAG_user, utils.RunFuncName(), updateUserName,userName, uid)
 
 	if error != nil {
-		fmt.Println(tAG_user, "failed Exec error:", error)
+		logger.Error(tAG_user, "failed Exec error:", error)
 		return false
 	}
 	if _, error := exec.RowsAffected(); error == nil {
