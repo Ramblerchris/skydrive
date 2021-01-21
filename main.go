@@ -25,26 +25,16 @@ var (
 	GoVersion    string // Golang信息
 	Debug    ="true" // 是否为开发环境
 )
-// Version 版本信息
-func Version() {
-	logger.Infof("App Name:\t%s\n", AppName)
-	logger.Infof("App Version:\t%s\n", AppVersion)
-	logger.Infof("Build version:\t%s\n", BuildVersion)
-	logger.Infof("Build time:\t%s\n", BuildTime)
-	logger.Infof("Git revision:\t%s\n", GitRevision)
-	logger.Infof("Git branch:\t%s\n", GitBranch)
-	logger.Infof("Golang Version: %s\n", GoVersion)
-	logger.Infof("Debug : %s\n", Debug)
-}
 
 func main() {
 	config.Debug,_=strconv.ParseBool(Debug)
-	Version()
 	logger.Setup()
+	versionInfo()
 	broadcast.InitUDP()
 	redisconn.GetRedisClient()
 	httpServer()
 }
+
 
 func httpServer() {
 	http.HandleFunc("/user/checknet", handler.CheckNetIsOkHandler)
@@ -87,12 +77,25 @@ func httpServer() {
 	http.HandleFunc("/admin/allFileList", handler.TokenCheckInterceptor(handler.GetAllFileListHandler))
 	http.HandleFunc("/admin/allUserFileList", handler.TokenCheckInterceptor(handler.GetAllUserFileListHandler))
 
-	logger.Infof("开始启动本地服务 地址为 %s \r\n", config.ServeLocation)
+	logger.Infof("开始启动本地服务 地址为 %s ", config.ServeLocation)
 	if error := http.ListenAndServe(config.ServeLocation, nil); error != nil {
-		logger.Errorf("启动错误 error:%s \r\n", error.Error())
+		logger.Errorf("启动错误 error:%s ", error.Error())
 	}
 }
 
+// Version 版本信息
+func versionInfo() {
+	if len(AppName) != 0 && AppName != "" {
+		logger.Infof("App Name:\t %s", AppName)
+		logger.Infof("App Version:\t %s", AppVersion)
+		logger.Infof("Build version:\t %s", BuildVersion)
+		logger.Infof("Build time:\t %s", BuildTime)
+		logger.Infof("Git revision:\t %s", GitRevision)
+		logger.Infof("Git branch:\t %s", GitBranch)
+		logger.Infof("Golang Version: \t %s", GoVersion)
+		logger.Infof("Debug :\t %s", Debug)
+	}
+}
 
 
 
