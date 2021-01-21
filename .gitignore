@@ -9,6 +9,7 @@
 .externalNativeBuild
 /vendor/*
 /temp/*
+/output/*
 /thumbnail/*
 .idea
 *.exe
