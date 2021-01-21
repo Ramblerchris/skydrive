@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	Debug    = true
+	Debug    = false
 	USER_NAME    = "root"
 	PASS_WORD    = "nihao@123456"
 	HOST         = "localhost"

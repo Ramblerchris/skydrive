@@ -1,12 +1,14 @@
 package logger
+
 import (
 	"fmt"
-	"runtime"
-	"strings"
 	"github.com/sirupsen/logrus"
 	"github.com/skydrive/config"
+	"gopkg.in/natefinch/lumberjack.v2"
 	"os"
 	"path"
+	"runtime"
+	"strings"
 )
 var logger = logrus.New()
 
@@ -24,14 +26,28 @@ func Setup() {
 		if err1 != nil {
 			os.Create(logpath)
 		}
-		// 写入文件
-		src, err := os.OpenFile(logpath, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
-		if err != nil {
-			fmt.Println("err", err)
-		}
+		//// 写入文件
+		//src, err := os.OpenFile(logpath, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
+		//if err != nil {
+		//	fmt.Println("err", err)
+		//}
 		// 设置输出
-		logger.Out = src
-	}else{
+		//logger.Out = src
+		logfileconfig := &lumberjack.Logger{
+			// 日志输出文件路径
+			//Filename:   "/var/log/myapp/foo.log",
+			Filename: logpath,
+			// 日志文件最大 size, 单位是 MB
+			MaxSize: 200, // megabytes
+			// 历史日志保留的最大个数
+			MaxBackups: 300,
+			// 保留过期文件的最大时间间隔,单位是天
+			MaxAge: 28, //days
+			// 是否需要压缩滚动日志, 使用的 gzip 压缩
+			Compress: true, // disabled by default
+		}
+		logger.SetOutput(logfileconfig) //调用 logrus 的 SetOutput()函数
+	} else {
 		logger.SetOutput(os.Stdout)
 	}
 	// 设置日志级别
