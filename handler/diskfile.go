@@ -109,7 +109,7 @@ func HitPassDiskBySha1Handler(w http.ResponseWriter, r *http.Request, utoken *db
 		}
 		if db.SaveDiskFileInfo(utoken.Uid.Int64, pid, utoken.Phone.String, metaInfo.Filesha1.String, metaInfo.FileName.String, metaInfo.FileLocation.String, metaInfo.FileSize.Int64, metaInfo.Minitype.String, int(metaInfo.Ftype.Int32), metaInfo.Video_duration.String) {
 			logger.Info(" metaInfo: ", metaInfo)
-			logger.Info("保存文件 成功，大小 %d \n", metaInfo.FileSize)
+			logger.Infof("保存文件 成功，大小 %d ", metaInfo.FileSize)
 			//更新当前文件夹的缩略图最新
 			db.UpdateUserDiskFileDirPreSha1ById(metaInfo.Filesha1.String, pid)
 			if value, err := db.GetDiskFileInfoByUidSha1(sha1, utoken.Uid.Int64); err == nil {

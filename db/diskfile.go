@@ -90,7 +90,7 @@ func SaveDiskFileInfo(uid, pid int64, phone, filehash, filename, location string
 	if rows, error := exec.RowsAffected(); error == nil {
 		if rows <= 0 {
 			//执行成功，但未添加，
-			logger.Error(tAG_userDiskfile, "failed with hash:%s has been upload", error)
+			logger.Errorf(tAG_userDiskfile+"failed with hash:%s has been upload", error)
 			return false
 		}
 	}
@@ -115,7 +115,7 @@ func UpdateDiskUserInfoStatusBySha1(filehash string, filestatus int8) bool {
 	if rows, error := exec.RowsAffected(); error == nil {
 		if rows <= 0 {
 			//执行成功，修改未成功，
-			logger.Error(tAG_userDiskfile, "failed with hash:%s has been upload", error)
+			logger.Error(tAG_userDiskfile+"failed with hash:%s has been upload", error)
 			return false
 		}
 	}
@@ -365,7 +365,7 @@ func UpdateUserDiskFileStatusBySha1sUidPid(uid, pid int64, filestatus int8, sha1
 	if rows, error := exec.RowsAffected(); error == nil {
 		if rows <= 0 {
 			//执行成功，修改未成功，
-			logger.Error(tAG_userDiskfile, "failed with hash:%s has been upload", error)
+			logger.Error(tAG_userDiskfile+ "failed with hash:%s has been upload", error)
 			return false
 		}
 	}
@@ -395,7 +395,7 @@ func UpdateUserDiskFileDirStatusByIds(ids []string, filestatus int8) (issuccess 
 	if rows, error = exec.RowsAffected(); error != nil {
 		if rows <= 0 {
 			//执行成功，修改未成功，
-			logger.Error(tAG_userDiskfile, "failed with hash:%s has been upload\n", error)
+			logger.Error(tAG_userDiskfile+"failed with hash:%s has been upload\n", error)
 			issuccess = false
 			rows = 0
 		}

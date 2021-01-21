@@ -191,7 +191,7 @@ func HitPassBySha1Handler(w http.ResponseWriter, r *http.Request, utoken *db.Tab
 		}
 		if db.SaveUserFileInfo(utoken.Uid.Int64, pid, utoken.Phone.String, metaInfo.Filesha1.String, metaInfo.FileName.String, metaInfo.FileLocation.String, metaInfo.FileSize.Int64, metaInfo.Minitype.String, int(metaInfo.Ftype.Int32), metaInfo.Video_duration.String) {
 			logger.Info(" metaInfo: ", metaInfo)
-			logger.Info("保存文件 成功，大小 %d \n", metaInfo.FileSize)
+			logger.Infof("保存文件 成功，大小 %d", metaInfo.FileSize)
 			//更新当前文件夹的缩略图最新
 			db.UpdateUserFileDirPreSha1ById(metaInfo.Filesha1.String, pid)
 			if value, err := db.GetUserFileInfoByUidSha1(sha1, utoken.Uid.Int64); err == nil {
@@ -252,7 +252,7 @@ func UploadUserFileHandler(w http.ResponseWriter, r *http.Request, utoken *db.Ta
 		defer newfile.Close()
 		metaInfo.FileSize, error = io.Copy(newfile, file)
 		if error != nil {
-			logger.Info("保存文件出错 %s \n", error.Error())
+			logger.Infof("保存文件出错 %s ", error.Error())
 			response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "file copy error")
 			return
 		}

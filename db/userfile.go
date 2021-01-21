@@ -90,7 +90,7 @@ func SaveUserFileInfo(uid, pid int64, phone, filehash, filename, location string
 	if rows, error := exec.RowsAffected(); error == nil {
 		if rows <= 0 {
 			//执行成功，但未添加，
-			logger.Error(tAG_userfile, "failed with hash:%s has been upload", error)
+			logger.Error(tAG_userfile, "failed with ", error)
 			return false
 		}
 	}
@@ -194,7 +194,7 @@ func GetUserDirListByUidPidDirName(uid, pid int64, filename string) (tableUserFi
 	defer  rowdata.Close()
 	logger.Info(tAG_userfile, utils.RunFuncName(), selectUFileByUidAndPidAndFileName, uid, pid, filename)
 	if error != nil {
-		logger.Error("failed to Exec error:", error)
+		logger.Error(tAG_userfile,"failed to Exec error:", error)
 		return tableUserFile, error
 	}
 	tableUserFile = make([]TableUserFile, 0)
@@ -227,7 +227,7 @@ func GetUserDirFileListByUidPid(uid, pid int64, pageNo, pageSize, lastid int64) 
 	defer  rowdata.Close()
 	logger.Info(tAG_userfile, utils.RunFuncName(), selectUFileByUidAndPidPage, uid, pid, lastid, pageSize)
 	if error != nil {
-		logger.Error("failed to Exec error:", error)
+		logger.Error(tAG_userfile, "failed to Exec error:", error)
 		return tableUserFile, error, 0
 	}
 	tableUserFile = make([]TableUserFile, 0)
@@ -326,7 +326,7 @@ func GetUserFileListMetaByUid(uid int64, pageNo, pageSize, lastid int64) (tableU
 	defer rowdata.Close()
 	logger.Info(tAG_userfile, utils.RunFuncName(), selectUFileByUidPage, uid, lastid, pageSize)
 	if error != nil {
-		logger.Error("failed to Exec error:", error)
+		logger.Error(tAG_userfile, "failed to Exec error:", error)
 		return tableUserFile, error, 0
 	}
 	tableUserFile = make([]TableUserFile, 0)
@@ -355,7 +355,7 @@ func GetUserFileAllSha1ListByUid(uid int64) (sha1s []string, err error) {
 	defer rowdata.Close()
 	logger.Info(tAG_userfile, utils.RunFuncName(),selectUFileAllsha1s, uid)
 	if error != nil {
-		logger.Error("failed to Exec error:", error)
+		logger.Error(tAG_userfile,"failed to Exec error:", error)
 		return sha1s, error
 	}
 	sha1s = make([]string, 0)
@@ -387,7 +387,7 @@ func GetUserFileListBySha1s(uid int64, sha1s []string) (tableUserFile []TableUse
 	defer rowdata.Close()
 	logger.Info(tAG_userfile, utils.RunFuncName(), sprintf, uid)
 	if error != nil {
-		logger.Error("failed to Exec error:", error)
+		logger.Error(tAG_userfile, "failed to Exec error:", error)
 		return tableUserFile, error
 	}
 	tableUserFile = make([]TableUserFile, 0)
@@ -451,7 +451,7 @@ func UpdateUserFileDirStatusByIds(ids []string, filestatus int8) bool {
 	if rows, error := exec.RowsAffected(); error == nil {
 		if rows <= 0 {
 			//执行成功，修改未成功，
-			logger.Error(tAG_userfile, "failed with hash has been upload\n", error)
+			logger.Error(tAG_userfile, "failed with hash has been upload", error)
 			return false
 		}
 	}

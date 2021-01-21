@@ -3,7 +3,7 @@
 set -e
 
 PROJECT_NAME="skydrive"
-BINARY="skydrive_debug"
+BINARY="skydrive_release"
 
 OUTPUT_DIR=output
 GOOS=$(go env GOOS)

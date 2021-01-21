@@ -23,18 +23,18 @@ var (
 	GitRevision  string // Git版本
 	GitBranch    string // Git分支
 	GoVersion    string // Golang信息
-	Debug    string // 是否为开发环境
+	Debug    ="true" // 是否为开发环境
 )
 // Version 版本信息
 func Version() {
-	fmt.Printf("App Name:\t%s\n", AppName)
-	fmt.Printf("App Version:\t%s\n", AppVersion)
-	fmt.Printf("Build version:\t%s\n", BuildVersion)
-	fmt.Printf("Build time:\t%s\n", BuildTime)
-	fmt.Printf("Git revision:\t%s\n", GitRevision)
-	fmt.Printf("Git branch:\t%s\n", GitBranch)
-	fmt.Printf("Golang Version: %s\n", GoVersion)
-	fmt.Printf("Debug : %d\n", Debug)
+	logger.Infof("App Name:\t%s\n", AppName)
+	logger.Infof("App Version:\t%s\n", AppVersion)
+	logger.Infof("Build version:\t%s\n", BuildVersion)
+	logger.Infof("Build time:\t%s\n", BuildTime)
+	logger.Infof("Git revision:\t%s\n", GitRevision)
+	logger.Infof("Git branch:\t%s\n", GitBranch)
+	logger.Infof("Golang Version: %s\n", GoVersion)
+	logger.Infof("Debug : %s\n", Debug)
 }
 
 func main() {
@@ -87,9 +87,9 @@ func httpServer() {
 	http.HandleFunc("/admin/allFileList", handler.TokenCheckInterceptor(handler.GetAllFileListHandler))
 	http.HandleFunc("/admin/allUserFileList", handler.TokenCheckInterceptor(handler.GetAllUserFileListHandler))
 
-	logger.Info(fmt.Sprintf("开始启动本地服务 地址为 %s \r\n", config.ServeLocation))
+	logger.Infof("开始启动本地服务 地址为 %s \r\n", config.ServeLocation)
 	if error := http.ListenAndServe(config.ServeLocation, nil); error != nil {
-		logger.Error(fmt.Sprintf("启动错误 error:%s \r\n", error.Error()))
+		logger.Errorf("启动错误 error:%s \r\n", error.Error())
 	}
 }
 

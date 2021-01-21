@@ -1,7 +1,6 @@
 package broadcast
 
 import (
-	"fmt"
 	"github.com/skydrive/logger"
 	"net"
 )
@@ -19,14 +18,14 @@ func StartUDPGroup(UDPListenPort int) {
 		logger.Error(err)
 		return
 	}
-	logger.Info(fmt.Sprintf("Local: <%s> \n", listener.LocalAddr().String()))
+	logger.Infof("Local: <%s> \n", listener.LocalAddr().String())
 	data := make([]byte, 1024)
 	for {
 		n, remoteAddr, err := listener.ReadFromUDP(data)
 		if err != nil {
-			logger.Error("error during read: %s", err)
+			logger.Errorf("error during read: %s", err.Error())
 		}
-		logger.Info(fmt.Sprintf("<%s> %s\n", remoteAddr, data[:n]))
+		logger.Infof("<%s> %s\n", remoteAddr, data[:n])
 
 		//ip := net.ParseIP("224.0.0.250")
 		srcAddr := &net.UDPAddr{IP: net.IPv4zero, Port: 0}

@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"github.com/skydrive/config"
 	"github.com/skydrive/db"
 	"github.com/skydrive/handler/cache"
@@ -23,7 +22,7 @@ func init() {
 
 func BuildEncodePwd(pwd string) string {
 	target := utils.GetStrMD5(pwd + config.Salt_MD5)
-	logger.Info(fmt.Sprintf("%s encode md5 %s\n", pwd, target))
+	logger.Infof("%s encode md5 %s\n", pwd, target)
 	return target
 }
 

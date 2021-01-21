@@ -68,6 +68,6 @@ type User struct {
 
 
 func (filemeta *UserFile) String() {
-	logger.Info("filesha1:%s filename:%s  fileSize: %d  Location: %s  UpdateAtTime: %s ", filemeta.Filesha1, filemeta.FileName, filemeta.FileSize, filemeta.FileLocation, filemeta.UpdateAtTime)
+	logger.Infof("filesha1:%s filename:%s  fileSize: %d  Location: %s  UpdateAtTime: %s ", filemeta.Filesha1, filemeta.FileName, filemeta.FileSize, filemeta.FileLocation, filemeta.UpdateAtTime)
 }
 

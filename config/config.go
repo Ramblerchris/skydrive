@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 )
-var Debug     = false
+var Debug     = true
 const (
 	USER_NAME    = "root"
 	PASS_WORD    = "nihao@123456"

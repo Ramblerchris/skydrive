@@ -81,6 +81,15 @@ func Info(args ...interface{}) {
 		entry.Info(args...)
 	}
 }
+// Info
+func Infof(format string, args ...interface{}) {
+	if logger.Level >= logrus.InfoLevel {
+		entry := logger.WithFields(logrus.Fields{})
+		entry.Data["file"] = fileInfo(2)
+		entry.Infof(format,args...)
+	}
+}
+
 // 带有field的Info
 func InfoWithFields(l interface{}, f Fields) {
 	if logger.Level >= logrus.InfoLevel {
@@ -111,6 +120,14 @@ func Error(args ...interface{}) {
 		entry := logger.WithFields(logrus.Fields{})
 		entry.Data["file"] = fileInfo(2)
 		entry.Error(args...)
+	}
+}
+// Errorf
+func Errorf(format string,args ...interface{}) {
+	if logger.Level >= logrus.ErrorLevel {
+		entry := logger.WithFields(logrus.Fields{})
+		entry.Data["file"] = fileInfo(2)
+		entry.Errorf(format,args...)
 	}
 }
 // 带有Fields的Error

@@ -23,14 +23,14 @@ func (t *TableUser) String() {
 func SaveUserInfo(phone string, password string, time string) bool {
 	stmt, error := mysql.DbConnect().Prepare(saveUserinfo)
 	if error != nil {
-		logger.Error("failed to prepare statement error:", error.Error())
+		logger.Error(tAG_userfile, "failed to prepare statement error:", error.Error())
 		return false
 	}
 	defer stmt.Close()
 	exec, error := stmt.Exec(password, phone, time, 1, phone)
 	logger.Info(tAG_user,utils.RunFuncName(),saveUserinfo,password, phone, time, 1, phone)
 	if error != nil {
-		logger.Error("failed to Exec error:", error)
+		logger.Error(tAG_userfile, "failed to Exec error:", error)
 		return false
 	}
 	if _, error := exec.RowsAffected(); error == nil {
@@ -42,7 +42,7 @@ func SaveUserInfo(phone string, password string, time string) bool {
 func GetUserInfoByPhone(phone string) (*TableUser, error) {
 	stmt, error := mysql.DbConnect().Prepare(selectUserInfo)
 	if error != nil {
-		logger.Error("failed to prepare statement error:", error)
+		logger.Error(tAG_userfile, "failed to prepare statement error:", error)
 		return nil, error
 	}
 	defer stmt.Close()
@@ -64,7 +64,7 @@ func GetUserInfoByPhone(phone string) (*TableUser, error) {
 	logger.Info(tAG_user, utils.RunFuncName(), saveUserinfo,phone)
 
 	if error != nil {
-		logger.Error("failed to QueryRow error:", error)
+		logger.Error(tAG_userfile, "failed to QueryRow error:", error)
 		return nil, error
 	}
 	logger.Info("GetUserInfoByPhone:",tUser)
@@ -74,7 +74,7 @@ func GetUserInfoByPhone(phone string) (*TableUser, error) {
 func UpdateUserPhotoByUid(photoAddr string,filesha1 string, uid  int64) bool {
 	stmt, error := mysql.DbConnect().Prepare(updateUserPhoto)
 	if error != nil {
-		logger.Error("failed to prepare statement error:", error)
+		logger.Error(tAG_userfile, "failed to prepare statement error:", error)
 		return false
 	}
 	defer stmt.Close()
@@ -94,7 +94,7 @@ func UpdateUserPhotoByUid(photoAddr string,filesha1 string, uid  int64) bool {
 func UpdateUserNameByUid(userName string, uid  int64) bool {
 	stmt, error := mysql.DbConnect().Prepare(updateUserName)
 	if error != nil {
-		logger.Error("failed to prepare statement error:", error)
+		logger.Error(tAG_userfile, "failed to prepare statement error:", error)
 		return false
 	}
 	defer stmt.Close()
