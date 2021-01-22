@@ -10,6 +10,7 @@ import (
 	"runtime"
 	"strings"
 )
+
 var logger = logrus.New()
 
 func Setup() {
@@ -47,13 +48,20 @@ func Setup() {
 			Compress: true, // disabled by default
 		}
 		logger.SetOutput(logfileconfig) //调用 logrus 的 SetOutput()函数
+		logger.SetFormatter(&logrus.JSONFormatter{TimestampFormat: "2006-01-02 15:04:05"})
 	} else {
 		logger.SetOutput(os.Stdout)
+		//logger.SetFormatter(&logrus.JSONFormatter{TimestampFormat: "2006-01-02 15:04:05"})
+		logger.SetFormatter(&logrus.TextFormatter{
+			TimestampFormat: "2006-01-02 15:04:05",
+			//是否是全部格式，默认是启动时间
+			FullTimestamp: true})
 	}
 	// 设置日志级别
 	logger.SetLevel(logrus.DebugLevel)
 
 }
+
 // 封装logrus.Fields
 type Fields logrus.Fields
 
@@ -65,6 +73,7 @@ func Debug(args ...interface{}) {
 		entry.Debug(args)
 	}
 }
+
 // 带有field的Debug
 func DebugWithFields(l interface{}, f Fields) {
 	if logger.Level >= logrus.DebugLevel {
@@ -73,6 +82,7 @@ func DebugWithFields(l interface{}, f Fields) {
 		entry.Debug(l)
 	}
 }
+
 // Info
 func Info(args ...interface{}) {
 	if logger.Level >= logrus.InfoLevel {
@@ -81,12 +91,13 @@ func Info(args ...interface{}) {
 		entry.Info(args...)
 	}
 }
+
 // Info
 func Infof(format string, args ...interface{}) {
 	if logger.Level >= logrus.InfoLevel {
 		entry := logger.WithFields(logrus.Fields{})
 		entry.Data["file"] = fileInfo(2)
-		entry.Infof(format,args...)
+		entry.Infof(format, args...)
 	}
 }
 
@@ -98,6 +109,7 @@ func InfoWithFields(l interface{}, f Fields) {
 		entry.Info(l)
 	}
 }
+
 // Warn
 func Warn(args ...interface{}) {
 	if logger.Level >= logrus.WarnLevel {
@@ -106,6 +118,7 @@ func Warn(args ...interface{}) {
 		entry.Warn(args...)
 	}
 }
+
 // 带有Field的Warn
 func WarnWithFields(l interface{}, f Fields) {
 	if logger.Level >= logrus.WarnLevel {
@@ -114,6 +127,7 @@ func WarnWithFields(l interface{}, f Fields) {
 		entry.Warn(l)
 	}
 }
+
 // Error
 func Error(args ...interface{}) {
 	if logger.Level >= logrus.ErrorLevel {
@@ -122,14 +136,16 @@ func Error(args ...interface{}) {
 		entry.Error(args...)
 	}
 }
+
 // Errorf
-func Errorf(format string,args ...interface{}) {
+func Errorf(format string, args ...interface{}) {
 	if logger.Level >= logrus.ErrorLevel {
 		entry := logger.WithFields(logrus.Fields{})
 		entry.Data["file"] = fileInfo(2)
-		entry.Errorf(format,args...)
+		entry.Errorf(format, args...)
 	}
 }
+
 // 带有Fields的Error
 func ErrorWithFields(l interface{}, f Fields) {
 	if logger.Level >= logrus.ErrorLevel {
@@ -138,6 +154,7 @@ func ErrorWithFields(l interface{}, f Fields) {
 		entry.Error(l)
 	}
 }
+
 // Fatal
 func Fatal(args ...interface{}) {
 	if logger.Level >= logrus.FatalLevel {
@@ -146,6 +163,7 @@ func Fatal(args ...interface{}) {
 		entry.Fatal(args...)
 	}
 }
+
 // 带有Field的Fatal
 func FatalWithFields(l interface{}, f Fields) {
 	if logger.Level >= logrus.FatalLevel {
@@ -154,6 +172,7 @@ func FatalWithFields(l interface{}, f Fields) {
 		entry.Fatal(l)
 	}
 }
+
 // Panic
 func Panic(args ...interface{}) {
 	if logger.Level >= logrus.PanicLevel {
@@ -162,6 +181,7 @@ func Panic(args ...interface{}) {
 		entry.Panic(args...)
 	}
 }
+
 // 带有Field的Panic
 func PanicWithFields(l interface{}, f Fields) {
 	if logger.Level >= logrus.PanicLevel {
