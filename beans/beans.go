@@ -65,6 +65,22 @@ type User struct {
 	Status  int32  `json:"status"`
 }
 
+type SystenInfo struct {
+	CpuPercent float64 `json:"CpuPercent"`
+	//CpuTotal uint64 `json:"CpuTotal"`
+	MemPercent float64 `json:"MemPercent"`
+	MemTotal uint64 `json:"MemTotal"`
+	DiskPercent float64 `json:"DiskPercent"`
+	DiskTotal uint64 `json:"DiskTotal"`
+	SwpPercent float64 `json:"SwpPercent"`
+	SwpTotal uint64 `json:"SwpTotal"`
+}
+
+type HostInfo struct {
+	Hostname string `json:"Hostname"`
+	OS float32 `json:"OS"`
+	IP float32 `json:"IP"`
+}
 
 
 func (filemeta *UserFile) String() {

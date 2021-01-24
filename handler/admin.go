@@ -5,9 +5,22 @@ import (
 	"github.com/skydrive/config"
 	"github.com/skydrive/db"
 	"github.com/skydrive/response"
+	"github.com/skydrive/utils"
 	"net/http"
 	"strconv"
 )
+
+
+//获取所有用户
+func GetSystemInfoHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
+	info:=&beans.SystenInfo{}
+	info.CpuPercent=utils.GetCpuPercent()
+	info.MemTotal,info.MemPercent=utils.GetMemPercent()
+	info.DiskTotal,info.DiskPercent=utils.GetDiskPercent()
+	info.SwpTotal,info.SwpPercent=utils.GetSwapMemoryPercent()
+	response.ReturnResponse(w, config.Net_SuccessCode,config.Success,info )
+}
+
 
 //获取所有用户
 func GetAllUserListHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
