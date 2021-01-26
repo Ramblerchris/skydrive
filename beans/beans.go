@@ -66,6 +66,7 @@ type User struct {
 }
 
 type SystenInfo struct {
+	HostName string `json:"HostName"`
 	CpuPercent float64 `json:"CpuPercent"`
 	//CpuTotal uint64 `json:"CpuTotal"`
 	MemPercent float64 `json:"MemPercent"`
@@ -73,6 +74,8 @@ type SystenInfo struct {
 	DiskPercent float64 `json:"DiskPercent"`
 	DiskTotal uint64 `json:"DiskTotal"`
 	SwpPercent float64 `json:"SwpPercent"`
+	NetIO interface{} `json:"netIO"`
+	HostInfo interface{} `json:"hostInfo"`
 	SwpTotal uint64 `json:"SwpTotal"`
 }
 

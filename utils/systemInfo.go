@@ -3,13 +3,28 @@ package utils
 import (
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/disk"
+	"github.com/shirou/gopsutil/host"
 	"github.com/shirou/gopsutil/mem"
+	"github.com/shirou/gopsutil/net"
+	"github.com/skydrive/logger"
 	"time"
 )
 
 func GetCpuPercent() float64 {
 	percent, _:= cpu.Percent(time.Second, false)
+	logger.Info("cpuInfo",percent)
 	return percent[0]
+}
+func IOCounters() net.IOCountersStat {
+	percent, _:= net.IOCounters(false)
+	logger.Info("IOCounters",percent)
+	return percent[0]
+}
+
+func HostInfo() host.InfoStat {
+	percent, _:= host.Info()
+	logger.Info("HostInfo",percent)
+	return *percent
 }
 
 func GetMemPercent()(total uint64,percent float64) {

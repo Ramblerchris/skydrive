@@ -7,6 +7,7 @@ import (
 	"github.com/skydrive/response"
 	"github.com/skydrive/utils"
 	"net/http"
+	"os"
 	"strconv"
 )
 
@@ -14,10 +15,14 @@ import (
 //获取所有用户
 func GetSystemInfoHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	info:=&beans.SystenInfo{}
+	info.HostName,_ = os.Hostname()
+	info.HostName,_ = os.Hostname()
 	info.CpuPercent=utils.GetCpuPercent()
 	info.MemTotal,info.MemPercent=utils.GetMemPercent()
 	info.DiskTotal,info.DiskPercent=utils.GetDiskPercent()
 	info.SwpTotal,info.SwpPercent=utils.GetSwapMemoryPercent()
+	info.NetIO=utils.IOCounters()
+	info.HostInfo=utils.HostInfo()
 	response.ReturnResponse(w, config.Net_SuccessCode,config.Success,info )
 }
 
