@@ -11,6 +11,7 @@ import (
 const (
 	 selectAllUserInfo 			= "select id ,user_name,user_pwd,photo_addr,photo_file_sha1,email,phone,email_validated,phone_validated,signup_at,last_active,profile,status from tbl_user  limit ?,?"
 	 selectAllUserFile          = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at,filetype,minitype,ftype,video_duration from tbl_user_file  limit  ?,?"
+	 selectAllDiskUserFile          = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at,filetype,minitype,ftype,video_duration from tbl_cloud_disk  limit  ?,?"
 	 selectAllUTokenInfo		= "select id ,uid,phone,user_token,expiretime from tbl_user_token limit  ?,? "
 	 selectAllFile 				= "select id,file_sha1,file_name,file_size,file_addr,minitype,ftype,video_duration,create_at from tbl_file limit ?,?"
 	 selectCountByTable	 		= "select count(*) from  "
@@ -93,6 +94,26 @@ func AdminGetAllUserTokenList(pageNo,pageSize int64 ) (tableUsertokenFile []Tabl
 		tableUsertokenFile = append(tableUsertokenFile, utoken)
 	}
 	return tableUsertokenFile, nil, GetCountByTableName("tbl_user_token")
+}
+
+func AdminGetAllDiskUserFileInfoList(pageNo,pageSize int64 ) (tableUserFile []TableUserFile, err error, total int64) {
+	rowdata, err := getPageStmt(selectAllDiskUserFile, pageNo, pageSize)
+	defer rowdata.Close()
+	if err != nil {
+		return tableUserFile, err,0
+	}
+	tableUserFile = make([]TableUserFile, 0)
+	for rowdata.Next() {
+		tfile := TableUserFile{}
+		error := rowdata.Scan(
+			&tfile.Id, &tfile.PId, &tfile.Uid, &tfile.Phone, &tfile.FileHash, &tfile.FileHash_Pre, &tfile.FileName, &tfile.FileSize, &tfile.FileLocation, &tfile.Create_at, &tfile.Update_at, &tfile.Filetype, &tfile.Minitype, &tfile.Ftype, &tfile.Video_duration)
+		if error != nil {
+			logger.Error(tAG_admin, "failed to Query error:", error)
+			continue
+		}
+		tableUserFile = append(tableUserFile, tfile)
+	}
+	return tableUserFile, nil, GetCountByTableName("tbl_user_file")
 }
 
 func AdminGetAllUserFileInfoList(pageNo,pageSize int64 ) (tableUserFile []TableUserFile, err error, total int64) {

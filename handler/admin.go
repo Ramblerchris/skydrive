@@ -95,3 +95,23 @@ func GetAllUserFileListHandler(w http.ResponseWriter, r *http.Request, utoken *d
 	response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.Error)
 
 }
+
+func GetAllDiskUserFileListHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
+	r.ParseForm()
+	pageNo, _ := strconv.ParseInt(r.FormValue("pageNo"), 10, 64)
+	pageSize, _ := strconv.ParseInt(r.FormValue("pageSize"), 10, 64)
+	if pageSize == 0 {
+		pageSize = 10
+	}
+	if alluser, err, total := db.AdminGetAllDiskUserFileInfoList(pageNo, pageSize); err == nil {
+		metaFilelist := make([]beans.UserFile, 0)
+		for _, value := range alluser {
+			metaFilelist = append(metaFilelist, *beans.GetUserFileObject(value))
+		}
+		response.ReturnResponsePage(w, config.Net_SuccessCode, config.Success, metaFilelist, pageNo, pageSize, 0, total)
+		return
+	}
+	response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.Error)
+
+}
+

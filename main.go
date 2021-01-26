@@ -76,6 +76,7 @@ func httpServer() {
 	http.HandleFunc("/admin/allUserTokenList", handler.TokenCheckInterceptor(handler.GetAllUserTokenListHandler))
 	http.HandleFunc("/admin/allFileList", handler.TokenCheckInterceptor(handler.GetAllFileListHandler))
 	http.HandleFunc("/admin/allUserFileList", handler.TokenCheckInterceptor(handler.GetAllUserFileListHandler))
+	http.HandleFunc("/admin/allDiskUserFileList", handler.TokenCheckInterceptor(handler.GetAllDiskUserFileListHandler))
 	http.HandleFunc("/admin/systemInfo", handler.TokenCheckInterceptor(handler.GetSystemInfoHandler))
 
 	logger.Infof("开始启动本地服务 地址为 %s ", config.ServeLocation)
