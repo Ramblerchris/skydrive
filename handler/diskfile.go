@@ -78,8 +78,8 @@ func AddDiskFileDirByUidPidHandler(w http.ResponseWriter, r *http.Request, utoke
 	}
 	//todo 查询用户同级文件夹下的文件名是否存在
 	if data, err := db.GetDiskFileInfoListByUidPidDirName(utoken.Uid.Int64, pid, dirname); err == nil && len(data) != 0 {
-		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, dirname+"文件夹已经存在")
-		return
+		//response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, dirname+"文件夹已经存在")
+		//return
 	}
 	if isok, id := db.SaveDiskDirInfo(utoken.Uid.Int64, pid, utoken.Phone.String, dirname); isok {
 		if value, err := db.GetDiskFileInfoById(id); err == nil {
@@ -122,6 +122,24 @@ func HitPassDiskBySha1Handler(w http.ResponseWriter, r *http.Request, utoken *db
 		response.ReturnResponseCodeMessage(w, config.Net_EmptyCode, "未上传")
 	}
 }
+
+
+//修改指定文件夹名称
+func UpdateDiskDirNameById(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
+	r.ParseForm()
+	id, _ := strconv.ParseInt(r.FormValue("id"), 10, 64)
+	newfilename := r.FormValue("newfilename")
+	if newfilename == "" || len(newfilename)==0 {
+		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.FormValueError)
+		return
+	}
+	if db.UpdateDiskFileDirsNameById(newfilename, id) {
+		response.ReturnResponseCodeMessage(w, config.Net_SuccessCode, config.Success)
+		return
+	}
+	response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.Error)
+}
+
 
 //上传文件
 func UploadDiskFileHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {

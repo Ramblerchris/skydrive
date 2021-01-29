@@ -61,6 +61,7 @@ func httpServer() {
 	http.HandleFunc("/userfile/getlist", handler.TokenCheckInterceptor(handler.GetUserFileListByUidHandler))
 	http.HandleFunc("/userfile/hitpass", handler.TokenCheckInterceptor(handler.HitPassBySha1Handler))
 	http.HandleFunc("/userfile/adddir", handler.TokenCheckInterceptor(handler.AddFileDirByUidPidHandler))
+	http.HandleFunc("/userfile/updateName", handler.TokenCheckInterceptor(handler.UpdateDirNameById))
 	http.HandleFunc("/userfile/dirlist", handler.TokenCheckInterceptor(handler.GetUserDirFileListByPidHandler))
 	http.HandleFunc("/userfile/initmultipartinfo", handler.TokenCheckInterceptor(handler.InitMultipartUploadHandler))
 	http.HandleFunc("/userfile/finishmultipartinfo", handler.TokenCheckInterceptor(handler.FinishMultipartUploadHandler))
@@ -71,6 +72,7 @@ func httpServer() {
 	http.HandleFunc("/disk/hitpass", handler.TokenCheckInterceptor(handler.HitPassDiskBySha1Handler))
 	http.HandleFunc("/disk/adddir", handler.TokenCheckInterceptor(handler.AddDiskFileDirByUidPidHandler))
 	http.HandleFunc("/disk/dirlist", handler.TokenCheckInterceptor(handler.GetDiskDirFileListByPidHandler))
+	http.HandleFunc("/disk/updateName", handler.TokenCheckInterceptor(handler.UpdateDiskDirNameById))
 
 	http.HandleFunc("/admin/allUserList", handler.TokenCheckInterceptor(handler.GetAllUserListHandler))
 	http.HandleFunc("/admin/allUserTokenList", handler.TokenCheckInterceptor(handler.GetAllUserTokenListHandler))

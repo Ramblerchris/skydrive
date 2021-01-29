@@ -26,14 +26,15 @@ const (
 	updateUFileDirStatus              = "update tbl_user_file set status=? where id=? "
 	updateUFileDirfile_sha1_pre       = "update tbl_user_file set file_sha1_pre=? where id=? "
 	updateUFileDirsStatus             = "update tbl_user_file set status=? where id in('%s')"
+	updateUFileDirsName               = "update tbl_user_file set file_name=? where id=? "
 	selectUFileBysha1s                = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at,filetype,minitype,ftype,video_duration from tbl_user_file where uid=? and file_sha1 in('%s') "
 	selectUFileAllsha1s               = "select file_sha1 from tbl_user_file where uid=?"
 	//selectUFileCountByUid 			  = "select count(*) from tbl_user_file where  uid=? and status=1 and id>? "
-	selectUFileCountByUid = "select count(*) from tbl_user_file where  uid=? and status=1  "
+	selectUFileCountByUid 			  = "select count(*) from tbl_user_file where  uid=? and status=1  "
 	//selectUFileCountByUidPid 		  = "select count(*) from tbl_user_file where  pid=? and uid=? and status=1 and id>? "
-	selectUFileCountByUidPid = "select count(*) from tbl_user_file where  pid=? and uid=? and status=1  "
-	selectMaxIdFromUserFile  = "select max(id) from tbl_user_file where  pid=? and uid=? and status=1  order by id desc"
-	tAG_userfile             = "userfile.go：sql"
+	selectUFileCountByUidPid 		= "select count(*) from tbl_user_file where  pid=? and uid=? and status=1  "
+	selectMaxIdFromUserFile  		= "select max(id) from tbl_user_file where  pid=? and uid=? and status=1  order by id desc"
+	tAG_userfile            		= "userfile.go：sql"
 )
 
 //创建一个文件夹
@@ -108,6 +109,31 @@ func UpdateUserFileInfoStatusBySha1(filehash string, filestatus int8) bool {
 	defer stmt.Close()
 	exec, error := stmt.Exec(filestatus, filehash)
 	logger.Info(tAG_userfile, utils.RunFuncName(), updateUFileInfo)
+	if error != nil {
+		logger.Error(tAG_userfile, "failed Exec error:", error)
+		return false
+	}
+	if rows, error := exec.RowsAffected(); error == nil {
+		if rows <= 0 {
+			//执行成功，修改未成功，
+			logger.Error(tAG_userfile, "failed with hash:%s has been upload", error)
+			return false
+		}
+	}
+	return true
+}
+
+//修改文件夹名
+func UpdateUFileDirsNameById(newFileName string, id int64) bool {
+	stmt, error := mysql.DbConnect().Prepare(updateUFileDirsName)
+	if error != nil {
+		logger.Error(tAG_userfile, "failed to prepare statement error:", error.Error())
+		return false
+	}
+	logger.Info(tAG_userfile, utils.RunFuncName(),"start")
+	defer stmt.Close()
+	exec, error := stmt.Exec(newFileName, id)
+	logger.Info(tAG_userfile, utils.RunFuncName(), updateUFileDirsName)
 	if error != nil {
 		logger.Error(tAG_userfile, "failed Exec error:", error)
 		return false

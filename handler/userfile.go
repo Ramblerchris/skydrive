@@ -140,6 +140,22 @@ func DeleteFileDirByUidHandler(w http.ResponseWriter, r *http.Request, utoken *d
 	}
 }
 
+//修改指定文件夹名称
+func UpdateDirNameById(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
+	r.ParseForm()
+	id, _ := strconv.ParseInt(r.FormValue("id"), 10, 64)
+	newfilename := r.FormValue("newfilename")
+	if newfilename == "" || len(newfilename)==0 {
+		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.FormValueError)
+		return
+	}
+	if db.UpdateUFileDirsNameById(newfilename, id) {
+		response.ReturnResponseCodeMessage(w, config.Net_SuccessCode, config.Success)
+		return
+	}
+	response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.Error)
+}
+
 //查看当前用户所有保存文件的sha1
 func GetAllSha1ListByUidHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	if byuid, err := db.GetUserFileAllSha1ListByUid(utoken.Uid.Int64); err == nil {

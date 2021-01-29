@@ -26,6 +26,7 @@ const (
 	updateUDiskFileDirStatus              = "update tbl_cloud_disk set status=? where id=? "
 	updateUDiskFileDirfile_sha1_pre       = "update tbl_cloud_disk set file_sha1_pre=? where id=? "
 	updateUDiskFileDirsStatus             = "update tbl_cloud_disk set status=? where id in('%s')"
+	updateDiskFileDirsName               = "update tbl_cloud_disk set file_name=? where id=? "
 	selectUDiskFileBysha1s                = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at,filetype,minitype,ftype,video_duration from tbl_cloud_disk where uid=? and file_sha1 in('%s') "
 	selectUDiskFileAllsha1s               = "select file_sha1 from tbl_cloud_disk where uid=?"
 	//selectUDiskFileCountByUid 			  = "select count(*) from tbl_cloud_disk where  uid=? and status=1 and id>? "
@@ -116,6 +117,31 @@ func UpdateDiskUserInfoStatusBySha1(filehash string, filestatus int8) bool {
 		if rows <= 0 {
 			//执行成功，修改未成功，
 			logger.Error(tAG_userDiskfile+"failed with hash:%s has been upload", error)
+			return false
+		}
+	}
+	return true
+}
+
+//修改文件夹名
+func UpdateDiskFileDirsNameById(newFileName string, id int64) bool {
+	stmt, error := mysql.DbConnect().Prepare(updateDiskFileDirsName)
+	if error != nil {
+		logger.Error(tAG_userDiskfile, "failed to prepare statement error:", error.Error())
+		return false
+	}
+	logger.Info(tAG_userDiskfile, utils.RunFuncName(),"start")
+	defer stmt.Close()
+	exec, error := stmt.Exec(newFileName, id)
+	logger.Info(tAG_userDiskfile, utils.RunFuncName(), updateDiskFileDirsName)
+	if error != nil {
+		logger.Error(tAG_userDiskfile, "failed Exec error:", error)
+		return false
+	}
+	if rows, error := exec.RowsAffected(); error == nil {
+		if rows <= 0 {
+			//执行成功，修改未成功，
+			logger.Error(tAG_userDiskfile, "failed with hash:%s has been upload", error)
 			return false
 		}
 	}
