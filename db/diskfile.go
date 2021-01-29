@@ -224,6 +224,9 @@ func GetDiskFileListByUidPid(uid, pid int64, pageNo, pageSize, lastid int64) (ta
 	if lastid == -1 {
 		lastid = GetUserDiskListMaxCountByUid(uid, pid)+1
 	}
+	if pageSize < 0 {
+		pageSize = lastid
+	}
 	rowdata, error := stmt.Query(uid, pid, lastid, pageSize)
 	defer  rowdata.Close()
 	logger.Info(tAG_userDiskfile, utils.RunFuncName(), selectUDiskFileByUidAndPidPage, uid, pid, lastid, pageSize)

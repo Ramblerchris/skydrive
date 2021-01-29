@@ -223,6 +223,9 @@ func GetUserDirFileListByUidPid(uid, pid int64, pageNo, pageSize, lastid int64) 
 	if lastid == -1 {
 		lastid = GetUserDirListMaxCountByUid(uid, pid)+1
 	}
+	if pageSize < 0 {
+		pageSize = lastid
+	}
 	rowdata, error := stmt.Query(uid, pid, lastid, pageSize)
 	defer  rowdata.Close()
 	logger.Info(tAG_userfile, utils.RunFuncName(), selectUFileByUidAndPidPage, uid, pid, lastid, pageSize)
