@@ -1,10 +1,41 @@
 package config
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/skydrive/logger"
+	"github.com/skydrive/utils"
+	"os"
 	"time"
 )
+
 var Debug     = true
+type ConfigInt struct {
+	USER_NAME string `json:"username"`
+	PASS_WORD string `json:"password"`
+	HOST string `json:"host"`
+	PORT string `json:"port"`
+	DATABASE string `json:"skydrive"`
+	CHARSET string `json:"charset"`
+	MySqlSprintf string `json:"conSprintf"`
+
+	Http_ServeLocation int `json:"HttpPORT"`
+	UDP_SERVER_ListenPORT  int `json:"UDP_SERVER_ListenPORT"`
+	UDP_GroupSERVER_ListenPORT int `json:"UDP_GroupSERVER_ListenPORT"`
+	UDP_GroupSERVER_Sendport int `json:"UDP_GroupSERVER_SendPORT"`
+	UDP_SERVER_Sendport  int `json:"UDP_SERVER_SendPORT"`
+}
+
+func (dbConfig *ConfigInt) GetDataSourceName() string {
+	return fmt.Sprintf(dbConfig.MySqlSprintf, dbConfig.USER_NAME, dbConfig.PASS_WORD, dbConfig.HOST, dbConfig.PORT, dbConfig.DATABASE, 1000, 500, 500, dbConfig.CHARSET)
+}
+
+func (dbConfig *ConfigInt) String() string {
+	return fmt.Sprintf("USER_NAME:%s PASS_WORD:%s  HOST: %s  PORT: %s  DATABASE: %s   CHARSET: %s  MySqlSprintf: %s ",
+		dbConfig.USER_NAME, dbConfig.PASS_WORD, dbConfig.HOST, dbConfig.PORT, dbConfig.DATABASE, dbConfig.CHARSET, dbConfig.MySqlSprintf)
+}
+
+
 const (
 	USER_NAME    = "root"
 	PASS_WORD    = "nihao@123456"
@@ -12,15 +43,14 @@ const (
 	PORT         = "3306"
 	DATABASE     = "skydrive"
 	CHARSET      = "utf8"
-	MySqlConfit  = "%s:%s@tcp(%s:%s)/%s?charset=%s"
-	MySqlConfit1 = "%s:%s@tcp(%s:%s)/%s?timeout=%dms&readTimeout=%dms&writeTimeout=%dms&charset=%s"
+	//MySqlConfit  = "%s:%s@tcp(%s:%s)/%s?charset=%s"
+	MySqlSprintf = "%s:%s@tcp(%s:%s)/%s?timeout=%dms&readTimeout=%dms&writeTimeout=%dms&charset=%s"
 	//("%s:%s@tcp(%s:%d)/%s?timeout=%dms&readTimeout=%dms&writeTimeout=%dms&charset=utf8", "用户名", "密码", "hostip", 端口, "库名", 1000, 500, 500)//后面三个分别为连接超时，读超时，写超时
-	ServeLocation              = ":9996"
+	Http_ServeLocation         = 9996
 	UDP_SERVER_ListenPORT      = 8997
 	UDP_GroupSERVER_ListenPORT = 8998
-
-	UdpGroupserverSendport = 8999
-	UdpServerSendport      = 8996
+	UDP_GroupSERVER_Sendport = 8999
+	UDP_SERVER_Sendport      = 8996
 
 	CHUNK_Size = 7 * 1025 * 1025 //分块上传的大小 7Mb
 
@@ -43,8 +73,33 @@ const (
 	Thumbnail_Quality      = 40
 	Log_FILE_PATH      = "temp/log/"
 	LOG_FILE_NAME      = "logfile.log"
+	configInt      = "config_ini.json"
 )
 
-func GetDataSourceName() string {
-	return fmt.Sprintf(MySqlConfit1, USER_NAME, PASS_WORD, HOST, PORT, DATABASE, 1000, 500, 500, CHARSET)
+func Setup()  (dbconfig *ConfigInt  ){
+	exists, _ := utils.PathExists(configInt)
+	if exists {
+		file, _ := os.Open("config_ini.json")
+		defer file.Close()
+		decoder := json.NewDecoder(file)
+		decoder.Decode(&dbconfig)
+		logger.Info(dbconfig.String())
+	} else {
+		dbconfig = &ConfigInt{
+			USER_NAME:    USER_NAME,
+			PASS_WORD:    PASS_WORD,
+			HOST:         HOST,
+			PORT:         PORT,
+			DATABASE:     DATABASE,
+			CHARSET:      CHARSET,
+			MySqlSprintf: MySqlSprintf,
+
+			Http_ServeLocation:         Http_ServeLocation,
+			UDP_SERVER_ListenPORT:      UDP_SERVER_ListenPORT,
+			UDP_GroupSERVER_ListenPORT: UDP_GroupSERVER_ListenPORT,
+			UDP_GroupSERVER_Sendport:   UDP_GroupSERVER_Sendport,
+			UDP_SERVER_Sendport:        UDP_SERVER_Sendport,
+		}
+	}
+	return dbconfig
 }

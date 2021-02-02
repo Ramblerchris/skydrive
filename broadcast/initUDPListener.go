@@ -1,10 +1,7 @@
 package broadcast
 
-import "github.com/skydrive/config"
-
 //监听UDP内网 网络广播
-func InitUDP()  {
-	go StartUDPServerV2(config.UDP_SERVER_ListenPORT)
-	//go broadcast.StartUDPGroup(config.UDP_SERVER_ListenPORT)
-	go StartUDPGroupV2(config.UdpGroupserverSendport,config.UDP_GroupSERVER_ListenPORT)
+func InitUDP(listenPort,sendPort,groupListenPort,groupSendPort int )  {
+	go StartUDPServerV2(listenPort,sendPort)
+	go StartUDPGroupV2(groupListenPort,groupSendPort )
 }

@@ -3,7 +3,6 @@ package mysqlconn
 import (
 	"database/sql"
 	"fmt"
-	"github.com/skydrive/config"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -12,11 +11,11 @@ import (
 
 var mysqldb *sql.DB
 
-func init() {
+func Setup(dataSource string) {
 	var error error
 	//mysqldb, error := sql.Open("mysql", config.GetDataSourceName())
 	//上面这种会给全局的变量覆盖，报runtime error: invalid memory address or nil pointer dereference
-	mysqldb, error = sql.Open("mysql", config.GetDataSourceName())
+	mysqldb, error = sql.Open("mysql", dataSource)
 	if error != nil {
 		fmt.Println(" connect mysql Error", error)
 		return

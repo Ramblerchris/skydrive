@@ -1,0 +1,14 @@
+{
+  "username":"root",
+  "password":"nihao@123456",
+  "host":"localhost",
+  "port":"3306",
+  "skydrive":"skydrive",
+  "charset":"utf8",
+  "conSprintf":"%s:%s@tcp(%s:%s)/%s?timeout=%dms&readTimeout=%dms&writeTimeout=%dms&charset=%s",
+  "HttpPORT":9996,
+  "UDP_SERVER_ListenPORT":8997,
+  "UDP_GroupSERVER_ListenPORT":8998,
+  "UDP_GroupSERVER_SendPORT":8999,
+  "UDP_SERVER_SendPORT":8996
+}

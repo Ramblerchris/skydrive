@@ -2,16 +2,15 @@ package broadcast
 
 import (
 	"fmt"
-	"github.com/skydrive/config"
 	"net"
 	"testing"
 )
 
 func Test_udp(t *testing.T)  {
-	StartUDPServerV2(config.UDP_SERVER_ListenPORT)
-
-	//broadcast.StartUDPGroup(config.UDP_SERVER_ListenPORT)
-	StartUDPGroupV2(config.UDP_GroupSERVER_ListenPORT)
+	//StartUDPServerV2(config.UDP_SERVER_ListenPORT)
+	//
+	////broadcast.StartUDPGroup(config.UDP_SERVER_ListenPORT)
+	//StartUDPGroupV2(config.UDP_GroupSERVER_ListenPORT)
 
 }
 func Test_client( t *testing.T)  {

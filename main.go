@@ -5,6 +5,7 @@ import (
 	"github.com/skydrive/broadcast"
 	"github.com/skydrive/cache/redisconn"
 	"github.com/skydrive/config"
+	"github.com/skydrive/db/mysqlconn"
 	"github.com/skydrive/handler"
 	"github.com/skydrive/logger"
 	"github.com/skydrive/media"
@@ -28,15 +29,17 @@ var (
 
 func main() {
 	config.Debug,_=strconv.ParseBool(Debug)
-	logger.Setup()
+	configInt := config.Setup()
+	mysqlconn.Setup(configInt.GetDataSourceName())
+	logger.Setup(config.Debug,config.Log_FILE_PATH,config.LOG_FILE_NAME)
 	versionInfo()
-	broadcast.InitUDP()
+	broadcast.InitUDP(configInt.UDP_SERVER_ListenPORT,configInt.UDP_SERVER_Sendport,configInt.UDP_GroupSERVER_ListenPORT,configInt.UDP_GroupSERVER_Sendport)
 	redisconn.GetRedisClient()
-	httpServer()
+	httpServer(configInt)
 }
 
 
-func httpServer() {
+func httpServer(configInt *config.ConfigInt) {
 	http.HandleFunc("/user/checknet", handler.CheckNetIsOkHandler)
 	http.HandleFunc("/user/register", handler.RegisterHandler)
 	http.HandleFunc("/user/signin", handler.SignInHandler)
@@ -81,8 +84,8 @@ func httpServer() {
 	http.HandleFunc("/admin/allDiskUserFileList", handler.TokenCheckInterceptor(handler.GetAllDiskUserFileListHandler))
 	http.HandleFunc("/admin/systemInfo", handler.TokenCheckInterceptor(handler.GetSystemInfoHandler))
 
-	logger.Infof("开始启动本地服务 地址为 %s ", config.ServeLocation)
-	if error := http.ListenAndServe(config.ServeLocation, nil); error != nil {
+	logger.Infof("开始启动本地服务 地址为 %d ", configInt.Http_ServeLocation)
+	if error := http.ListenAndServe(fmt.Sprintf(":%d",configInt.Http_ServeLocation), nil); error != nil {
 		logger.Errorf("启动错误 error:%s ", error.Error())
 	}
 }

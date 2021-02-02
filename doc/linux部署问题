@@ -1,0 +1,24 @@
+	ServeLocation              = 9996
+	UDP_SERVER_ListenPORT      = 8997
+	UDP_GroupSERVER_ListenPORT = 8998
+
+	UdpGroupserverSendport = 8999
+	UdpServerSendport      = 8996
+
+	USER_NAME    = "root"
+	PASS_WORD    = "nihao@123456"
+	HOST         = "localhost"
+	PORT         = "3306"
+	DATABASE     = "skydrive"
+
+Syntax error: "(" unexpected（linux系统）:
+	sudo dpkg-reconfigure dash
+	选No
+
+curl -o 本地文件名  链接
+chmod +x 本地文件/chmo 777 本地文件
+sudo dpkg-reconfigure dash  选No
+是否已经安装myslq
+sudo netstat -tap | grep mysql
+sudo apt-get install mysql-server mysql-client
+

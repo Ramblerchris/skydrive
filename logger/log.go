@@ -3,7 +3,6 @@ package logger
 import (
 	"fmt"
 	"github.com/sirupsen/logrus"
-	"github.com/skydrive/config"
 	"gopkg.in/natefinch/lumberjack.v2"
 	"os"
 	"path"
@@ -13,10 +12,10 @@ import (
 
 var logger = logrus.New()
 
-func Setup() {
-	if !config.Debug {
-		logFilePath := config.Log_FILE_PATH
-		logFileName := config.LOG_FILE_NAME
+func Setup(isDebug bool ,logpath,logfilename string) {
+	if !isDebug {
+		logFilePath := logpath
+		logFileName := logfilename
 		// 日志文件
 		_, err := os.Stat(logFilePath)
 		if err != nil {

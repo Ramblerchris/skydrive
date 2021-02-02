@@ -1,6 +1,8 @@
 #!/bin/bash
 
 set -e
+set GOARCH=amd64
+set GOOS=linux
 
 PROJECT_NAME="skydrive"
 BINARY="skydrive_release"
@@ -20,7 +22,7 @@ Debug=false
 echo  ${OUTPUT_DIR}
 echo  ${OUTPUT_DIR}/${BINARY}
 
-CGO_ENABLED=0 go build -a -installsuffix cgo -v -mod=vendor \
+CGO_ENABLED=0 GOOS=linux  GOARCH=amd64 go build -a -installsuffix cgo -v -mod=vendor \
 -ldflags "-s -w -X 'main.AppName=${APP_NAME}' \
 			-X 'main.AppVersion=${APP_VERSION}' \
 			-X 'main.BuildVersion=${BUILD_VERSION}' \

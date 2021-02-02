@@ -11,7 +11,7 @@ import (
 var conngrouplist = make(chan bool, 3)
 
 //需要优化
-func StartUDPGroupV2(UDPServerSendPort int,UDPListenPort int) {
+func StartUDPGroupV2(UDPListenPort int,UDPServerSendPort int) {
 	//如果第二参数为nil,它会使用系统指定多播接口，但是不推荐这样使用
 	addr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("225.0.0.1:%d",UDPListenPort))
 	if err != nil {
