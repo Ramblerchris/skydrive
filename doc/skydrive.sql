@@ -1,3 +1,5 @@
+create database skydrive default character set utf8mb4 collate utf8mb4_unicode_ci;
+use skydrive;
 -- 创建文件表基本表，用于秒传，逻辑关联 用户媒体表，用户云盘表格，用户剧集表
 CREATE TABLE `tbl_file`
 (

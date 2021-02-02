@@ -15,10 +15,38 @@ Syntax error: "(" unexpected（linux系统）:
 	sudo dpkg-reconfigure dash
 	选No
 
+设置管理员密码：
+sudo passwd
+
 curl -o 本地文件名  链接
 chmod +x 本地文件/chmo 777 本地文件
 sudo dpkg-reconfigure dash  选No
 是否已经安装myslq
 sudo netstat -tap | grep mysql
 sudo apt-get install mysql-server mysql-client
+
+sudo mysql-uroot -p 进入后
+设置root密码
+        方法1： 用SET PASSWORD命令
+        　　首先登录MySQL。
+        格式：mysql> set password for 用户名@localhost = password('新密码');
+        例子：mysql> set password for root@localhost = password('123');
+        方法2：用mysqladmin
+        　　格式：mysqladmin -u用户名 -p旧密码 password 新密码
+        例子：mysqladmin -uroot -p123456 password 123
+        方法3：用UPDATE直接编辑user表
+        　　首先登录MySQL。
+        mysql> use mysql;
+        mysql> update user set password=password('123') where user='root' and host='localhost';
+        mysql> flush privileges;
+
+一直报语法错误用这种
+  ALTER USER 'root'@'localhost' IDENTIFIED BY '123456';
+
+$ sudo mysql -u root
+mysql> ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'new-password';
+$ sudo service mysql stop
+$ sudo service mysql start
+$ mysql -u root -p
+
 

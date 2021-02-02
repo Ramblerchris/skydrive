@@ -83,7 +83,7 @@ func Setup()  (dbconfig *ConfigInt  ){
 		defer file.Close()
 		decoder := json.NewDecoder(file)
 		decoder.Decode(&dbconfig)
-		logger.Info(dbconfig.String())
+		logger.Info("读取配置文件",dbconfig.String())
 	} else {
 		dbconfig = &ConfigInt{
 			USER_NAME:    USER_NAME,
@@ -100,6 +100,7 @@ func Setup()  (dbconfig *ConfigInt  ){
 			UDP_GroupSERVER_Sendport:   UDP_GroupSERVER_Sendport,
 			UDP_SERVER_Sendport:        UDP_SERVER_Sendport,
 		}
+		logger.Info("默认配置",dbconfig.String())
 	}
 	return dbconfig
 }
