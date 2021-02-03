@@ -49,4 +49,17 @@ $ sudo service mysql stop
 $ sudo service mysql start
 $ mysql -u root -p
 
+/etc/rc.local
+#!/bin/bash
+#执行的命令
+(
+sleep 10
+执行命令
+) &
+exit 0
+
+
+
+远程链接：
+ ssh  root@localhost
 
