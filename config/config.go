@@ -23,8 +23,8 @@ type ConfigInt struct {
 	DATABASE string `json:"skydrive"`
 	CHARSET string `json:"charset"`
 	MySqlSprintf string `json:"conSprintf"`
-	DiskFileRoot string `json:"updisk"`
-	AlbumFileRoot string `json:"upalbum"`
+	DiskFileRoot string `json:"diskFileRoot"`
+	AlbumFileRoot string `json:"albumFileRoot"`
 
 	Http_ServeLocation int `json:"HttpPORT"`
 	UDP_SERVER_ListenPORT  int `json:"UDP_SERVER_ListenPORT"`
@@ -90,8 +90,12 @@ func Setup()  (dbconfig *ConfigInt  ){
 		decoder := json.NewDecoder(file)
 		decoder.Decode(&dbconfig)
 		logger.Info("读取配置文件",dbconfig.String())
-		DiskFileRoot = dbconfig.DiskFileRoot
-		AlbumFileRoot = dbconfig.AlbumFileRoot
+		if len(dbconfig.DiskFileRoot)>0{
+			DiskFileRoot = dbconfig.DiskFileRoot
+		}
+		if len(dbconfig.AlbumFileRoot)>0{
+			AlbumFileRoot = dbconfig.AlbumFileRoot
+		}
 	} else {
 		dbconfig = &ConfigInt{
 			USER_NAME:    USER_NAME,

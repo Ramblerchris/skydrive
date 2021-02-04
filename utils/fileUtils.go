@@ -42,8 +42,9 @@ func CreateDirbySha1(rootpath, sha, filename string,uid int64) (error, string) {
 	}
 	path := getDirPath(rootpath, sha)
 	err := os.MkdirAll(path, os.ModePerm)
+	logger.Info("CreateDirbySha1 path:", path," err:",err)
 	if err!=nil{
-		return err,""
+		return err,path
 	}
 	filename=fmt.Sprintf("%d_%s_%s", uid, BuildUUID(), filename)
 	return nil, fmt.Sprintf("%s/%s", path,  filename)
