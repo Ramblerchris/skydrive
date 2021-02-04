@@ -1,0 +1,127 @@
+#######设置密码和下载文件 start ############
+设置管理员密码：
+sudo passwd
+
+curl -o 本地文件名  链接
+chmod +x 本地文件/chmo 777 本地文件
+sudo dpkg-reconfigure dash  选No
+#######设置密码和下载文件 end ############
+
+
+
+
+#######mysql start ############
+是否已经安装myslq
+sudo netstat -tap | grep mysql
+sudo apt-get install mysql-server mysql-client
+
+sudo mysql-uroot -p 进入后
+设置root密码
+        方法1： 用SET PASSWORD命令
+        　　首先登录MySQL。
+        格式：mysql> set password for 用户名@localhost = password('新密码');
+        例子：mysql> set password for root@localhost = password('123');
+        方法2：用mysqladmin
+        　　格式：mysqladmin -u用户名 -p旧密码 password 新密码
+        例子：mysqladmin -uroot -p123456 password 123
+        方法3：用UPDATE直接编辑user表
+        　　首先登录MySQL。
+        mysql> use mysql;
+        mysql> update user set password=password('123') where user='root' and host='localhost';
+        mysql> flush privileges;
+
+一直报语法错误用这种
+  ALTER USER 'root'@'localhost' IDENTIFIED BY '123456';
+
+$ sudo mysql -u root
+mysql> ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'new-password';
+$ sudo service mysql stop
+$ sudo service mysql start
+$ mysql -u root -p
+#######mysql end ############
+
+
+
+
+
+
+#######SSH start ############
+
+远程链接：
+ ssh  root@localhost
+
+ sudo apt-get install ssh
+ sudo service ssh start
+
+ 检查端口是否监听
+ ss -tnlp
+#######SSH end ############
+
+
+
+
+
+#######添加硬盘 start ############
+ #查看更多硬盘
+ fdisk -l
+
+操作sdb
+fdisk /dev/sdb
+ 然后，我们为这个硬盘创建分区，输入fdisk /dev/sdb，依次输入n，p，1，w，其中n分别表示创建一个新分区，p表示分区类型为主分区，1表示分区编号是1，w表示保存
+mkfs.ext4 /dev/sdb1
+下一步是格式化分区，我们输入mkfs.ext4 /dev/sdb1 （1就是上一步的分区编号）。
+
+mkdir /data
+mkdir /data，在根目录创建/data作为此分区的挂载点，
+mount /dev/sdb1 /data
+输mount /dev/sdb1 /data，将分区挂载到目录下，
+df -h |grep sdb1
+通过df -h,可以看到挂载成功
+
+自动挂载，输vi /etc/fstab
+/dev/sdb1 /data ext4 defaults 0 0
+
+df -h
+输入df -h检查一下，分区自动挂载
+
+査看文件的详细信息
+stat demo.txt
+#######添加硬盘 end ############
+
+
+
+
+
+#######执行程序 start ############
+ServeLocation              = 9996
+	UDP_SERVER_ListenPORT      = 8997
+	UDP_GroupSERVER_ListenPORT = 8998
+
+	UdpGroupserverSendport = 8999
+	UdpServerSendport      = 8996
+
+	USER_NAME    = "root"
+	PASS_WORD    = "nihao@123456"
+	HOST         = "localhost"
+	PORT         = "3306"
+	DATABASE     = "skydrive"
+执行二进制报
+Syntax error: "(" unexpected（linux系统）:
+	sudo dpkg-reconfigure dash
+	选No
+#######执行程序 end ############
+
+
+
+
+
+#######自启动 start ############
+/etc/rc.local
+#!/bin/bash
+#执行的命令
+(
+sleep 10
+执行脚本
+) &
+exit 0
+#######自启动 end ############
