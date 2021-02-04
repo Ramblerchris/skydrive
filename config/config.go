@@ -9,7 +9,12 @@ import (
 	"time"
 )
 
-var Debug     = true
+var (
+	Debug     = true
+	DiskFileRoot           = "updisk"
+	AlbumFileRoot          = "upalbum"
+)
+
 type ConfigInt struct {
 	USER_NAME string `json:"username"`
 	PASS_WORD string `json:"password"`
@@ -18,6 +23,8 @@ type ConfigInt struct {
 	DATABASE string `json:"skydrive"`
 	CHARSET string `json:"charset"`
 	MySqlSprintf string `json:"conSprintf"`
+	DiskFileRoot string `json:"updisk"`
+	AlbumFileRoot string `json:"upalbum"`
 
 	Http_ServeLocation int `json:"HttpPORT"`
 	UDP_SERVER_ListenPORT  int `json:"UDP_SERVER_ListenPORT"`
@@ -68,12 +75,11 @@ const (
 	Regex_MobilePhone = `^(1[3|4|5|8][0-9]\d{4,8})$`
 	Salt_MD5          = "&%)&%A3t8C"
 
-	SaveFileRoot           = "temp"
 	SaveFileRoot_thumbnail = "thumbnail"
 	Thumbnail_Quality      = 40
-	Log_FILE_PATH      = "temp/log/"
-	LOG_FILE_NAME      = "logfile.log"
-	configInt      = "config_ini.json"
+	Log_FILE_PATH          = "temp/log/"
+	LOG_FILE_NAME          = "logfile.log"
+	configInt              = "config_ini.json"
 )
 
 func Setup()  (dbconfig *ConfigInt  ){
@@ -84,6 +90,8 @@ func Setup()  (dbconfig *ConfigInt  ){
 		decoder := json.NewDecoder(file)
 		decoder.Decode(&dbconfig)
 		logger.Info("读取配置文件",dbconfig.String())
+		DiskFileRoot = dbconfig.DiskFileRoot
+		AlbumFileRoot = dbconfig.AlbumFileRoot
 	} else {
 		dbconfig = &ConfigInt{
 			USER_NAME:    USER_NAME,

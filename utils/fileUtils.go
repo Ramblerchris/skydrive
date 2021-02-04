@@ -34,6 +34,7 @@ func FileMerge(chunkpath string, newfile string) bool {
 	}
 	return true
 }
+
 //创建文件存储路径
 func CreateDirbySha1(rootpath, sha, filename string,uid int64) (error, string) {
 	if sha == "" {

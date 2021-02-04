@@ -2,6 +2,7 @@ package redisconn
 
 import (
 	"context"
+
 	"github.com/go-redis/redis/v8"
 	_ "github.com/go-redis/redis/v8"
 	"github.com/skydrive/logger"
@@ -14,7 +15,7 @@ var (
 	redispassword = "123456"
 )
 
-func init() {
+func Setup() {
 	client = redis.NewClient(&redis.Options{
 		Addr:     redishost,
 		Password: redispassword, // no password set

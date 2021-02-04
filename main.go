@@ -2,6 +2,12 @@ package main
 
 import (
 	"fmt"
+	"net/http"
+	_ "net/http/pprof"
+	"os"
+	"strconv"
+	"time"
+
 	"github.com/skydrive/broadcast"
 	"github.com/skydrive/cache/redisconn"
 	"github.com/skydrive/config"
@@ -10,34 +16,30 @@ import (
 	"github.com/skydrive/logger"
 	"github.com/skydrive/media"
 	"github.com/skydrive/utils"
-	"net/http"
-	_ "net/http/pprof"
-	"os"
-	"strconv"
-	"time"
 )
+
 var (
-	AppName      string // 应用名称
-	AppVersion   string // 应用版本
-	BuildVersion string // 编译版本
-	BuildTime    string // 编译时间
-	GitRevision  string // Git版本
-	GitBranch    string // Git分支
-	GoVersion    string // Golang信息
-	Debug    ="true" // 是否为开发环境
+	AppName      string   // 应用名称
+	AppVersion   string   // 应用版本
+	BuildVersion string   // 编译版本
+	BuildTime    string   // 编译时间
+	GitRevision  string   // Git版本
+	GitBranch    string   // Git分支
+	GoVersion    string   // Golang信息
+	Debug        = "true" // 是否为开发环境
 )
 
 func main() {
-	config.Debug,_=strconv.ParseBool(Debug)
+	config.Debug, _ = strconv.ParseBool(Debug)
 	configInt := config.Setup()
 	mysqlconn.Setup(configInt.GetDataSourceName())
-	logger.Setup(config.Debug,config.Log_FILE_PATH,config.LOG_FILE_NAME)
+	// redisconn.Setup()
+	logger.Setup(config.Debug, config.Log_FILE_PATH, config.LOG_FILE_NAME)
 	versionInfo()
-	broadcast.InitUDP(configInt.UDP_SERVER_ListenPORT,configInt.UDP_SERVER_Sendport,configInt.UDP_GroupSERVER_ListenPORT,configInt.UDP_GroupSERVER_Sendport)
+	broadcast.InitUDP(configInt.UDP_SERVER_ListenPORT, configInt.UDP_SERVER_Sendport, configInt.UDP_GroupSERVER_ListenPORT, configInt.UDP_GroupSERVER_Sendport)
 	redisconn.GetRedisClient()
 	httpServer(configInt)
 }
-
 
 func httpServer(configInt *config.ConfigInt) {
 	http.HandleFunc("/user/checknet", handler.CheckNetIsOkHandler)
@@ -66,9 +68,9 @@ func httpServer(configInt *config.ConfigInt) {
 	http.HandleFunc("/userfile/adddir", handler.TokenCheckInterceptor(handler.AddFileDirByUidPidHandler))
 	http.HandleFunc("/userfile/updateName", handler.TokenCheckInterceptor(handler.UpdateDirNameById))
 	http.HandleFunc("/userfile/dirlist", handler.TokenCheckInterceptor(handler.GetUserDirFileListByPidHandler))
-	http.HandleFunc("/userfile/initmultipartinfo", handler.TokenCheckInterceptor(handler.InitMultipartUploadHandler))
-	http.HandleFunc("/userfile/finishmultipartinfo", handler.TokenCheckInterceptor(handler.FinishMultipartUploadHandler))
-	http.HandleFunc("/userfile/uploadmultipartinfo", handler.TokenCheckInterceptor(handler.UploadMultipartHandler))
+	// http.HandleFunc("/userfile/initmultipartinfo", handler.TokenCheckInterceptor(handler.InitMultipartUploadHandler))
+	// http.HandleFunc("/userfile/finishmultipartinfo", handler.TokenCheckInterceptor(handler.FinishMultipartUploadHandler))
+	// http.HandleFunc("/userfile/uploadmultipartinfo", handler.TokenCheckInterceptor(handler.UploadMultipartHandler))
 
 	http.HandleFunc("/disk/upload", handler.TokenCheckInterceptor(handler.UploadDiskFileHandler))
 	http.HandleFunc("/disk/delete", handler.TokenCheckInterceptor(handler.DeleteDiskFileDirByUidHandler))
@@ -85,7 +87,7 @@ func httpServer(configInt *config.ConfigInt) {
 	http.HandleFunc("/admin/systemInfo", handler.TokenCheckInterceptor(handler.GetSystemInfoHandler))
 
 	logger.Infof("开始启动本地服务 地址为 %d ", configInt.Http_ServeLocation)
-	if error := http.ListenAndServe(fmt.Sprintf(":%d",configInt.Http_ServeLocation), nil); error != nil {
+	if error := http.ListenAndServe(fmt.Sprintf(":%d", configInt.Http_ServeLocation), nil); error != nil {
 		logger.Errorf("启动错误 error:%s ", error.Error())
 	}
 }
@@ -103,8 +105,6 @@ func versionInfo() {
 		logger.Infof("Debug :\t %s", Debug)
 	}
 }
-
-
 
 func handleFile(path string, fileinfo os.FileInfo, index int) {
 	//fmt.Print(" 处理", fileinfo.Mode())

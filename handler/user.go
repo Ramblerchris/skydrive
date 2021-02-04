@@ -176,7 +176,7 @@ func UpdataUploadUserPhotoHandler(w http.ResponseWriter, r *http.Request, utoken
 			response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, fmt.Sprintf("获取文件出错 %s \n", error.Error()))
 			return
 		}
-		error, path := utils.CreateDirbySha1(config.SaveFileRoot, sha1, fileheader.Filename,utoken.Uid.Int64)
+		error, path := utils.CreateDirbySha1(config.AlbumFileRoot, sha1, fileheader.Filename,utoken.Uid.Int64)
 		if error!=nil{
 			response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, fmt.Sprintf("创建文件夹出错 %s \n", error.Error()))
 		}

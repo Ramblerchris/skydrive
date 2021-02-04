@@ -10,5 +10,7 @@
   "UDP_SERVER_ListenPORT":8997,
   "UDP_GroupSERVER_ListenPORT":8998,
   "UDP_GroupSERVER_SendPORT":8999,
-  "UDP_SERVER_SendPORT":8996
+  "UDP_SERVER_SendPORT":8996,
+  "DiskFileRoot":"updisk",
+  "AlbumFileRoot":"upalbum"
 }

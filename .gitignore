@@ -9,6 +9,8 @@
 .externalNativeBuild
 /vendor/*
 /temp/*
+/updisk/*
+/upalbum/*
 /output/*
 /thumbnail/*
 .idea
