@@ -121,7 +121,7 @@ Syntax error: "(" unexpected（linux系统）:
 #执行的命令
 (
 sleep 10
-执行脚本
+执行脚本  &
 ) &
 exit 0
 #######自启动 end ############
