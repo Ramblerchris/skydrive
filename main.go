@@ -31,17 +31,17 @@ var (
 
 func main() {
 	config.Debug, _ = strconv.ParseBool(Debug)
-	configInt := config.Setup()
-	mysqlconn.Setup(configInt.GetDataSourceName())
+	configInit := config.Setup()
+	mysqlconn.Setup(configInit.GetDataSourceName())
 	// redisconn.Setup()
 	logger.Setup(config.Debug, config.Log_FILE_PATH, config.LOG_FILE_NAME)
 	versionInfo()
-	broadcast.InitUDP(configInt.UDP_SERVER_ListenPORT, configInt.UDP_SERVER_Sendport, configInt.UDP_GroupSERVER_ListenPORT, configInt.UDP_GroupSERVER_Sendport)
+	broadcast.InitUDP(configInit.UDP_SERVER_ListenPORT, configInit.UDP_SERVER_Sendport, configInit.UDP_GroupSERVER_ListenPORT, configInit.UDP_GroupSERVER_Sendport)
 	redisconn.GetRedisClient()
-	httpServer(configInt)
+	httpServer(configInit)
 }
 
-func httpServer(configInt *config.ConfigInt) {
+func httpServer(configInit *config.ConfigInt) {
 	http.HandleFunc("/user/checknet", handler.CheckNetIsOkHandler)
 	http.HandleFunc("/user/register", handler.RegisterHandler)
 	http.HandleFunc("/user/signin", handler.SignInHandler)
@@ -85,9 +85,9 @@ func httpServer(configInt *config.ConfigInt) {
 	http.HandleFunc("/admin/allUserFileList", handler.TokenCheckInterceptor(handler.GetAllUserFileListHandler))
 	http.HandleFunc("/admin/allDiskUserFileList", handler.TokenCheckInterceptor(handler.GetAllDiskUserFileListHandler))
 	http.HandleFunc("/admin/systemInfo", handler.TokenCheckInterceptor(handler.GetSystemInfoHandler))
-
-	logger.Infof("开始启动本地服务 地址为 %d ", configInt.Http_ServeLocation)
-	if error := http.ListenAndServe(fmt.Sprintf(":%d", configInt.Http_ServeLocation), nil); error != nil {
+	http.Handle("/", http.StripPrefix("/", http.FileServer(http.Dir(configInit.AdminManagerDir))))
+	logger.Infof("开始启动本地服务 地址为 %d ", configInit.Http_ServeLocation)
+	if error := http.ListenAndServe(fmt.Sprintf(":%d", configInit.Http_ServeLocation), nil); error != nil {
 		logger.Errorf("启动错误 error:%s ", error.Error())
 	}
 }

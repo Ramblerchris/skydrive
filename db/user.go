@@ -17,7 +17,7 @@ const (
 )
 
 func (t *TableUser) String() {
-	logger.Info("Id:%s User_name:%s User_pwd :%s Email:%s Phone:%s Email_validated:%s Phone_validated:%s Signup_at :%s Last_active:%s Profile:%s Status:%s",t.Id,t.User_name,t.User_pwd,t.Email,t.Phone,t.Email_validated,t.Phone_validated,t.Signup_at,t.Last_active,t.Profile,t.Status)
+	logger.Infof("Id:%s User_name:%s User_pwd :%s Email:%s Phone:%s Email_validated:%s Phone_validated:%s Signup_at :%s Last_active:%s Profile:%s Status:%s",t.Id,t.User_name,t.User_pwd,t.Email,t.Phone,t.Email_validated,t.Phone_validated,t.Signup_at,t.Last_active,t.Profile,t.Status)
 }
 
 func SaveUserInfo(phone string, password string, time string) bool {

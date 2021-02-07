@@ -8,7 +8,7 @@ PROJECT_NAME="skydrive"
 BINARY="skydrive_release"
 
 OUTPUT_DIR=output
-GOOS=$(go env GOOS)
+GOOS=linux
 
 APP_NAME=${PROJECT_NAME}
 APP_VERSION=$(git log -1 --oneline)

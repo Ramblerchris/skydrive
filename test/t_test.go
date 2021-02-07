@@ -6,6 +6,7 @@ import (
 	"github.com/skydrive/config"
 	"net"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 	"testing"
@@ -21,7 +22,9 @@ func Test_join(t *testing.T)  {
 func Test_t(t *testing.T) {
 	//testTime()
 	//testUdp()
-	TestRange(t)
+	//TestRange(t)
+	matchString, err := regexp.MatchString("^([hH][tT]{2}[pP]://|[hH][tT]{2}[pP][sS]://)(([A-Za-z0-9-~]+).)+([A-Za-z0-9-~\\/])+$", "https://static3.laiyifen.com/files/product-admin-web/image/1591327761047_5742.jpg?")
+	fmt.Println(matchString,err)
 }
 func TestRange(t *testing.T) {
 	var ma = make(map[string]string)

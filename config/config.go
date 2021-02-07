@@ -16,13 +16,13 @@ var (
 )
 
 type ConfigInt struct {
-	USER_NAME string `json:"username"`
-	PASS_WORD string `json:"password"`
-	HOST string `json:"host"`
-	PORT string `json:"port"`
-	DATABASE string `json:"skydrive"`
-	CHARSET string `json:"charset"`
-	MySqlSprintf string `json:"conSprintf"`
+	USER_NAME string `json:"mysqlDbUsername"`
+	PASS_WORD string `json:"mysqlDbPassword"`
+	HOST string `json:"mysqlDbHost"`
+	PORT string `json:"mysqlDbPort"`
+	DATABASE string `json:"mysqlDbName"`
+	CHARSET string `json:"mysqlDbcharset"`
+	MySqlSprintf string `json:"mysqlDbconSprintf"`
 	DiskFileRoot string `json:"diskFileRoot"`
 	AlbumFileRoot string `json:"albumFileRoot"`
 
@@ -31,6 +31,7 @@ type ConfigInt struct {
 	UDP_GroupSERVER_ListenPORT int `json:"UDP_GroupSERVER_ListenPORT"`
 	UDP_GroupSERVER_Sendport int `json:"UDP_GroupSERVER_SendPORT"`
 	UDP_SERVER_Sendport  int `json:"UDP_SERVER_SendPORT"`
+	AdminManagerDir  string `json:"adminManagerDir"`
 }
 
 func (dbConfig *ConfigInt) GetDataSourceName() string {

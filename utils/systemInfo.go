@@ -11,7 +11,11 @@ import (
 )
 
 func GetCpuPercent() float64 {
-	percent, _:= cpu.Percent(time.Second, false)
+	percent, error:= cpu.Percent(time.Second, false)
+	if error!=nil{
+		logger.Info("cpuInfo error:",error)
+		return 0.1
+	}
 	logger.Info("cpuInfo",percent)
 	return percent[0]
 }
