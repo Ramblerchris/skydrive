@@ -34,7 +34,7 @@ func main() {
 	configInit := config.Setup()
 	mysqlconn.Setup(configInit.GetDataSourceName())
 	// redisconn.Setup()
-	logger.Setup(config.Debug, config.Log_FILE_PATH, config.LOG_FILE_NAME)
+	logger.Setup(config.Debug, config.LogDir, config.LOG_FILE_NAME)
 	versionInfo()
 	broadcast.InitUDP(configInit.UDP_SERVER_ListenPORT, configInit.UDP_SERVER_Sendport, configInit.UDP_GroupSERVER_ListenPORT, configInit.UDP_GroupSERVER_Sendport)
 	redisconn.GetRedisClient()

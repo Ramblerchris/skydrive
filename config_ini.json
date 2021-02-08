@@ -11,7 +11,8 @@
   "UDP_GroupSERVER_ListenPORT":8998,
   "UDP_GroupSERVER_SendPORT":8999,
   "UDP_SERVER_SendPORT":8996,
-  "diskFileRoot":"/Users/mac/updisk",
-  "albumFileRoot":"/Users/mac/upalbum",
-  "adminManagerDir":"html"
+  "diskFileRoot":"updisk",
+  "albumFileRoot":"upalbum",
+  "adminManagerDir":"html",
+  "LogDir":"output/log"
 }

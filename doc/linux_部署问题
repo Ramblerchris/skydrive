@@ -7,9 +7,14 @@ sudo chmod -R 777 temp  修改文件夹权限
 mv * ../ 当前所有文件移动到上一级
 mkdir test  创建文件夹
 touch aa.txt  创建文件
-
-
 sudo dpkg-reconfigure dash  选No
+rm:
+-r 就是向下递归，不管有多少级目录，一并删除
+-f 就是直接强行删除，不作任何提示的意思
+删除文件夹实例：
+rm -rf /var/log/httpd/access 将会删除/var/log/httpd/access目录以及其下所有文件、文件夹
+删除文件使用实例：
+rm -f /var/log/httpd/access.log 将会强制删除/var/log/httpd/access.log这个文件
 #######设置密码和下载文件 end ############
 
 
@@ -17,6 +22,13 @@ sudo dpkg-reconfigure dash  选No
 scp /Users/mac/gomodproject/skydrive/doc/skydrive.sql wisn@172.17.57.196:/home/wisn/
 https://www.cnblogs.com/withfeel/p/10635873.html
 #######传输文件 end ############
+
+#######关机 start ############
+shutdown -h now  现在马上关机
+shutdown -h 20:30  晚上8:30定时关机
+shutdown -r now  现在马上重起
+shutdown -r 20:30  晚上8:30定时重起
+#######关机 end ############
 
 
 #######解压缩文件 start ############

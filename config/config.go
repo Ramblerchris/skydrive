@@ -10,9 +10,11 @@ import (
 )
 
 var (
-	Debug     = true
-	DiskFileRoot           = "updisk"
-	AlbumFileRoot          = "upalbum"
+	Debug         = true
+	DiskFileRoot  = "updisk"
+	AlbumFileRoot = "upalbum"
+	LogDir        = "log"
+
 )
 
 type ConfigInt struct {
@@ -32,6 +34,7 @@ type ConfigInt struct {
 	UDP_GroupSERVER_Sendport int `json:"UDP_GroupSERVER_SendPORT"`
 	UDP_SERVER_Sendport  int `json:"UDP_SERVER_SendPORT"`
 	AdminManagerDir  string `json:"adminManagerDir"`
+	LogDir  string `json:"LogDir"`
 }
 
 func (dbConfig *ConfigInt) GetDataSourceName() string {
@@ -78,7 +81,6 @@ const (
 
 	SaveFileRoot_thumbnail = "thumbnail"
 	Thumbnail_Quality      = 40
-	Log_FILE_PATH          = "temp/log/"
 	LOG_FILE_NAME          = "logfile.log"
 	configInt              = "config_ini.json"
 	AdminManagerDir        = "html"
@@ -97,6 +99,9 @@ func Setup()  (dbconfig *ConfigInt  ){
 		}
 		if len(dbconfig.AlbumFileRoot)>0{
 			AlbumFileRoot = dbconfig.AlbumFileRoot
+		}
+		if len(dbconfig.LogDir)>0{
+			LogDir = dbconfig.LogDir
 		}
 	} else {
 		dbconfig = &ConfigInt{
