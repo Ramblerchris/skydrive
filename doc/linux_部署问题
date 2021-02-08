@@ -1,20 +1,37 @@
 #######设置密码和下载文件 start ############
 设置管理员密码：
 sudo passwd
-
 curl -o 本地文件名  链接
 chmod +x 本地文件/chmo 777 本地文件
+sudo chmod -R 777 temp  修改文件夹权限
+mv * ../ 当前所有文件移动到上一级
+mkdir test  创建文件夹
+touch aa.txt  创建文件
+
+
 sudo dpkg-reconfigure dash  选No
 #######设置密码和下载文件 end ############
 
 
+#######传输文件 start ############
+scp /Users/mac/gomodproject/skydrive/doc/skydrive.sql wisn@172.17.57.196:/home/wisn/
+https://www.cnblogs.com/withfeel/p/10635873.html
+#######传输文件 end ############
+
+
+#######解压缩文件 start ############
+unzip -o -d /home/sunny myfile.zip
+zip -d myfile.zip smart.txt
+
+删除压缩文件中smart.txt文件
+zip -m myfile.zip ./rpm_info.txt
+#######解压缩文件 end ############
 
 
 #######mysql start ############
 是否已经安装myslq
 sudo netstat -tap | grep mysql
 sudo apt-get install mysql-server mysql-client
-
 sudo mysql-uroot -p 进入后
 设置root密码
         方法1： 用SET PASSWORD命令
@@ -34,7 +51,7 @@ sudo mysql-uroot -p 进入后
   ALTER USER 'root'@'localhost' IDENTIFIED BY '123456';
 
 $ sudo mysql -u root
-mysql> ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'new-password';
+mysql> ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'nihao@123456';
 $ sudo service mysql stop
 $ sudo service mysql start
 $ mysql -u root -p
@@ -125,3 +142,20 @@ sleep 10
 ) &
 exit 0
 #######自启动 end ############
+
+
+
+
+
+#######kill pid start ############
+ps
+kill -l pid
+-l选项告诉kill命令用好像启动进程的用户已注销的方式结束进程
+
+kill -9 PID  强大和危险的命令迫使进程在运行时突然终止
+#######kill pid end ############
+
+
+
+
+

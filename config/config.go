@@ -81,6 +81,7 @@ const (
 	Log_FILE_PATH          = "temp/log/"
 	LOG_FILE_NAME          = "logfile.log"
 	configInt              = "config_ini.json"
+	AdminManagerDir        = "html"
 )
 
 func Setup()  (dbconfig *ConfigInt  ){
@@ -112,6 +113,7 @@ func Setup()  (dbconfig *ConfigInt  ){
 			UDP_GroupSERVER_ListenPORT: UDP_GroupSERVER_ListenPORT,
 			UDP_GroupSERVER_Sendport:   UDP_GroupSERVER_Sendport,
 			UDP_SERVER_Sendport:        UDP_SERVER_Sendport,
+			AdminManagerDir:        AdminManagerDir,
 		}
 		logger.Info("默认配置",dbconfig.String())
 	}
