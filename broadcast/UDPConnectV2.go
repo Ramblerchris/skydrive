@@ -1,6 +1,8 @@
 package broadcast
 
 import (
+	"fmt"
+	"github.com/skydrive/config"
 	"github.com/skydrive/logger"
 	"net"
 	"os"
@@ -12,7 +14,7 @@ import (
 var connlist = make(chan bool, 3)
 
 //需要优化
-func StartUDPServerV2(UDPListenPort ,sendPort int) {
+func StartUDPServerV2(UDPListenPort, sendPort int) {
 	address := ":" + strconv.Itoa(UDPListenPort)
 	addr, err := net.ResolveUDPAddr("udp", address)
 	if err != nil {
@@ -27,11 +29,11 @@ func StartUDPServerV2(UDPListenPort ,sendPort int) {
 	defer conn.Close()
 	for {
 		connlist <- true
-		go dealRead(conn,sendPort)
+		go dealRead(conn, sendPort)
 	}
 
 }
-func dealRead(conn *net.UDPConn,sendport int ) {
+func dealRead(conn *net.UDPConn, sendport int) {
 	//defer  conn.Close()
 	data := make([]byte, 65507)
 	n, rAddr, err := conn.ReadFromUDP(data)
@@ -45,8 +47,8 @@ func dealRead(conn *net.UDPConn,sendport int ) {
 	upper := strings.ToUpper(strData)
 	//10s 后给客户端再回复消息
 	//time.Sleep(time.Second*1)
-	rAddr.Port=sendport
-	_, err = conn.WriteToUDP([]byte("pong "+upper), rAddr)
+	rAddr.Port = sendport
+	_, err = conn.WriteToUDP([]byte(fmt.Sprintf("{\"debug\":%t ,\"message\":\"pong %s\"}", config.Debug, upper)), rAddr)
 	if err != nil {
 		logger.Error(err)
 	}

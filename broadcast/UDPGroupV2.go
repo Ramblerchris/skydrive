@@ -2,6 +2,7 @@ package broadcast
 
 import (
 	"fmt"
+	"github.com/skydrive/config"
 	"github.com/skydrive/logger"
 	"net"
 	"strings"
@@ -46,7 +47,7 @@ func dealUdpGroup(UDPServerSendPort int,listener *net.UDPConn) {
 		logger.Error(err)
 	}
 	//defer conn.Close()
-	conn.Write([]byte(fmt.Sprintf("pong %s", strings.ToUpper(string(data[:n])))))
+	conn.Write([]byte(fmt.Sprintf("{\"debug\":%t ,\"message\":\"pong %s\"}",config.Debug, strings.ToUpper(string(data[:n])))))
 	logger.Infof("<%s>\n", conn.RemoteAddr())
 	<-conngrouplist
 

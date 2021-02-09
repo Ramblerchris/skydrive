@@ -15,7 +15,7 @@ BUILD_TIME=$(date "+%FT%T%z")
 GIT_REVISION=$(git rev-parse --short HEAD)
 GIT_BRANCH=$(git name-rev --name-only HEAD)
 GO_VERSION=$(go version)
-Debug=false
+Debug=true
 
 echo  ${OUTPUT_DIR}
 echo  ${OUTPUT_DIR}/${BINARY}
