@@ -1,0 +1,16 @@
+安装linux
+
+安装ssh
+
+设置时区 ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime #linux的时区设置为上海
+
+硬盘分区格式化挂载
+
+config_ini.json 配置路径
+
+安装mysql 
+
+设置mysql 密码
+
+导入sql
+

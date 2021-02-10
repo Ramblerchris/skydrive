@@ -60,8 +60,9 @@ sudo mysql-uroot -p 进入后
         mysql> flush privileges;
 
 一直报语法错误用这种
-  ALTER USER 'root'@'localhost' IDENTIFIED BY '123456';
-
+  ALTER USER 'root'@'localhost' IDENTIFIED BY 'nihao@123456';
+connect mysql failed Error 1698: Access denied for user 'root'@'localhost'
+解决办法：ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'nihao@123456';
 $ sudo mysql -u root
 mysql> ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'nihao@123456';
 $ sudo service mysql stop
@@ -96,7 +97,8 @@ $ mysql -u root -p
 
 操作sdb
 fdisk /dev/sdb
- 然后，我们为这个硬盘创建分区，输入fdisk /dev/sdb，依次输入n，p，1，w，其中n分别表示创建一个新分区，p表示分区类型为主分区，1表示分区编号是1，w表示保存
+ 然后，我们为这个硬盘创建分区，输入fdisk /dev/sdb，依次输入n，p，1，w，
+ 其中n分别表示创建一个新分区，p表示分区类型为主分区，1表示分区编号是1，w表示保存
 mkfs.ext4 /dev/sdb1
 下一步是格式化分区，我们输入mkfs.ext4 /dev/sdb1 （1就是上一步的分区编号）。
 
@@ -112,6 +114,8 @@ df -h |grep sdb1
 
 df -h
 输入df -h检查一下，分区自动挂载
+
+https://www.cnblogs.com/zishengY/p/7137671.html
 
 査看文件的详细信息
 stat demo.txt

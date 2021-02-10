@@ -13,6 +13,7 @@ var (
 	Debug         = true
 	DiskFileRoot  = "updisk"
 	AlbumFileRoot = "upalbum"
+	ThumbnailRoot = "thumbnail"
 	LogDir        = "log"
 
 )
@@ -27,6 +28,7 @@ type ConfigInt struct {
 	MySqlSprintf string `json:"mysqlDbconSprintf"`
 	DiskFileRoot string `json:"diskFileRoot"`
 	AlbumFileRoot string `json:"albumFileRoot"`
+	ThumbnailRoot string `json:"thumbnailRoot"`
 
 	Http_ServeLocation int `json:"HttpPORT"`
 	UDP_SERVER_ListenPORT  int `json:"UDP_SERVER_ListenPORT"`
@@ -79,7 +81,7 @@ const (
 	Regex_MobilePhone = `^(1[3|4|5|8][0-9]\d{4,8})$`
 	Salt_MD5          = "&%)&%A3t8C"
 
-	SaveFileRoot_thumbnail = "thumbnail"
+	//SaveFileRoot_thumbnail = "thumbnail"
 	Thumbnail_Quality      = 40
 	LOG_FILE_NAME          = "logfile.log"
 	configInt              = "config_ini.json"
@@ -102,6 +104,9 @@ func Setup()  (dbconfig *ConfigInt  ){
 		}
 		if len(dbconfig.LogDir)>0{
 			LogDir = dbconfig.LogDir
+		}
+		if len(dbconfig.ThumbnailRoot)>0{
+			ThumbnailRoot = dbconfig.ThumbnailRoot
 		}
 	} else {
 		dbconfig = &ConfigInt{

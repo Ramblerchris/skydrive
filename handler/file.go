@@ -50,7 +50,7 @@ func OpenFile1Handler(w http.ResponseWriter, r *http.Request, utoken *db.TableUT
 	//只针对图片压缩
 	setHeaderFileName(w, data.FileName,nil)
 	if q != 0 && data.Ftype == 0 {
-		err, target := utils.CreateThumbDir(config.SaveFileRoot_thumbnail, filesha1, strconv.FormatInt(q, 10), data.FileName)
+		err, target := utils.CreateThumbDir(config.ThumbnailRoot, filesha1, strconv.FormatInt(q, 10), data.FileName)
 		if err == nil {
 			//_, error := os.Open(data.FileLocation)
 			exists, _ := utils.PathExists(target)
