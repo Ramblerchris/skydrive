@@ -19,6 +19,7 @@ func GetCpuPercent() float64 {
 	logger.Info("cpuInfo",percent)
 	return percent[0]
 }
+
 func IOCounters() net.IOCountersStat {
 	percent, _:= net.IOCounters(false)
 	logger.Info("IOCounters",percent)

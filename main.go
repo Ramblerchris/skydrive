@@ -84,6 +84,8 @@ func httpServer(configInit *config.ConfigInt) {
 	http.HandleFunc("/admin/allFileList", handler.TokenCheckInterceptor(handler.GetAllFileListHandler))
 	http.HandleFunc("/admin/allUserFileList", handler.TokenCheckInterceptor(handler.GetAllUserFileListHandler))
 	http.HandleFunc("/admin/allDiskUserFileList", handler.TokenCheckInterceptor(handler.GetAllDiskUserFileListHandler))
+	http.HandleFunc("/admin/sdrb", handler.TokenCheckInterceptor(handler.ShutdownHandler))
+	//http.HandleFunc("/admin/sdrb", handler.ShutdownHandler)
 	http.HandleFunc("/admin/systemInfo", handler.TokenCheckInterceptor(handler.GetSystemInfoHandler))
 	http.Handle("/", http.StripPrefix("/", http.FileServer(http.Dir(configInit.AdminManagerDir))))
 	logger.Infof("开始启动本地服务 地址为 %d ", configInit.Http_ServeLocation)

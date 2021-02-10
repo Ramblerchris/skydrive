@@ -8,6 +8,7 @@ import (
 	"github.com/skydrive/utils"
 	"net/http"
 	"os"
+	"os/exec"
 	"strconv"
 )
 
@@ -117,6 +118,37 @@ func GetAllDiskUserFileListHandler(w http.ResponseWriter, r *http.Request, utoke
 		return
 	}
 	response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.Error)
+}
 
+func ShutdownHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
+	r.ParseForm()
+	handletype := r.FormValue("type")
+	var cmd *exec.Cmd
+	if handletype == "sd_off" {
+		//立刻关机 定时关机
+		time := r.FormValue("time")
+		if time == "" || len(time) == 0 {
+			cmd = exec.Command("shutdown", "-h", "now")
+		} else {
+			cmd = exec.Command("shutdown", time)
+		}
+	} else if handletype == "sd_cancel" {
+		//取消关机和重启
+		cmd = exec.Command("shutdown", "-c")
+	} else if handletype == "sd_reboot" {
+		//立刻重启和定时重启
+		time := r.FormValue("time")
+		if time == "" || len(time) == 0 {
+			cmd = exec.Command("reboot")
+		} else {
+			cmd = exec.Command("shutdown", "-r", time)
+		}
+	}
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, string(output))
+		return
+	}
+	response.ReturnResponseCodeMessage(w, config.Net_SuccessCode, string(output))
 }
 
