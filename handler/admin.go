@@ -1,32 +1,31 @@
 package handler
 
 import (
+	"net/http"
+	"os"
+	"os/exec"
+	"strconv"
+
 	"github.com/skydrive/beans"
 	"github.com/skydrive/config"
 	"github.com/skydrive/db"
 	"github.com/skydrive/response"
 	"github.com/skydrive/utils"
-	"net/http"
-	"os"
-	"os/exec"
-	"strconv"
 )
-
 
 //获取所有用户
 func GetSystemInfoHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
-	info:=&beans.SystenInfo{}
-	info.HostName,_ = os.Hostname()
-	info.HostName,_ = os.Hostname()
-	info.CpuPercent=utils.GetCpuPercent()
-	info.MemTotal,info.MemPercent=utils.GetMemPercent()
-	info.DiskTotal,info.DiskPercent=utils.GetDiskPercent()
-	info.SwpTotal,info.SwpPercent=utils.GetSwapMemoryPercent()
-	info.NetIO=utils.IOCounters()
-	info.HostInfo=utils.HostInfo()
-	response.ReturnResponse(w, config.Net_SuccessCode,config.Success,info )
+	info := &beans.SystenInfo{}
+	info.HostName, _ = os.Hostname()
+	info.HostName, _ = os.Hostname()
+	info.CpuPercent = utils.GetCpuPercent()
+	info.MemTotal, info.MemPercent = utils.GetMemPercent()
+	info.DiskTotal, info.DiskPercent = utils.GetDiskPercent()
+	info.SwpTotal, info.SwpPercent = utils.GetSwapMemoryPercent()
+	info.NetIO = utils.IOCounters()
+	info.HostInfo = utils.HostInfo()
+	response.ReturnResponse(w, config.Net_SuccessCode, config.Success, info)
 }
-
 
 //获取所有用户
 func GetAllUserListHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
@@ -151,4 +150,3 @@ func ShutdownHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUTo
 	}
 	response.ReturnResponseCodeMessage(w, config.Net_SuccessCode, string(output))
 }
-

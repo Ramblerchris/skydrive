@@ -15,12 +15,26 @@ rm:
 rm -rf /var/log/httpd/access 将会删除/var/log/httpd/access目录以及其下所有文件、文件夹
 删除文件使用实例：
 rm -f /var/log/httpd/access.log 将会强制删除/var/log/httpd/access.log这个文件
+复制并提示是否要覆盖
+cp -ri /home/wisn/  /home/wisn/1
 #######设置密码和下载文件 end ############
 
 
 #######传输文件 start ############
 scp /Users/mac/gomodproject/skydrive/doc/skydrive.sql wisn@172.17.57.196:/home/wisn/
 https://www.cnblogs.com/withfeel/p/10635873.html
+#######传输文件 end ############
+
+
+#######查看文件大小 start ############
+只显示直接子目录文件及文件夹大小统计值：
+du -h --max-depth=1 thumbnail/
+
+参数解释-a ： 列出所有的文件与目录容量，因为默认仅统计目录的容量而已
+-h: 以人们较易读的容量格式呈现(G/M/K)显示，自动选择显示的单位大小
+-s : 列出总量而已，而不列出每个个别的目录占用容量
+-k ： 以KB为单位进行显示
+-m : 以MB为单位进行显示常用命令参考 查看当前目录大小[plain] du -sh ./
 #######传输文件 end ############
 
 #######关机 start ############
@@ -65,9 +79,24 @@ connect mysql failed Error 1698: Access denied for user 'root'@'localhost'
 解决办法：ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'nihao@123456';
 $ sudo mysql -u root
 mysql> ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'nihao@123456';
+ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY 'nihao@123456';
 $ sudo service mysql stop
 $ sudo service mysql start
 $ mysql -u root -p
+
+问题：
+linux  2003 - Can't connect to MySQL
+解决：
+update user set host='%' where user='root';
+grant all privileges on *.* to 'root'@'%'
+flush privileges;
+https://blog.csdn.net/freezingxu/article/details/77088506
+
+
+ mysql_upgrade -u root -p 
+
+数据库备份
+mysqldump -uroot -pnihao@123456 --databases  skydrive > /home/wisn/skydrive-$(date +%Y%m%d).sql
 #######mysql end ############
 
 
@@ -164,6 +193,8 @@ exit 0
 
 
 #######kill pid start ############
+ ps -aux|grep "start.sh"
+ 
 ps
 kill -l pid
 -l选项告诉kill命令用好像启动进程的用户已注销的方式结束进程
