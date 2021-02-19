@@ -54,12 +54,53 @@ func OpenFile1Handler(w http.ResponseWriter, r *http.Request, utoken *db.TableUT
 		if err == nil {
 			//_, error := os.Open(data.FileLocation)
 			exists, _ := utils.PathExists(target)
-			if !exists && media.ScaleImageQuality(data.FileLocation, target, config.Thumbnail_Quality) {
+			if !exists && media.ScaleImageQualityV1(data.FileLocation, target, config.Thumbnail_Quality) {
 				http.ServeFile(w, r, target)
 			} else {
 				http.ServeFile(w, r, target)
 			}
 			return
+		}
+	}
+	http.ServeFile(w, r, data.FileLocation)
+}
+
+func OpenFile1HandlerV2(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
+	r.ParseForm()
+	filesha1 := r.FormValue("filesha1")
+	q, _ := strconv.ParseInt(r.FormValue("q"), 10, 64)
+	widthf, _ := strconv.ParseFloat(r.FormValue("widthf"), 10)
+	width, _ := strconv.ParseInt(r.FormValue("width"), 10, 64)
+	if len(filesha1) == 0 || filesha1 == "" || len(filesha1) == 0 || filesha1 == "" {
+		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.FormValueError)
+		return
+	}
+	data, ok := cache.GetFileMeta(filesha1)
+	if !ok {
+		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "not find filesha1:"+filesha1)
+		return
+	}
+	//只针对图片压缩
+	setHeaderFileName(w, data.FileName, nil)
+	if q != 0 && data.Ftype == 0 {
+		err, target := utils.CreateThumbDir(config.ThumbnailRoot, filesha1, strconv.FormatInt(q, 10), data.FileName)
+		if err == nil {
+			//_, error := os.Open(data.FileLocation)
+			exists, _ := utils.PathExists(target)
+			if !exists {
+				media.ScaleImageByWidthAndQuity(data.FileLocation, int(width), widthf, config.Thumbnail_Quality, target)
+			}
+			exists, _ = utils.PathExists(target)
+			if exists {
+				http.ServeFile(w, r, target)
+				return
+			}
+			//ScaleImageByWidthAndQuity(path, 0, 0.5, 100, output_path)
+			//if !exists && media.ScaleImageByWidthAndQuity(data.FileLocation, int(width),widthf,config.Thumbnail_Quality,target) {
+			//	http.ServeFile(w, r, target)
+			//} else {
+			//	http.ServeFile(w, r, target)
+			//}
 		}
 	}
 	http.ServeFile(w, r, data.FileLocation)

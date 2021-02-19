@@ -1,22 +1,19 @@
 package media
 
-
 import (
-	"fmt"
 	"github.com/nfnt/resize"
 	"github.com/skydrive/logger"
-	"io"
-	"os"
-	"log"
-	"image/jpeg"
-	"strconv"
-	"path/filepath"
-	"time"
-	"strings"
-	"bufio"
 	"image"
+	"image/jpeg"
 	"image/png"
+	"io"
+	"log"
+	"os"
+	"strings"
 )
+// reverseOrientation amply`s what ever operation is necessary to transform given orientation
+// to the orientation 1
+
 
 func imageCompress(
 	getReadSizeFile func() (io.Reader,error),
@@ -112,176 +109,176 @@ func imageCompress(
 
 	return true
 }
-
-func getFilelist(path string) {
-	/** 创建输出目录 */
-	errC := os.MkdirAll(inputArgs.OutputPath, 0777)
-	if errC != nil {
-		fmt.Printf("%s", errC)
-		return
-	}
-	err := filepath.Walk(path, func(pathFound string, f os.FileInfo, err error) error {
-		if ( f == nil ) {
-			return err
-		}
-		if f.IsDir() { /** 是否是目录 */
-			return nil
-		}
-		// println(pathFound)
-		/** 找到一个文件 */
-		/** 判断是不是图片 */
-		localPath,format,_ := isPictureFormat(pathFound)
-		/** 随机数 */
-		t := time.Now()
-		millis := t.Nanosecond() /** 纳秒 */
-		outputPath := inputArgs.OutputPath+strconv.FormatInt(int64(millis),10)+"."+format
-		if localPath!="" {
-			if !imageCompress(
-				func() (io.Reader,error){
-					return os.Open(localPath)
-				},
-				func() (*os.File,error) {
-					return os.Open(localPath)
-				},
-				outputPath,
-				inputArgs.Quality,
-				inputArgs.Width,
-				format) {
-				logger.Info("生成缩略图失败")
-			}else{
-				logger.Info("生成缩略图成功 "+outputPath)
-			}
-		}
-		return nil
-	})
-	if err != nil {
-		fmt.Printf("输入的路径信息有误 %v\n", err)
-	}
-}
+///*
+//func getFilelist(path string) {
+//	/** 创建输出目录 */
+//	errC := os.MkdirAll(inputArgs.OutputPath, 0777)
+//	if errC != nil {
+//		fmt.Printf("%s", errC)
+//		return
+//	}
+//	err := filepath.Walk(path, func(pathFound string, f os.FileInfo, err error) error {
+//		if ( f == nil ) {
+//			return err
+//		}
+//		if f.IsDir() { /** 是否是目录 */
+//			return nil
+//		}
+//		// println(pathFound)
+//		/** 找到一个文件 */
+//		/** 判断是不是图片 */
+//		localPath,format,_ := isPictureFormat(pathFound)
+//		/** 随机数 */
+//		t := time.Now()
+//		millis := t.Nanosecond() /** 纳秒 */
+//		outputPath := inputArgs.OutputPath+strconv.FormatInt(int64(millis),10)+"."+format
+//		if localPath!="" {
+//			if !imageCompress(
+//				func() (io.Reader,error){
+//					return os.Open(localPath)
+//				},
+//				func() (*os.File,error) {
+//					return os.Open(localPath)
+//				},
+//				outputPath,
+//				inputArgs.Quality,
+//				inputArgs.Width,
+//				format) {
+//				logger.Info("生成缩略图失败")
+//			}else{
+//				logger.Info("生成缩略图成功 "+outputPath)
+//			}
+//		}
+//		return nil
+//	})
+//	if err != nil {
+//		fmt.Printf("输入的路径信息有误 %v\n", err)
+//	}
+//}*/
 
 /** 是否是图片 */
-func isPictureFormat(path string) (string,string,string) {
-	temp := strings.Split(path,".")
-	if len(temp) <=1 {
-		return "","",""
-	}
-	mapRule := make(map[string]int64)
-	mapRule["jpg"]  = 1
-	mapRule["png"]  = 1
-	mapRule["jpeg"] = 1
-	// logger.Info(temp[1]+"---")
-	/** 添加其他格式 */
-	if mapRule[temp[1]] == 1  {
-		println(temp[1])
-		return path,temp[1],temp[0]
-	}else{
-		return "","",""
-	}
-}
+//func isPictureFormat(path string) (string,string,string) {
+//	temp := strings.Split(path,".")
+//	if len(temp) <=1 {
+//		return "","",""
+//	}
+//	mapRule := make(map[string]int64)
+//	mapRule["jpg"]  = 1
+//	mapRule["png"]  = 1
+//	mapRule["jpeg"] = 1
+//	// logger.Info(temp[1]+"---")
+//	/** 添加其他格式 */
+//	if mapRule[temp[1]] == 1  {
+//		println(temp[1])
+//		return path,temp[1],temp[0]
+//	}else{
+//		return "","",""
+//	}
+//}
+//
+//func execute()  {
+//	/** 获取输入 */
+//	//str := ""
+//	//fmt.Scanln (&str) /** 不要使用 scanf，它不会并以一个新行结束输入 */
+//
+//	reader := bufio.NewReader(os.Stdin)
+//	data, _, _ := reader.ReadLine()
+//	/** 分割 */
+//	strPice := strings.Split(string(data)," ") /** 空格 */
+//	if len(strPice) < 3 {
+//		fmt.Printf("输入有误，参数数量不足,请重新输入或退出程序：")
+//		execute()
+//		return
+//	}
+//
+//	inputArgs.LocalPath = strPice[0]
+//	inputArgs.Quality,_ = strconv.Atoi(strPice[1])
+//	inputArgs.Width,_   = strconv.Atoi(strPice[2])
+//
+//	pathTemp,format,top := isPictureFormat(inputArgs.LocalPath)
+//	if pathTemp == "" {
+//		/** 目录 */
+//		/** 如果输入目录，那么是批量 */
+//		logger.Info("开始批量压缩...")
+//		rs := []rune(inputArgs.LocalPath)
+//		end := len(rs)
+//		substr := string(rs[end-1:end])
+//		if substr=="/" {
+//			/** 有 / */
+//			rs := []rune(inputArgs.LocalPath)
+//			end := len(rs)
+//			substr := string(rs[0:end-1])
+//			endIndex := strings.LastIndex(substr,"/")
+//			inputArgs.OutputPath = string(rs[0:endIndex])+"/LghImageCompress/";
+//		}else {
+//			endIndex := strings.LastIndex(inputArgs.LocalPath,"/")
+//			inputArgs.OutputPath = string(rs[0:endIndex])+"/LghImageCompress/";
+//		}
+//		getFilelist(inputArgs.LocalPath)
+//		logger.Info("图片保存在文件夹 "+inputArgs.OutputPath)
+//	}else{
+//		/** 单个 */
+//		/** 如果输入文件，那么是单个，允许自定义路径 */
+//		logger.Info("开始单张压缩...") //C:\Users\lzq\Desktop\Apk.jpg 75 200
+//		inputArgs.OutputPath = top+"_compress."+format
+//		if !imageCompress(
+//			func() (io.Reader,error){
+//				return os.Open(inputArgs.LocalPath)
+//			},
+//			func() (*os.File,error) {
+//				return os.Open(inputArgs.LocalPath)
+//			},
+//			inputArgs.OutputPath,
+//			inputArgs.Quality,
+//			inputArgs.Width,
+//			format) {
+//			logger.Info("生成缩略图失败")
+//		}else{
+//			logger.Info("生成缩略图成功 "+inputArgs.OutputPath)
+//			finish()
+//		}
+//	}
+//
+//	time.Sleep(5 * time.Minute) /** 如果不是自己点击退出，延时5分钟 */
+//}
+//
+//func finish()  {
+//	fmt.Printf("继续输入进行压缩或者退出程序：")
+//	execute()
+//}
+//
+//func showTips()  {
+//	tips := []string{
+//		"请输入文件夹或图片路径:",
+//		"如果输入文件夹,那么该目录的图片将会被批量压缩;",
+//		"如果是图片路径，那么将会被单独压缩处理。",
+//		"例如：",
+//		"C:/Users/lzq/Desktop/headImages/ 75 200",
+//		"指桌面 headImages 文件夹，里面的图片质量压缩到75%，宽分辨率为200，高是等比例计算",
+//		"C:/Users/lzq/Desktop/headImages/1.jpg 75 200",
+//		"指桌面的 headImages 文件夹里面的 1.jpg 图片,质量压缩到75%，宽分辨率为200，高是等比例计算 ",
+//		"请输入："}
+//	itemLen := len(tips)
+//	for i :=0;i<itemLen;i++ {
+//		if i == itemLen -1 {
+//			fmt.Printf(tips[i])
+//		}else{
+//			logger.Info(tips[i])
+//		}
+//	}
+//}
 
-func execute()  {
-	/** 获取输入 */
-	//str := ""
-	//fmt.Scanln (&str) /** 不要使用 scanf，它不会并以一个新行结束输入 */
+//type InputArgs struct {
+//	OutputPath string  /** 输出目录 */
+//	LocalPath  string  /** 输入的目录或文件路径 */
+//	Quality    int     /** 质量 */
+//	Width      int     /** 宽度尺寸，像素单位 */
+//	Format     string  /** 格式 */
+//}
 
-	reader := bufio.NewReader(os.Stdin)
-	data, _, _ := reader.ReadLine()
-	/** 分割 */
-	strPice := strings.Split(string(data)," ") /** 空格 */
-	if len(strPice) < 3 {
-		fmt.Printf("输入有误，参数数量不足,请重新输入或退出程序：")
-		execute()
-		return
-	}
-
-	inputArgs.LocalPath = strPice[0]
-	inputArgs.Quality,_ = strconv.Atoi(strPice[1])
-	inputArgs.Width,_   = strconv.Atoi(strPice[2])
-
-	pathTemp,format,top := isPictureFormat(inputArgs.LocalPath)
-	if pathTemp == "" {
-		/** 目录 */
-		/** 如果输入目录，那么是批量 */
-		logger.Info("开始批量压缩...")
-		rs := []rune(inputArgs.LocalPath)
-		end := len(rs)
-		substr := string(rs[end-1:end])
-		if substr=="/" {
-			/** 有 / */
-			rs := []rune(inputArgs.LocalPath)
-			end := len(rs)
-			substr := string(rs[0:end-1])
-			endIndex := strings.LastIndex(substr,"/")
-			inputArgs.OutputPath = string(rs[0:endIndex])+"/LghImageCompress/";
-		}else {
-			endIndex := strings.LastIndex(inputArgs.LocalPath,"/")
-			inputArgs.OutputPath = string(rs[0:endIndex])+"/LghImageCompress/";
-		}
-		getFilelist(inputArgs.LocalPath)
-		logger.Info("图片保存在文件夹 "+inputArgs.OutputPath)
-	}else{
-		/** 单个 */
-		/** 如果输入文件，那么是单个，允许自定义路径 */
-		logger.Info("开始单张压缩...") //C:\Users\lzq\Desktop\Apk.jpg 75 200
-		inputArgs.OutputPath = top+"_compress."+format
-		if !imageCompress(
-			func() (io.Reader,error){
-				return os.Open(inputArgs.LocalPath)
-			},
-			func() (*os.File,error) {
-				return os.Open(inputArgs.LocalPath)
-			},
-			inputArgs.OutputPath,
-			inputArgs.Quality,
-			inputArgs.Width,
-			format) {
-			logger.Info("生成缩略图失败")
-		}else{
-			logger.Info("生成缩略图成功 "+inputArgs.OutputPath)
-			finish()
-		}
-	}
-
-	time.Sleep(5 * time.Minute) /** 如果不是自己点击退出，延时5分钟 */
-}
-
-func finish()  {
-	fmt.Printf("继续输入进行压缩或者退出程序：")
-	execute()
-}
-
-func showTips()  {
-	tips := []string{
-		"请输入文件夹或图片路径:",
-		"如果输入文件夹,那么该目录的图片将会被批量压缩;",
-		"如果是图片路径，那么将会被单独压缩处理。",
-		"例如：",
-		"C:/Users/lzq/Desktop/headImages/ 75 200",
-		"指桌面 headImages 文件夹，里面的图片质量压缩到75%，宽分辨率为200，高是等比例计算",
-		"C:/Users/lzq/Desktop/headImages/1.jpg 75 200",
-		"指桌面的 headImages 文件夹里面的 1.jpg 图片,质量压缩到75%，宽分辨率为200，高是等比例计算 ",
-		"请输入："}
-	itemLen := len(tips)
-	for i :=0;i<itemLen;i++ {
-		if i == itemLen -1 {
-			fmt.Printf(tips[i])
-		}else{
-			logger.Info(tips[i])
-		}
-	}
-}
-
-type InputArgs struct {
-	OutputPath string  /** 输出目录 */
-	LocalPath  string  /** 输入的目录或文件路径 */
-	Quality    int     /** 质量 */
-	Width      int     /** 宽度尺寸，像素单位 */
-	Format     string  /** 格式 */
-}
-
-var inputArgs InputArgs
-func main() {
-	showTips()
-	execute()
-	time.Sleep(5 * time.Minute) /** 如果不是自己点击退出，延时5分钟 */
-}
+//var inputArgs InputArgs
+//func main() {
+//	showTips()
+//	execute()
+//	time.Sleep(5 * time.Minute) /** 如果不是自己点击退出，延时5分钟 */
+//}

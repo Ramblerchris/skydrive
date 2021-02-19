@@ -1,0 +1,1 @@
+ALTER TABLE `tbl_user_file` ADD share INT(4);

@@ -2,20 +2,22 @@ package media
 
 import (
 	"bytes"
-	"fmt"
+	"github.com/disintegration/imaging"
+	"github.com/rwcarlsen/goexif/exif"
+	"github.com/sirupsen/logrus"
 	"image"
 	"image/color"
 	"image/draw"
 	_ "image/gif"
 	"image/jpeg"
 	_ "image/jpeg"
+	"image/png"
 	_ "image/png"
+	"io"
 	"os"
-	"path/filepath"
-	"strings"
 )
 
-func ScaleImageQuality(p string, target string,quality int ) (isSuccess bool) {
+func ScaleImageQualityV1(p string, target string,quality int ) (isSuccess bool) {
 	open, err := os.Open(p)
 	defer open.Close()
 	if err != nil {
@@ -51,9 +53,6 @@ func ScaleImageQuality(p string, target string,quality int ) (isSuccess bool) {
 			return false
 		}
 
-	} else if s == "bmp" {
-		//img := origin.(*image.RGBA)
-		//subImg := decode.SubImage(image.Rect(x0, y0, x1, y1)).(*image.RGBA)
 	}
 	create, _ := os.Create(target)
 	create.Write(buf.Bytes())
@@ -61,76 +60,107 @@ func ScaleImageQuality(p string, target string,quality int ) (isSuccess bool) {
 	return true
 }
 
-
-func ScaleImage(p string) {
-	open, err := os.Open(p)
-	defer open.Close()
+func ScaleImageByWidthAndQuity(originPath string, targetWidth int, targetWidthFloat float64, targetQuality int, outputPath string) (isSuccess bool) {
+	efile, err := os.Open(originPath)
+	if err != nil {
+		logrus.Warnf("could not open file for exif decoder: %s", originPath)
+		return false
+	}
+	defer efile.Close()
+	open, format, err := image.Decode(efile)
 	if err != nil {
 		print(err.Error())
-		return
+		return false
 	}
-	decode, s, err := image.Decode(open)
-	if err != nil {
+	if format != "jpg" && format != "jpeg" && format != "png" {
 		print(err.Error())
-		return
+		return false
 	}
-	if s != "jpg" && s != "jpeg" && s != "png" {
-		return
+	var config image.Config
+	efile.Seek(0, io.SeekStart)
+	if format == "jpg" || format == "jpeg" {
+		config, err = jpeg.DecodeConfig(efile)
+		if err != nil {
+			print(err.Error())
+			return false
+		}
+	} else if format == "png" {
+		config, err = png.DecodeConfig(efile)
+		if err != nil {
+			print(err.Error())
+			return false
+		}
 	}
 
+	if targetWidth == 0 {
+		targetWidth = int(targetWidthFloat * float64(config.Width))
+	}
+	if targetWidth > config.Width || targetWidth == 0 {
+		targetWidth = config.Width
+	}
+
+	//fmt.Printf("%d ====== %d", targetWidth, config.Width)
+	/** 做等比缩放 */
+	width := targetWidth
+	height := targetWidth * config.Height / config.Width
+	//open, err := imaging.Open(originPath)
+	thumb := imaging.Thumbnail(open, width, height, imaging.CatmullRom)
+	dst := imaging.New(width, height, color.NRGBA{0, 0, 0, 0})
+	dst = imaging.Paste(dst, thumb, image.Pt(0, 0))
+	efile.Seek(0, io.SeekStart)
+	x, _ := exif.Decode(efile)
+	if x != nil {
+		orient, _ := x.Get(exif.Orientation)
+		if orient != nil {
+			logrus.Infof("%s had orientation %s", originPath, orient.String())
+			dst = reverseOrientation(dst, orient.String())
+		} else {
+			logrus.Warnf("%s had no orientation - implying 1", originPath)
+			dst = reverseOrientation(dst, "1")
+		}
+	}
 	buf := bytes.Buffer{}
-	fmt.Println(s)
-	//stat, _ := open.Stat()
-	//fmt.Println(stat.Name())
-	//fmt.Println(open.Name())
-	//fmt.Println(filepath.Base(open.Name()))
-	//fmt.Println(filepath.Ext(open.Name()))
-	//fmt.Println(filepath.Clean(open.Name()))
-	//fmt.Println(filepath.Abs(open.Name()))
-	//fmt.Println(filepath.VolumeName(open.Name()))
-	fmt.Println(strings.TrimSuffix(filepath.Base(open.Name()), filepath.Ext(open.Name())))
-	suffix := strings.TrimSuffix(filepath.Base(open.Name()), filepath.Ext(open.Name()))
-
-	if s == "jpg" || s == "jpeg" {
-		err = jpeg.Encode(&buf, decode, &jpeg.Options{Quality: 5})
+	if format == "jpg" || format == "jpeg" {
+		err = jpeg.Encode(&buf, dst, &jpeg.Options{Quality: targetQuality})
 		if err != nil {
-			return
+			return false
 		}
-	} else if s == "png" {
-		newImg := image.NewRGBA(decode.Bounds())
+	} else if format == "png" {
+		newImg := image.NewRGBA(dst.Bounds())
 		draw.Draw(newImg, newImg.Bounds(), &image.Uniform{C: color.White}, image.Point{}, draw.Src)
-		draw.Draw(newImg, newImg.Bounds(), decode, decode.Bounds().Min, draw.Over)
-
-		err = jpeg.Encode(&buf, newImg, &jpeg.Options{Quality: 20})
+		draw.Draw(newImg, newImg.Bounds(), dst, dst.Bounds().Min, draw.Over)
+		err = jpeg.Encode(&buf, newImg, &jpeg.Options{Quality: targetQuality})
 		if err != nil {
-			return
+			return false
 		}
-
-	} else if s == "bmp" {
-		//img := origin.(*image.RGBA)
-		//subImg := decode.SubImage(image.Rect(x0, y0, x1, y1)).(*image.RGBA)
 	}
-	create, _ := os.Create("/Users/mac/Desktop/testimage222/" + suffix + "." + s)
+	create, _ := os.Create(outputPath)
 	create.Write(buf.Bytes())
 	create.Close()
-
-	//fmt.Printf(s,"  bounds",decode.Bounds().Max.X, decode.Bounds().Max.Y)
+	return true
 }
 
-func GetFileounds(path string) (width int, height int) {
-	open, err := os.Open(path)
-	//open, err := os.Open("/Users/mac/Desktop/1589191894238_8130.png")
-	//open, err := os.Open("1589191894238_8130.png")
-	if err != nil {
-		print(err.Error())
-		return
+func reverseOrientation(img image.Image, o string) *image.NRGBA {
+	switch o {
+	case "1":
+		return imaging.Clone(img)
+	case "2":
+		return imaging.FlipV(img)
+	case "3":
+		return imaging.Rotate180(img)
+	case "4":
+		return imaging.Rotate180(imaging.FlipV(img))
+	case "5":
+		return imaging.Rotate270(imaging.FlipV(img))
+	case "6":
+		return imaging.Rotate270(img)
+	case "7":
+		return imaging.Rotate90(imaging.FlipV(img))
+	case "8":
+		return imaging.Rotate90(img)
 	}
-	config, _, err := image.DecodeConfig(open)
-	if err != nil {
-		print(err.Error())
-		return
-	}
-
-	return config.Width, config.Height
-
+	logrus.Errorf("unknown orientation %s, expect 1-8", o)
+	return imaging.Clone(img)
 }
+
+

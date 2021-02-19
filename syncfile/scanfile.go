@@ -1,4 +1,4 @@
-package handler
+package syncfile
 
 import (
 	"github.com/skydrive/logger"
@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 )
+
 type HandleFile func(string, os.FileInfo,int)
 
 
@@ -13,6 +14,7 @@ func StartScanFile(dirpath string,handle HandleFile) {
 	countr, dircount, countsizer := scanDir(dirpath,handle, 0, 0, 0, 0)
 	logger.Infof("文件数量：%d 文件夹%d 总大小：%d (%.5f GB)", countr, dircount, countsizer, float64(countsizer)/1e9)
 }
+
 //扫描文件夹
 func scanDir(dirpath string,handle HandleFile, level int, filecount int64,dircount int64, countsize int64) (filecountr int64,dircountr int64, countsizer int64) {
 	tag := "|-"

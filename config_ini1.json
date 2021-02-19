@@ -11,9 +11,9 @@
   "UDP_GroupSERVER_ListenPORT":8998,
   "UDP_GroupSERVER_SendPORT":8999,
   "UDP_SERVER_SendPORT":8996,
-  "diskFileRoot":"updisk",
-  "albumFileRoot":"upalbum",
-  "thumbnailRoot":"thumbnail",
+  "diskFileRoot":"/skydir/disk1/updisk",
+  "albumFileRoot":"/skydir/disk1/upalbum",
+  "thumbnailRoot":"/skydir/disk1/thumbnail",
   "adminManagerDir":"html",
   "LogDir":"output/log"
 }

@@ -18,10 +18,12 @@ func GetSystemInfoHandler(w http.ResponseWriter, r *http.Request, utoken *db.Tab
 	info := &beans.SystenInfo{}
 	info.HostName, _ = os.Hostname()
 	info.HostName, _ = os.Hostname()
-	info.CpuPercent = utils.GetCpuPercent()
+	info.CpuPercent,_ = utils.FormatFloatCeil(utils.GetCpuPercent(),2)
 	info.MemTotal, info.MemPercent = utils.GetMemPercent()
 	info.DiskTotal, info.DiskPercent = utils.GetDiskPercent()
 	info.SwpTotal, info.SwpPercent = utils.GetSwapMemoryPercent()
+	info.MemPercent,_ = utils.FormatFloatCeil(info.MemPercent,2)
+	info.DiskPercent,_ = utils.FormatFloatCeil(info.DiskPercent,2)
 	info.NetIO = utils.IOCounters()
 	info.HostInfo = utils.HostInfo()
 	response.ReturnResponse(w, config.Net_SuccessCode, config.Success, info)

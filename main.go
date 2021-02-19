@@ -14,7 +14,6 @@ import (
 	"github.com/skydrive/db/mysqlconn"
 	"github.com/skydrive/handler"
 	"github.com/skydrive/logger"
-	"github.com/skydrive/media"
 	"github.com/skydrive/utils"
 )
 
@@ -57,6 +56,7 @@ func httpServer(configInit *config.ConfigInt) {
 	http.HandleFunc("/file/download", handler.TokenCheckInterceptor(handler.DownloadFileWebBySha1Handler))
 	//浏览器直接打开查看
 	http.HandleFunc("/file/open", handler.TokenCheckInterceptor(handler.OpenFile1Handler))
+	http.HandleFunc("/file/openV2", handler.TokenCheckInterceptor(handler.OpenFile1HandlerV2))
 
 	http.HandleFunc("/userfile/getSha1IsExistList", handler.TokenCheckInterceptor(handler.GetSha1ListIsExistByUidHandler))
 	http.HandleFunc("/userfile/getAllSha1sByUser", handler.TokenCheckInterceptor(handler.GetAllSha1ListByUidHandler))
@@ -111,7 +111,7 @@ func versionInfo() {
 func handleFile(path string, fileinfo os.FileInfo, index int) {
 	//fmt.Print(" 处理", fileinfo.Mode())
 	//ext := filepath.Ext(fileinfo.Name())
-	media.ScaleImage(path)
+	//media.ScaleImage(path)
 	//media.ScaleImage("/Users/mac/Desktop/1589265866339_8927.JPG")
 	//media.ScaleImage("/Users/mac/Desktop/1589191894238_8130.png")
 	//handler.StartScanFile("/Users/mac/Desktop/image/", handleFile)
