@@ -10,15 +10,16 @@ import (
 )
 
 const (
-	selectUFileBySha1      = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at,filetype,minitype,ftype,video_duration from tbl_user_file where file_sha1=? and uid=? and status=1 limit 1"
-	selectUFileByid        = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at,filetype,minitype,ftype,video_duration from tbl_user_file where id=?  and status=1 limit 1"
+	selectUFileBySha1      = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at,status,filetype,minitype,ftype,video_duration from tbl_user_file where file_sha1=? and uid=? and status=1 limit 1"
+	//selectUFileByid        = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at,status,filetype,minitype,ftype,video_duration from tbl_user_file where id=?  and status>0 limit 1"
+	selectUFileByid        = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at,status,filetype,minitype,ftype,video_duration from tbl_user_file where id=?  limit 1"
 	selectUFileByUid       = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,filetype,minitype,ftype,video_duration from tbl_user_file where uid=? and status=1 "
-	selectUFileByUidPage   = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,filetype,minitype,ftype,video_duration from tbl_user_file where uid=? and status=1 and id>? limit ? "
+	selectUFileByUidPage   = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at,status,filetype,minitype,ftype,video_duration from tbl_user_file where uid=? and status=1 and id>? limit ? "
 	selectUFileByUidAndPid = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,filetype,minitype,ftype,video_duration from tbl_user_file where uid=? and pid=? and status=1 "
 	//selectUFileByUidAndPidPage        = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,filetype,minitype,ftype,video_duration from tbl_user_file where uid=? and pid=? and status=1 and id>? limit ? "
-	selectUFileByUidAndPidPage        = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,filetype,minitype,ftype,video_duration from tbl_user_file where uid=? and pid=? and status=1 and id<? order by id desc  limit ? "
-	selectUFileByUidAndPidAndSha1     = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,filetype,minitype,ftype,video_duration from tbl_user_file where file_sha1=? and uid=? and pid=? and status=1 limit 1 "
-	selectUFileByUidAndPidAndFileName = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,filetype,minitype,ftype,video_duration from tbl_user_file where uid=? and pid=? and file_name=? and status=1 "
+	selectUFileByUidAndPidPage        = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,status,filetype,minitype,ftype,video_duration from tbl_user_file where uid=? and pid=? and status>0 and id<? order by id desc  limit ? "
+	selectUFileByUidAndPidAndSha1     = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,status,filetype,minitype,ftype,video_duration from tbl_user_file where file_sha1=? and uid=? and pid=? and status=1 limit 1 "
+	selectUFileByUidAndPidAndFileName = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,status,filetype,minitype,ftype,video_duration from tbl_user_file where uid=? and pid=? and file_name=? and status=1 "
 	saveUFileinfo                     = "insert into tbl_user_file(uid,pid,phone,file_sha1,file_name,file_size,file_addr,status,minitype,ftype,video_duration) values(?,?,?,?,?,?,?,?,?,?,?)"
 	saveUFileDirinfo                  = "insert into tbl_user_file(uid,pid,phone,file_name,status,filetype) values(?,?,?,?,?,?)"
 	updateUFileInfo                   = "update tbl_user_file set status=? where file_sha1=?"
@@ -27,7 +28,7 @@ const (
 	updateUFileDirfile_sha1_pre       = "update tbl_user_file set file_sha1_pre=? where id=? "
 	updateUFileDirsStatus             = "update tbl_user_file set status=? where id in('%s')"
 	updateUFileDirsName               = "update tbl_user_file set file_name=? where id=? "
-	selectUFileBysha1s                = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at,filetype,minitype,ftype,video_duration from tbl_user_file where uid=? and file_sha1 in('%s') "
+	selectUFileBysha1s                = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at,status,filetype,minitype,ftype,video_duration from tbl_user_file where uid=? and file_sha1 in('%s') "
 	selectUFileAllsha1s               = "select file_sha1 from tbl_user_file where uid=?"
 	//selectUFileCountByUid 			  = "select count(*) from tbl_user_file where  uid=? and status=1 and id>? "
 	selectUFileCountByUid 			  = "select count(*) from tbl_user_file where  uid=? and status=1  "
@@ -160,7 +161,7 @@ func GetUserDirInfoById(id int64) (*TableUserFile, error) {
 	tfile := TableUserFile{}
 	row := stmt.QueryRow(id)
 	error = row.Scan(
-		&tfile.Id, &tfile.PId, &tfile.Uid, &tfile.Phone, &tfile.FileHash, &tfile.FileHash_Pre, &tfile.FileName, &tfile.FileSize, &tfile.FileLocation, &tfile.Create_at, &tfile.Update_at, &tfile.Filetype, &tfile.Minitype, &tfile.Ftype, &tfile.Video_duration)
+		&tfile.Id, &tfile.PId, &tfile.Uid, &tfile.Phone, &tfile.FileHash, &tfile.FileHash_Pre, &tfile.FileName, &tfile.FileSize, &tfile.FileLocation, &tfile.Create_at, &tfile.Update_at, &tfile.Status, &tfile.Filetype, &tfile.Minitype, &tfile.Ftype, &tfile.Video_duration)
 	if error != nil {
 		logger.Error(tAG_userfile, "failed to QueryRow error:", error)
 		return nil, error
@@ -180,7 +181,7 @@ func GetUserFileMetaByPidUidSha1(filehash string, uid, pid int64) (*TableUserFil
 	row := stmt.QueryRow(filehash, uid, pid)
 	logger.Info(tAG_userfile, utils.RunFuncName(), selectUFileByUidAndPidAndSha1,filehash, uid, pid)
 	error = row.Scan(
-		&tfile.Id, &tfile.PId, &tfile.Uid, &tfile.Phone, &tfile.FileHash, &tfile.FileHash_Pre, &tfile.FileName, &tfile.FileSize, &tfile.FileLocation, &tfile.Create_at, &tfile.Update_at, &tfile.Filetype, &tfile.Minitype, &tfile.Ftype, &tfile.Video_duration)
+		&tfile.Id, &tfile.PId, &tfile.Uid, &tfile.Phone, &tfile.FileHash, &tfile.FileHash_Pre, &tfile.FileName, &tfile.FileSize, &tfile.FileLocation, &tfile.Create_at, &tfile.Update_at,  &tfile.Status,&tfile.Filetype, &tfile.Minitype, &tfile.Ftype, &tfile.Video_duration)
 	if error != nil {
 		logger.Error(tAG_userfile, "failed to QueryRow error:", error)
 		return nil, error
@@ -200,7 +201,7 @@ func GetUserFileInfoByUidSha1(filehash string, uid int64) (*TableUserFile, error
 	tfile := TableUserFile{}
 	row := stmt.QueryRow(filehash, uid)
 	error = row.Scan(
-		&tfile.Id, &tfile.PId, &tfile.Uid, &tfile.Phone, &tfile.FileHash, &tfile.FileHash_Pre, &tfile.FileName, &tfile.FileSize, &tfile.FileLocation, &tfile.Create_at, &tfile.Update_at, &tfile.Filetype, &tfile.Minitype, &tfile.Ftype, &tfile.Video_duration)
+		&tfile.Id, &tfile.PId, &tfile.Uid, &tfile.Phone, &tfile.FileHash, &tfile.FileHash_Pre, &tfile.FileName, &tfile.FileSize, &tfile.FileLocation, &tfile.Create_at, &tfile.Update_at,  &tfile.Status,&tfile.Filetype, &tfile.Minitype, &tfile.Ftype, &tfile.Video_duration)
 	if error != nil {
 		logger.Error(tAG_userfile, "failed to QueryRow error:", error)
 		return nil, error
@@ -227,7 +228,7 @@ func GetUserDirListByUidPidDirName(uid, pid int64, filename string) (tableUserFi
 	for rowdata.Next() {
 		tfile := TableUserFile{}
 		error = rowdata.Scan(
-			&tfile.Id, &tfile.PId, &tfile.Uid, &tfile.Phone, &tfile.FileHash, &tfile.FileHash_Pre, &tfile.FileName, &tfile.FileSize, &tfile.FileLocation, &tfile.Create_at, &tfile.Update_at, &tfile.Filetype, &tfile.Minitype, &tfile.Ftype, &tfile.Video_duration)
+			&tfile.Id, &tfile.PId, &tfile.Uid, &tfile.Phone, &tfile.FileHash, &tfile.FileHash_Pre, &tfile.FileName, &tfile.FileSize, &tfile.FileLocation, &tfile.Create_at, &tfile.Update_at, &tfile.Status, &tfile.Filetype, &tfile.Minitype, &tfile.Ftype, &tfile.Video_duration)
 		if error != nil {
 			logger.Error(tAG_userfile, "failed to Query error:", error)
 			continue
@@ -237,7 +238,7 @@ func GetUserDirListByUidPidDirName(uid, pid int64, filename string) (tableUserFi
 	return tableUserFile, nil
 }
 
-//查看当前用户 pid 对应子目录所有文件列表，包括文件列表
+//查看当前用户 pid 对应子目录所有文件夹列表
 func GetUserDirFileListByUidPid(uid, pid int64, pageNo, pageSize, lastid int64) (tableUserFile []TableUserFile, err error, total int64) {
 	//目前忽略了文件类型
 	stmt, error := mysql.DbConnect().Prepare(selectUFileByUidAndPidPage)
@@ -263,7 +264,7 @@ func GetUserDirFileListByUidPid(uid, pid int64, pageNo, pageSize, lastid int64) 
 	for rowdata.Next() {
 		tfile := TableUserFile{}
 		error = rowdata.Scan(
-			&tfile.Id, &tfile.PId, &tfile.Uid, &tfile.Phone, &tfile.FileHash, &tfile.FileHash_Pre, &tfile.FileName, &tfile.FileSize, &tfile.FileLocation, &tfile.Create_at, &tfile.Update_at, &tfile.Filetype, &tfile.Minitype, &tfile.Ftype, &tfile.Video_duration)
+			&tfile.Id, &tfile.PId, &tfile.Uid, &tfile.Phone, &tfile.FileHash, &tfile.FileHash_Pre, &tfile.FileName, &tfile.FileSize, &tfile.FileLocation, &tfile.Create_at, &tfile.Update_at, &tfile.Status,  &tfile.Filetype, &tfile.Minitype, &tfile.Ftype, &tfile.Video_duration)
 		if error != nil {
 			logger.Error(tAG_userfile, "failed to Query error:", error)
 			continue
@@ -362,7 +363,7 @@ func GetUserFileListMetaByUid(uid int64, pageNo, pageSize, lastid int64) (tableU
 	for rowdata.Next() {
 		tfile := TableUserFile{}
 		error = rowdata.Scan(
-			&tfile.Id, &tfile.PId, &tfile.Uid, &tfile.Phone, &tfile.FileHash, &tfile.FileHash_Pre, &tfile.FileName, &tfile.FileSize, &tfile.FileLocation, &tfile.Create_at, &tfile.Update_at, &tfile.Filetype, &tfile.Minitype, &tfile.Ftype, &tfile.Video_duration)
+			&tfile.Id, &tfile.PId, &tfile.Uid, &tfile.Phone, &tfile.FileHash, &tfile.FileHash_Pre, &tfile.FileName, &tfile.FileSize, &tfile.FileLocation, &tfile.Create_at, &tfile.Update_at, &tfile.Status,  &tfile.Filetype, &tfile.Minitype, &tfile.Ftype, &tfile.Video_duration)
 		if error != nil {
 			logger.Error(tAG_userfile, "failed to Query error:", error)
 			continue
@@ -423,7 +424,7 @@ func GetUserFileListBySha1s(uid int64, sha1s []string) (tableUserFile []TableUse
 	for rowdata.Next() {
 		tfile := TableUserFile{}
 		error = rowdata.Scan(
-			&tfile.Id, &tfile.PId, &tfile.Uid, &tfile.Phone, &tfile.FileHash, &tfile.FileHash_Pre, &tfile.FileName, &tfile.FileSize, &tfile.FileLocation, &tfile.Create_at, &tfile.Update_at, &tfile.Filetype, &tfile.Minitype, &tfile.Ftype, &tfile.Video_duration)
+			&tfile.Id, &tfile.PId, &tfile.Uid, &tfile.Phone, &tfile.FileHash, &tfile.FileHash_Pre, &tfile.FileName, &tfile.FileSize, &tfile.FileLocation, &tfile.Create_at, &tfile.Update_at, &tfile.Status,  &tfile.Filetype, &tfile.Minitype, &tfile.Ftype, &tfile.Video_duration)
 		if error != nil {
 			logger.Error(tAG_userfile, "failed to Query error:", error)
 			continue
@@ -460,8 +461,8 @@ func UpdateUserFileStatusBySha1sUidPid(uid, pid int64, filestatus int8, sha1s []
 	return true
 }
 
-//当前用户文件状态批量修改
-func UpdateUserFileDirStatusByIds(ids []string, filestatus int8) bool {
+//当前用户文件夹状态的批量修改
+func UpdateUserFileDirStatusByIds(ids []string, filestatus int64) bool {
 	sha1sJoin := strings.Join(ids, "','")
 	sprintf := fmt.Sprintf(updateUFileDirsStatus, sha1sJoin)
 	stmt, error := mysql.DbConnect().Prepare(sprintf)

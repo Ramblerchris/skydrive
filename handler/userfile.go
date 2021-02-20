@@ -44,7 +44,7 @@ func GetUserFileListByUidHandler(w http.ResponseWriter, r *http.Request, utoken 
 	response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.GetFileDirListError)
 }
 
-// 获取用户文件夹内的所有文件
+// 获取用户文件夹内的所有文件夹列表
 func GetUserDirFileListByPidHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	pageNo, _ := strconv.ParseInt(r.FormValue("pageNo"), 10, 64)
@@ -61,8 +61,21 @@ func GetUserDirFileListByPidHandler(w http.ResponseWriter, r *http.Request, utok
 	if byuid, err,total := db.GetUserDirFileListByUidPid(utoken.Uid.Int64, pid,pageNo,pageSize,lastId); err == nil {
 		metaFilelist := make([]beans.UserFile, 0)
 		for _, value := range byuid {
+			var temp = beans.GetUserFileObject(value)
+			//设置分享信息
+			if value.Status.Int32 == 2 {
+				temp.IsShare = true
+				if utoken.Phone.String == value.Phone.String {
+					temp.IsShareFromMe = true
+				} else {
+					temp.IsShareFromMe = false
+				}
+				temp.ShareFrom = value.Phone.String
+			} else {
+				temp.IsShare = false
+			}
 			//logger.Info("GetUserDirFileListByPidHandler", value)
-			metaFilelist = append(metaFilelist, *beans.GetUserFileObject(value))
+			metaFilelist = append(metaFilelist, *temp)
 		}
 		nextPageId:=lastId
 		if len(metaFilelist)!=0{
@@ -125,16 +138,34 @@ func DeleteFileListBySha1sUidHandler(w http.ResponseWriter, r *http.Request, uto
 func DeleteFileDirByUidHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	if r.Method == "POST" {
-		//id, _ := strconv.ParseInt(r.FormValue("ids"), 10, 64)
 		value := r.FormValue("ids")
 		if value == "" {
 			response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.FormValueError)
 			return
 		}
+		status, error := strconv.ParseInt(r.FormValue("status"), 10, 64)
+		if error != nil {
+			//删除 -1  分享 2
+			status = -1
+		}
 		split := strings.Split(value, ";")
-		if db.UpdateUserFileDirStatusByIds(split, -1) {
-			response.ReturnResponseCodeMessage(w, config.Net_SuccessCode, config.Success)
-			return
+		var target []string
+		for _, value := range split {
+			parseInt, err := strconv.ParseInt(value, 10, 64)
+			if err == nil {
+				userfile, error := db.GetUserDirInfoById(parseInt)
+				if error == nil {
+					if userfile.Phone.String == utoken.Phone.String {
+						target = append(target, value)
+					}
+				}
+			}
+		}
+		if len(target) > 0 {
+			if db.UpdateUserFileDirStatusByIds(target, status) {
+				response.ReturnResponseCodeMessage(w, config.Net_SuccessCode, config.Success)
+				return
+			}
 		}
 		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.Error)
 	}

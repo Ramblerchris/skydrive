@@ -43,6 +43,7 @@ type TableUserFile struct {
 	FileName       sql.NullString
 	FileLocation   sql.NullString
 	FileSize       sql.NullInt64
+	Status         sql.NullInt32
 	Filetype       sql.NullInt32
 	Create_at      sql.NullString
 	Update_at      sql.NullString

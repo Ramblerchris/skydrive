@@ -10,7 +10,7 @@ CREATE TABLE `tbl_file`
     `file_addr`      varchar(1024) NOT NULL DEFAULT '' COMMENT '文件存储位置',
     `create_at`      datetime               default NOW() COMMENT '创建日期',
     `update_at`      datetime               default NOW() on update current_timestamp() COMMENT '更新日期',
-    `status`         tinyint       NOT NULL DEFAULT '0' COMMENT '状态( 1可用/ 2禁用/ -1已删除等状态)',
+    `status`         tinyint       NOT NULL DEFAULT '0' COMMENT '状态( 1 可用/2 分享状态/ -1 已删除/-2 禁用等状态)',
     `minitype`       char(40)      NOT NULL DEFAULT '' COMMENT '文件具体类型',
     `ftype`          tinyint       NOT NULL DEFAULT '0' COMMENT '文件状态(0图片/1视频/2音乐/3文档/4压缩包)',
     `video_duration` time          NOT NULL DEFAULT '0' COMMENT '视频时长',
@@ -36,7 +36,7 @@ CREATE TABLE `tbl_user_file`
     `create_at`      datetime               default NOW() COMMENT '创建日期',
     `update_at`      datetime               default NOW() on update current_timestamp() COMMENT '更新日期',
     `delete_at`      datetime               default NOW() COMMENT '删除日期（回收站保留30天功能）',
-    `status`         tinyint       NOT NULL DEFAULT '0' COMMENT '状态( 1 可用/ 2 禁用/ -1 已删除等状态)',
+    `status`         tinyint       NOT NULL DEFAULT '0' COMMENT '状态( 1 可用/2 分享状态/ -1 已删除/-2 禁用等状态)',
     `filetype`       tinyint       NOT NULL DEFAULT '-1' COMMENT '文件类型(文件夹 1/文件-1)',
     `minitype`       char(40)      NOT NULL DEFAULT '' COMMENT '文件类型',
     `ftype`          tinyint       NOT NULL DEFAULT '0' COMMENT '文件状态(0图片/1视频/2音乐/3文档/4压缩包)',
@@ -103,7 +103,7 @@ CREATE TABLE `tbl_cloud_disk`
     `create_at`      datetime               default NOW() COMMENT '创建日期',
     `update_at`      datetime               default NOW() on update current_timestamp() COMMENT '更新日期',
     `delete_at`      datetime               default NOW() COMMENT '删除日期（回收站保留30天功能）',
-    `status`         tinyint       NOT NULL DEFAULT '0' COMMENT '状态( 1 可用/ 2 禁用/ -1 已删除等状态)',
+    `status`         tinyint       NOT NULL DEFAULT '0' COMMENT '状态( 1 可用/2 分享状态/ -1 已删除/-2 禁用等状态)',
     `filetype`       tinyint       NOT NULL DEFAULT '-1' COMMENT '文件类型(文件夹 1/文件-1)',
     `minitype`       char(40)      NOT NULL DEFAULT '' COMMENT '文件类型',
     `ftype`          tinyint       NOT NULL DEFAULT '0' COMMENT '文件状态(0图片/1视频/2音乐/3文档/4压缩包)',
@@ -121,7 +121,7 @@ CREATE TABLE `tbl_film_type`
     `film_type_id` int(11)     NOT NULL AUTO_INCREMENT,
     `type_id`      int(11)     NOT NULL COMMENT '类型id',
     `type_name`    varchar(64) NOT NULL COMMENT '视频类型表名称',
-    `status`       tinyint     NOT NULL COMMENT '状态( 1 启用/ 2 禁用/ -1 标记删除等)',
+    `status`       tinyint     NOT NULL COMMENT '状态( 1 启用/ -2 禁用/ -1 标记删除等)',
     PRIMARY KEY (`film_type_id`),
     KEY `type_id` (`type_id`)
 ) ENGINE = InnoDB
@@ -134,7 +134,7 @@ CREATE TABLE `tbl_film_classfy`
     `film_classfy_id` int(11)     NOT NULL AUTO_INCREMENT,
     `class_id`        int(11)     NOT NULL COMMENT '分类id',
     `class_name`      varchar(64) NOT NULL COMMENT '视频分类表',
-    `status`          tinyint     NOT NULL COMMENT '状态( 1 启用/ 2 禁用/ -1 标记删除等)',
+    `status`          tinyint     NOT NULL COMMENT '状态( 1 启用/ -2 禁用/ -1 标记删除等)',
     PRIMARY KEY (`film_classfy_id`),
     KEY `class_id` (`class_id`)
 ) ENGINE = InnoDB
@@ -158,7 +158,7 @@ CREATE TABLE `tbl_film_info`
     `score`                int(11)       NOT NULL DEFAULT '0' COMMENT '评分',
     `show_at`              datetime               default NOW() COMMENT '上映时间',
     `create_at`            datetime               default NOW() COMMENT '添加时间',
-    `status`               tinyint       NOT NULL COMMENT '状态( 1 可以查询/ 2不可查询/ -1 标记删除等)',
+    `status`               tinyint       NOT NULL COMMENT '状态( 1 可以查询/ -2不可查询/ -1 标记删除等)',
     `film_duration`        time          NOT NULL DEFAULT '0' COMMENT '视频时长',
     `photo_addr`           varchar(1024) NOT NULL DEFAULT '' COMMENT '图片资料，多张用;分割',
     PRIMARY KEY (`film_info_id`),
@@ -178,7 +178,7 @@ CREATE TABLE `tbl_video_playlist`
     `video_duration`           time          NOT NULL DEFAULT '0' COMMENT '单个视频时长',
     `score`                    int(11)       NOT NULL DEFAULT '0' COMMENT '单个视频评分',
     `create_at`                datetime               default NOW() COMMENT '添加时间',
-    `status`                   tinyint       NOT NULL COMMENT '状态( 1 可以查询/ 2不可查询/ -1 标记删除等)',
+    `status`                   tinyint       NOT NULL COMMENT '状态( 1 可以查询/ -2不可查询/ -1 标记删除等)',
     `file_addr`                varchar(1024) NOT NULL DEFAULT '' COMMENT '文件存储位置',
     PRIMARY KEY (`video_id`),
     KEY `idx_status` (`status`)

@@ -82,27 +82,27 @@ func TokenCheckInterceptor(h HandlerFuncAuth) http.HandlerFunc {
 			response.ReturnResponseCodeMessageHttpCode(w, http.StatusUnauthorized, config.Net_ErrorCode, "bad request")
 			return
 		}
-		byToken, exist := tokenmap.ReadTokenMap(token)
+		userTokenInfo, exist := tokenmap.ReadTokenMap(token)
 		if !exist {
 			if byTokenbydb, er := db.GetUserTokenInfoByToken(token); er != nil {
 				response.ReturnResponseCodeMessageHttpCode(w, http.StatusForbidden, config.Net_ErrorCode, "bad request")
 				return
 			} else {
-				byToken = byTokenbydb
-				tokenmap.WriteTokenMap(token, byToken)
+				userTokenInfo = byTokenbydb
+				tokenmap.WriteTokenMap(token, userTokenInfo)
 			}
 		} else {
-			logger.Info(TAG, "缓存获取用户:", byToken)
+			logger.Info(TAG, "缓存获取用户:", userTokenInfo)
 		}
-		if byToken.User_token.String != "" {
+		if userTokenInfo.User_token.String != "" {
 			//todo 判断过期时间
-			logger.Info(token, " Expiretime :", byToken.Expiretime.Int64, " Now:", time.Now().UnixNano()/1e6)
-			if byToken.Expiretime.Int64 < time.Now().UnixNano()/1e6 {
+			logger.Info(token, " Expiretime :", userTokenInfo.Expiretime.Int64, " Now:", time.Now().UnixNano()/1e6)
+			if userTokenInfo.Expiretime.Int64 < time.Now().UnixNano()/1e6 {
 				tokenmap.DeleteTokenMap(token)
 				response.ReturnResponseCodeMessageHttpCode(w, http.StatusForbidden, config.Net_ErrorCode_Token_exprise, "token expired")
 				return
 			}
-			h(w, r, &byToken)
+			h(w, r, &userTokenInfo)
 			return
 		} else {
 			response.ReturnResponseCodeMessageHttpCode(w, http.StatusForbidden, config.Net_ErrorCode, "bad request")

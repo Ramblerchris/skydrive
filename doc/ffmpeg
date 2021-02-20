@@ -1,0 +1,5 @@
+获取视频缩略图：
+ffmpeg -i /Users/mac/Desktop/media/video/video_ddd.mkv -y -f image2 -ss 8 -t 0.001  /Users/mac/Desktop/media/video/aaa.jpg
+
+
+ffmpeg -i /Users/mac/Desktop/media/video/video_ddd.mkv -vcodec h264 -s  1920*960 -an -f m4v /Users/mac/Desktop/media/video/video_ddd.264
