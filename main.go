@@ -62,7 +62,7 @@ func httpServer(configInit *config.ConfigInt) {
 	http.HandleFunc("/userfile/getAllSha1sByUser", handler.TokenCheckInterceptor(handler.GetAllSha1ListByUidHandler))
 	http.HandleFunc("/userfile/upload", handler.TokenCheckInterceptor(handler.UploadUserFileHandler))
 	http.HandleFunc("/userfile/deletefiles", handler.TokenCheckInterceptor(handler.DeleteFileListBySha1sUidHandler))
-	http.HandleFunc("/userfile/deleteDir", handler.TokenCheckInterceptor(handler.DeleteFileDirByUidHandler))
+	http.HandleFunc("/userfile/updateDirStatus", handler.TokenCheckInterceptor(handler.UpdateFileDirStatusByUidHandler))
 	http.HandleFunc("/userfile/getlist", handler.TokenCheckInterceptor(handler.GetUserFileListByUidHandler))
 	http.HandleFunc("/userfile/hitpass", handler.TokenCheckInterceptor(handler.HitPassBySha1Handler))
 	http.HandleFunc("/userfile/adddir", handler.TokenCheckInterceptor(handler.AddFileDirByUidPidHandler))

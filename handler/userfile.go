@@ -23,10 +23,15 @@ func GetUserFileListByUidHandler(w http.ResponseWriter, r *http.Request, utoken 
 	pageNo, _ := strconv.ParseInt(r.FormValue("pageNo"), 10, 64)
 	pageSize, _ := strconv.ParseInt(r.FormValue("pageSize"), 10, 64)
 	lastId, _ := strconv.ParseInt(r.FormValue("lastId"), 10, 64)
+	pid, _ := strconv.ParseInt(r.FormValue("pid"), 10, 64)
+	if pid == 0 {
+		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.FormValueError)
+		return
+	}
 	if pageSize==0 {
 		pageSize=10
 	}
-	if byuid, err ,total := db.GetUserFileListMetaByUid(utoken.Uid.Int64,pageNo,pageSize,lastId); err == nil {
+	if byuid, err ,total := db.GetUserDirFileListByPid(pid,pageNo,pageSize,lastId); err == nil {
 		metaFilelist := make([]beans.UserFile, 0)
 		for _, value := range byuid {
 			//logger.Info("GetUserFileListByUidHandler",value)
@@ -58,22 +63,31 @@ func GetUserDirFileListByPidHandler(w http.ResponseWriter, r *http.Request, utok
 	if pageSize==0 {
 		pageSize=10
 	}
-	if byuid, err,total := db.GetUserDirFileListByUidPid(utoken.Uid.Int64, pid,pageNo,pageSize,lastId); err == nil {
-		metaFilelist := make([]beans.UserFile, 0)
+	metaFilelist := make([]beans.UserFile, 0)
+	//查询所有分享的文件夹
+	if byuid, err := db.GetALLUFileShare(); err == nil {
 		for _, value := range byuid {
 			var temp = beans.GetUserFileObject(value)
 			//设置分享信息
 			if value.Status.Int32 == 2 {
-				temp.IsShare = true
+				temp.IsShare = 1
 				if utoken.Phone.String == value.Phone.String {
-					temp.IsShareFromMe = true
+					temp.IsShareFromMe = 1
 				} else {
-					temp.IsShareFromMe = false
+					temp.IsShareFromMe = 0
 				}
 				temp.ShareFrom = value.Phone.String
 			} else {
-				temp.IsShare = false
+				temp.IsShare = 0
 			}
+			//logger.Info("GetUserDirFileListByPidHandler", value)
+			metaFilelist = append(metaFilelist, *temp)
+		}
+	}
+	//查询自己的所有不是分享状态的文件夹
+	if byuid, err,total := db.GetUserDirFileListByUidPid(utoken.Uid.Int64, pid,pageNo,pageSize,lastId); err == nil {
+		for _, value := range byuid {
+			var temp = beans.GetUserFileObject(value)
 			//logger.Info("GetUserDirFileListByPidHandler", value)
 			metaFilelist = append(metaFilelist, *temp)
 		}
@@ -135,7 +149,7 @@ func DeleteFileListBySha1sUidHandler(w http.ResponseWriter, r *http.Request, uto
 }
 
 //批量删除指定文件夹
-func DeleteFileDirByUidHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
+func UpdateFileDirStatusByUidHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	if r.Method == "POST" {
 		value := r.FormValue("ids")

@@ -17,7 +17,9 @@ const (
 	selectUFileByUidPage   = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at,status,filetype,minitype,ftype,video_duration from tbl_user_file where uid=? and status=1 and id>? limit ? "
 	selectUFileByUidAndPid = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,filetype,minitype,ftype,video_duration from tbl_user_file where uid=? and pid=? and status=1 "
 	//selectUFileByUidAndPidPage        = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,filetype,minitype,ftype,video_duration from tbl_user_file where uid=? and pid=? and status=1 and id>? limit ? "
-	selectUFileByUidAndPidPage        = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,status,filetype,minitype,ftype,video_duration from tbl_user_file where uid=? and pid=? and status>0 and id<? order by id desc  limit ? "
+	selectUFileByUidAndPidPage        = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,status,filetype,minitype,ftype,video_duration from tbl_user_file where uid=? and pid=? and status=1 and id<? order by id desc  limit ? "
+	selectUFileByPidPage       		 = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,status,filetype,minitype,ftype,video_duration from tbl_user_file where pid=? and status=1 and id<? order by id desc  limit ? "
+	selectUFileShare			      = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,status,filetype,minitype,ftype,video_duration from tbl_user_file where status=2 and filetype=1 "
 	selectUFileByUidAndPidAndSha1     = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,status,filetype,minitype,ftype,video_duration from tbl_user_file where file_sha1=? and uid=? and pid=? and status=1 limit 1 "
 	selectUFileByUidAndPidAndFileName = "select id,pid, uid,phone,file_sha1,file_sha1_pre,file_name,file_size,file_addr,create_at,update_at ,status,filetype,minitype,ftype,video_duration from tbl_user_file where uid=? and pid=? and file_name=? and status=1 "
 	saveUFileinfo                     = "insert into tbl_user_file(uid,pid,phone,file_sha1,file_name,file_size,file_addr,status,minitype,ftype,video_duration) values(?,?,?,?,?,?,?,?,?,?,?)"
@@ -33,9 +35,11 @@ const (
 	//selectUFileCountByUid 			  = "select count(*) from tbl_user_file where  uid=? and status=1 and id>? "
 	selectUFileCountByUid 			  = "select count(*) from tbl_user_file where  uid=? and status=1  "
 	//selectUFileCountByUidPid 		  = "select count(*) from tbl_user_file where  pid=? and uid=? and status=1 and id>? "
-	selectUFileCountByUidPid 		= "select count(*) from tbl_user_file where  pid=? and uid=? and status=1  "
-	selectMaxIdFromUserFile  		= "select max(id) from tbl_user_file where  pid=? and uid=? and status=1  order by id desc"
-	tAG_userfile            		= "userfile.go：sql"
+	selectUFileCountByUidPid        = "select count(*) from tbl_user_file where  pid=? and uid=? and status=1  "
+	selectUFileCountByPid           = "select count(*) from tbl_user_file where  pid=? and status=1  "
+	selectMaxIdFromUserFileByUidPid = "select max(id) from tbl_user_file where  pid=? and uid=? and status=1  order by id desc"
+	selectMaxIdFromUserFileByPid    = "select max(id) from tbl_user_file where  pid=?  and status=1  order by id desc"
+	tAG_userfile                    = "userfile.go：sql"
 )
 
 //创建一个文件夹
@@ -275,6 +279,73 @@ func GetUserDirFileListByUidPid(uid, pid int64, pageNo, pageSize, lastid int64) 
 	return tableUserFile, nil, GetUserDirListCountByUidPid(uid, pid, lastid)
 }
 
+//查看当前用户 pid 对应子目录所有文件夹列表
+func GetUserDirFileListByPid( pid int64, pageNo, pageSize, lastid int64) (tableUserFile []TableUserFile, err error, total int64) {
+	//目前忽略了文件类型
+	stmt, error := mysql.DbConnect().Prepare(selectUFileByPidPage)
+	if error != nil {
+		logger.Error(tAG_userfile, "failed to prepare statement error:", error)
+		return tableUserFile, error, 0
+	}
+	defer stmt.Close()
+	if lastid == -1 {
+		lastid = GetUserDirListMaxCountByPid( pid)+1
+	}
+	if pageSize < 0 {
+		pageSize = lastid
+	}
+	rowdata, error := stmt.Query(pid, lastid, pageSize)
+	defer  rowdata.Close()
+	logger.Info(tAG_userfile, utils.RunFuncName(), selectUFileByPidPage, pid, lastid, pageSize)
+	if error != nil {
+		logger.Error(tAG_userfile, "failed to Exec error:", error)
+		return tableUserFile, error, 0
+	}
+	tableUserFile = make([]TableUserFile, 0)
+	for rowdata.Next() {
+		tfile := TableUserFile{}
+		error = rowdata.Scan(
+			&tfile.Id, &tfile.PId, &tfile.Uid, &tfile.Phone, &tfile.FileHash, &tfile.FileHash_Pre, &tfile.FileName, &tfile.FileSize, &tfile.FileLocation, &tfile.Create_at, &tfile.Update_at, &tfile.Status,  &tfile.Filetype, &tfile.Minitype, &tfile.Ftype, &tfile.Video_duration)
+		if error != nil {
+			logger.Error(tAG_userfile, "failed to Query error:", error)
+			continue
+		}
+		tableUserFile = append(tableUserFile, tfile)
+	}
+
+	return tableUserFile, nil, GetUserDirListCountByPid( pid)
+}
+
+//查看所有分享的文件夹
+func GetALLUFileShare() (tableUserFile []TableUserFile, err error) {
+	//目前忽略了文件类型
+	stmt, error := mysql.DbConnect().Prepare(selectUFileShare)
+	if error != nil {
+		logger.Error(tAG_userfile, "failed to prepare statement error:", error)
+		return tableUserFile, error
+	}
+	defer stmt.Close()
+	rowdata, error := stmt.Query()
+	defer  rowdata.Close()
+	logger.Info(tAG_userfile, utils.RunFuncName(), selectUFileByUidAndPidPage)
+	if error != nil {
+		logger.Error(tAG_userfile, "failed to Exec error:", error)
+		return tableUserFile, error
+	}
+	tableUserFile = make([]TableUserFile, 0)
+	for rowdata.Next() {
+		tfile := TableUserFile{}
+		error = rowdata.Scan(
+			&tfile.Id, &tfile.PId, &tfile.Uid, &tfile.Phone, &tfile.FileHash, &tfile.FileHash_Pre, &tfile.FileName, &tfile.FileSize, &tfile.FileLocation, &tfile.Create_at, &tfile.Update_at, &tfile.Status,  &tfile.Filetype, &tfile.Minitype, &tfile.Ftype, &tfile.Video_duration)
+		if error != nil {
+			logger.Error(tAG_userfile, "failed to Query error:", error)
+			continue
+		}
+		tableUserFile = append(tableUserFile, tfile)
+	}
+	return tableUserFile, nil
+}
+
 //查询当前用户指定文件下的文件数
 func GetUserDirListCountByUidPid(uid, pid int64, lastid int64) (count int64) {
 	//目前忽略了文件类型
@@ -298,10 +369,33 @@ func GetUserDirListCountByUidPid(uid, pid int64, lastid int64) (count int64) {
 	return countResult.Int64
 }
 
+//查询文件夹下的文件数
+func GetUserDirListCountByPid( pid int64) (count int64) {
+	//目前忽略了文件类型
+	stmt, error := mysql.DbConnect().Prepare(selectUFileCountByPid)
+	if error != nil {
+		logger.Error(tAG_userfile, "failed to prepare statement error:", error)
+		return 0
+	}
+	defer stmt.Close()
+	//result, err := stmt.Query(pid, uid, lastid)
+	result, err := stmt.Query(pid)
+	defer result.Close()
+	logger.Info(tAG_userfile, utils.RunFuncName(), selectUFileCountByPid, pid)
+	if err != nil {
+		return 0
+	}
+	var countResult sql.NullInt64
+	if result.Next() {
+		result.Scan(&countResult)
+	}
+	return countResult.Int64
+}
+
 //查询当前用户指定文件下最大的id
 func GetUserDirListMaxCountByUid(uid, pid int64) (maxid int64) {
 	//目前忽略了文件类型
-	stmt, error := mysql.DbConnect().Prepare(selectMaxIdFromUserFile)
+	stmt, error := mysql.DbConnect().Prepare(selectMaxIdFromUserFileByUidPid)
 	if error != nil {
 		logger.Error(tAG_userfile, "failed to prepare statement error:", error)
 		return 0
@@ -310,7 +404,30 @@ func GetUserDirListMaxCountByUid(uid, pid int64) (maxid int64) {
 	//result, err := stmt.Query(uid, lastid)
 	result, err := stmt.Query(pid, uid)
 	defer  result.Close()
-	logger.Info(tAG_userfile, utils.RunFuncName(),selectMaxIdFromUserFile, pid, uid)
+	logger.Info(tAG_userfile, utils.RunFuncName(), selectMaxIdFromUserFileByUidPid, pid, uid)
+	if err != nil {
+		return 0
+	}
+	var countResult sql.NullInt64
+	if result.Next() {
+		result.Scan(&countResult)
+	}
+	return countResult.Int64
+}
+
+//查询当前用户指定文件下最大的id
+func GetUserDirListMaxCountByPid( pid int64) (maxid int64) {
+	//目前忽略了文件类型
+	stmt, error := mysql.DbConnect().Prepare(selectMaxIdFromUserFileByPid)
+	if error != nil {
+		logger.Error(tAG_userfile, "failed to prepare statement error:", error)
+		return 0
+	}
+	defer stmt.Close()
+	//result, err := stmt.Query(uid, lastid)
+	result, err := stmt.Query(pid)
+	defer  result.Close()
+	logger.Info(tAG_userfile, utils.RunFuncName(), selectMaxIdFromUserFileByPid, pid)
 	if err != nil {
 		return 0
 	}

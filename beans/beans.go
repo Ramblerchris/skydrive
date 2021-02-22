@@ -40,8 +40,8 @@ type UserFile struct {
 	File
 	Filetype         int32  `json:"type,omitempty"`
 	PId              int64  `json:"pid,omitempty"`
-	IsShare          bool  `json:"isShare,omitempty"`
-	IsShareFromMe    bool  `json:"isShareFromMe,omitempty"`
+	IsShare          int32  `json:"isShare,omitempty"`
+	IsShareFromMe    int32  `json:"isShareFromMe,omitempty"`
 	ShareFrom    	string  `json:"ShareFrom,omitempty"`
 	CreateAtTime     string `json:"createattimestr,omitempty"`
 	UpdateAtTime     string `json:"updatattimestr,omitempty"`
