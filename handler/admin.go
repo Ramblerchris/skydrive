@@ -13,7 +13,7 @@ import (
 	"github.com/skydrive/utils"
 )
 
-//获取所有用户
+//获取系统信息
 func GetSystemInfoHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	info := &beans.SystenInfo{}
 	info.HostName, _ = os.Hostname()
@@ -48,6 +48,7 @@ func GetAllUserListHandler(w http.ResponseWriter, r *http.Request, utoken *db.Ta
 	response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.Error)
 }
 
+//获取所有用户token列表
 func GetAllUserTokenListHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	pageNo, _ := strconv.ParseInt(r.FormValue("pageNo"), 10, 64)
@@ -66,6 +67,7 @@ func GetAllUserTokenListHandler(w http.ResponseWriter, r *http.Request, utoken *
 	response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.Error)
 }
 
+//获取所有文件列表
 func GetAllFileListHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	pageNo, _ := strconv.ParseInt(r.FormValue("pageNo"), 10, 64)
@@ -84,6 +86,7 @@ func GetAllFileListHandler(w http.ResponseWriter, r *http.Request, utoken *db.Ta
 	response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.Error)
 }
 
+//获取所有用户文件列表
 func GetAllUserFileListHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	pageNo, _ := strconv.ParseInt(r.FormValue("pageNo"), 10, 64)
@@ -103,6 +106,7 @@ func GetAllUserFileListHandler(w http.ResponseWriter, r *http.Request, utoken *d
 
 }
 
+//获取所有用户网盘文件列表
 func GetAllDiskUserFileListHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	pageNo, _ := strconv.ParseInt(r.FormValue("pageNo"), 10, 64)
@@ -121,6 +125,7 @@ func GetAllDiskUserFileListHandler(w http.ResponseWriter, r *http.Request, utoke
 	response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.Error)
 }
 
+//控制客户端关机或重启
 func ShutdownHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	handletype := r.FormValue("type")

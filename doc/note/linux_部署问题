@@ -194,7 +194,6 @@ exit 0
 
 #######kill pid start ############
  ps -aux|grep "start.sh"
- 
 ps
 kill -l pid
 -l选项告诉kill命令用好像启动进程的用户已注销的方式结束进程

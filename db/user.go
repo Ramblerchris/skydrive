@@ -61,7 +61,7 @@ func GetUserInfoByPhone(phone string) (*TableUser, error) {
 		&tUser.Last_active,
 		&tUser.Profile,
 		&tUser.Status)
-	logger.Info(tAG_user, utils.RunFuncName(), saveUserinfo,phone)
+	logger.Info(tAG_user, utils.RunFuncName(), selectUserInfo,phone)
 
 	if error != nil {
 		logger.Error(tAG_userfile, "failed to QueryRow error:", error)
