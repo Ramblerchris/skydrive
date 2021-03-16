@@ -13,7 +13,7 @@
   "UDP_SERVER_SendPORT":8996,
   "diskFileRoot":"/skydir/disk1/updisk",
   "albumFileRoot":"/skydir/disk1/upalbum",
-  "thumbnailRoot":"/skydir/disk1/thumbnail",
+  "thumbnailRoot":"thumbnail",
   "adminManagerDir":"html",
   "LogDir":"output/log"
 }
