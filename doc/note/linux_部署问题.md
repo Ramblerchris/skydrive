@@ -1,4 +1,7 @@
-#######设置密码和下载文件 start ############
+#### ubuntu linux 安装和软件配置 
+
+```shell
+#######设置密码和下载安装文件 start ############
 设置管理员密码：
 sudo passwd
 curl -o 本地文件名  链接
@@ -17,34 +20,24 @@ rm -rf /var/log/httpd/access 将会删除/var/log/httpd/access目录以及其下
 rm -f /var/log/httpd/access.log 将会强制删除/var/log/httpd/access.log这个文件
 复制并提示是否要覆盖
 cp -ri /home/wisn/  /home/wisn/1
+
 #######设置密码和下载文件 end ############
+```
 
 
+
+#### 传输文件配置 
+
+```shell
 #######传输文件 start ############
 scp /Users/mac/gomodproject/skydrive/doc/skydrive.sql wisn@172.17.57.196:/home/wisn/
 https://www.cnblogs.com/withfeel/p/10635873.html
 #######传输文件 end ############
+```
 
+#### 解压缩文件 
 
-#######查看文件大小 start ############
-只显示直接子目录文件及文件夹大小统计值：
-du -h --max-depth=1 thumbnail/
-
-参数解释-a ： 列出所有的文件与目录容量，因为默认仅统计目录的容量而已
--h: 以人们较易读的容量格式呈现(G/M/K)显示，自动选择显示的单位大小
--s : 列出总量而已，而不列出每个个别的目录占用容量
--k ： 以KB为单位进行显示
--m : 以MB为单位进行显示常用命令参考 查看当前目录大小[plain] du -sh ./
-#######传输文件 end ############
-
-#######关机 start ############
-shutdown -h now  现在马上关机
-shutdown -h 20:30  晚上8:30定时关机
-shutdown -r now  现在马上重起
-shutdown -r 20:30  晚上8:30定时重起
-#######关机 end ############
-
-
+```shell
 #######解压缩文件 start ############
 unzip -o -d /home/sunny myfile.zip
 zip -d myfile.zip smart.txt
@@ -52,8 +45,13 @@ zip -d myfile.zip smart.txt
 删除压缩文件中smart.txt文件
 zip -m myfile.zip ./rpm_info.txt
 #######解压缩文件 end ############
+```
 
 
+
+#### mysql 
+
+```shell
 #######mysql start ############
 是否已经安装myslq
 sudo netstat -tap | grep mysql
@@ -98,12 +96,13 @@ https://blog.csdn.net/freezingxu/article/details/77088506
 数据库备份
 mysqldump -uroot -pnihao@123456 --databases  skydrive > /home/wisn/skydrive-$(date +%Y%m%d).sql
 #######mysql end ############
+```
 
 
 
+#### SSH
 
-
-
+```shell
 #######SSH start ############
 
 远程链接：
@@ -115,11 +114,32 @@ mysqldump -uroot -pnihao@123456 --databases  skydrive > /home/wisn/skydrive-$(da
  检查端口是否监听
  ss -tnlp
 #######SSH end ############
+```
 
 
 
 
 
+#### 自启动
+
+```shell
+#######自启动 start ############
+/etc/rc.local
+#!/bin/bash
+#执行的命令
+(
+sleep 10
+执行脚本  &
+) &
+exit 0
+#######自启动 end ############
+```
+
+
+
+#### 硬盘
+
+```shell
 #######添加硬盘 start ############
  #查看更多硬盘
  fdisk -l
@@ -149,6 +169,7 @@ https://www.cnblogs.com/zishengY/p/7137671.html
 査看文件的详细信息
 stat demo.txt
 #######添加硬盘 end ############
+```
 
 
 
@@ -159,39 +180,31 @@ ServeLocation              = 9996
 	UDP_SERVER_ListenPORT      = 8997
 	UDP_GroupSERVER_ListenPORT = 8998
 
-	UdpGroupserverSendport = 8999
-	UdpServerSendport      = 8996
+```ini
+UdpGroupserverSendport = 8999
+UdpServerSendport      = 8996
 
-	USER_NAME    = "root"
-	PASS_WORD    = "nihao@123456"
-	HOST         = "localhost"
-	PORT         = "3306"
-	DATABASE     = "skydrive"
-执行二进制报
+USER_NAME    = "root"
+PASS_WORD    = "nihao@123456"
+HOST         = "localhost"
+PORT         = "3306"
+DATABASE     = "skydrive"
+```
+#### 执行可运行二进制报错
+
+```
 Syntax error: "(" unexpected（linux系统）:
 	sudo dpkg-reconfigure dash
 	选No
+```
+
 #######执行程序 end ############
 
+#######执行程序 end ############
 
+#### 基本操作
 
-
-
-#######自启动 start ############
-/etc/rc.local
-#!/bin/bash
-#执行的命令
-(
-sleep 10
-执行脚本  &
-) &
-exit 0
-#######自启动 end ############
-
-
-
-
-
+```
 #######kill pid start ############
  ps -aux|grep "start.sh"
 ps
@@ -200,6 +213,27 @@ kill -l pid
 
 kill -9 PID  强大和危险的命令迫使进程在运行时突然终止
 #######kill pid end ############
+
+
+
+#######查看文件大小 start ############
+只显示直接子目录文件及文件夹大小统计值：
+du -h --max-depth=1 thumbnail/
+
+参数解释-a ： 列出所有的文件与目录容量，因为默认仅统计目录的容量而已
+-h: 以人们较易读的容量格式呈现(G/M/K)显示，自动选择显示的单位大小
+-s : 列出总量而已，而不列出每个个别的目录占用容量
+-k ： 以KB为单位进行显示
+-m : 以MB为单位进行显示常用命令参考 查看当前目录大小[plain] du -sh ./
+#######传输文件 end ############
+
+#######关机 start ############
+shutdown -h now  现在马上关机
+shutdown -h 20:30  晚上8:30定时关机
+shutdown -r now  现在马上重起
+shutdown -r 20:30  晚上8:30定时重起
+#######关机 end ############
+```
 
 
 

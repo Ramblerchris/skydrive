@@ -5,9 +5,11 @@ go build 编译程序时可以通过 -ldflags 来指定编译参数。
 
 测试加与不加 -ldflags 编译出的应用大小。
 
-
 打包：
+
+```shell
 go build -ldflags "-s -w"
+```
 
 
 
@@ -19,10 +21,16 @@ windows:
 https://github.com/upx/upx/releases
 
 mac:
+
+```shell
 brew install upx
+```
 
 linux:
+
+```shell
 tar -Jxf upx*.tar.xz
+```
 
 
 压缩命令 upx -9 -o ./frpc2_upx ./frpc2
