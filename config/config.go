@@ -17,7 +17,7 @@ var (
 	LogDir        = "log"
 
 )
-
+//全局配置项
 type ConfigInt struct {
 	USER_NAME string `json:"mysqlDbUsername"`
 	PASS_WORD string `json:"mysqlDbPassword"`
@@ -48,7 +48,7 @@ func (dbConfig *ConfigInt) String() string {
 		dbConfig.USER_NAME, dbConfig.PASS_WORD, dbConfig.HOST, dbConfig.PORT, dbConfig.DATABASE, dbConfig.CHARSET, dbConfig.MySqlSprintf)
 }
 
-
+//当config_ini.json 不存在的时候，使用默认配置
 const (
 	USER_NAME    = "root"
 	PASS_WORD    = "nihao@123456"
