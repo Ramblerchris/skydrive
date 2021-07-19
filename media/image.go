@@ -59,7 +59,7 @@ func ScaleImageQualityV1(p string, target string,quality int ) (isSuccess bool) 
 	create.Close()
 	return true
 }
-
+// 支持尺寸，质量压缩
 func ScaleImageByWidthAndQuity(originPath string, targetWidth int, targetWidthFloat float64, targetQuality int, outputPath string) (isSuccess bool) {
 	efile, err := os.Open(originPath)
 	if err != nil {

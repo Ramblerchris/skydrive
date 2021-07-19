@@ -242,7 +242,7 @@ func GetUserDirListByUidPidDirName(uid, pid int64, filename string) (tableUserFi
 	return tableUserFile, nil
 }
 
-//查看当前用户 pid 对应子目录所有文件夹列表
+// GetUserDirFileListByUidPid 查看当前用户 pid 对应子目录所有文件夹列表
 func GetUserDirFileListByUidPid(uid, pid int64, pageNo, pageSize, lastid int64) (tableUserFile []TableUserFile, err error, total int64) {
 	//目前忽略了文件类型
 	stmt, error := mysql.DbConnect().Prepare(selectUFileByUidAndPidPage)
@@ -279,7 +279,7 @@ func GetUserDirFileListByUidPid(uid, pid int64, pageNo, pageSize, lastid int64) 
 	return tableUserFile, nil, GetUserDirListCountByUidPid(uid, pid, lastid)
 }
 
-//查看当前用户 pid 对应子目录所有文件夹列表
+// GetUserDirFileListByPid 查看当前用户 pid 对应子目录所有文件夹列表
 func GetUserDirFileListByPid( pid int64, pageNo, pageSize, lastid int64) (tableUserFile []TableUserFile, err error, total int64) {
 	//目前忽略了文件类型
 	stmt, error := mysql.DbConnect().Prepare(selectUFileByPidPage)

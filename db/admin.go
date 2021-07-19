@@ -85,8 +85,7 @@ func AdminGetAllUserTokenList(pageNo,pageSize int64 ) (tableUsertokenFile []Tabl
 			&utoken.Uid,
 			&utoken.Phone,
 			&utoken.User_token,
-			&utoken.Expiretime,
-		)
+			&utoken.Expiretime)
 		if error != nil {
 			logger.Error(tAG_admin, "failed to Query error:", error)
 			continue

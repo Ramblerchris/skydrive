@@ -188,14 +188,14 @@ func UpdataUploadUserPhotoHandler(w http.ResponseWriter, r *http.Request, utoken
 		metaInfo.FileLocation=path
 		newfile, error := os.Create(metaInfo.FileLocation)
 		if error != nil {
-			fmt.Printf("创建文件出错 %s \n", error.Error())
+			logger.Infof("创建文件出错 %s \n", error.Error())
 			response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "file create error")
 			return
 		}
 		defer newfile.Close()
 		metaInfo.FileSize, error = io.Copy(newfile, file)
 		if error != nil {
-			fmt.Printf("保存文件出错 %s \n", error.Error())
+			logger.Infof("保存文件出错 %s \n", error.Error())
 			response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "file copy error")
 			return
 		}

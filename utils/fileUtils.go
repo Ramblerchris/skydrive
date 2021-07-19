@@ -50,16 +50,22 @@ func CreateDirbySha1(rootpath, sha, filename string,uid int64) (error, string) {
 	return nil, fmt.Sprintf("%s/%s", path,  filename)
 }
 
-//文件是否存在
-func PathExists(path string) (bool, error) {
-	_, err := os.Stat(path)
+// PathExists 文件是否存在
+func PathExists(path string) (isExist bool, err error) {
+	isExist, err, _ = PathExistsInfo(path)
+	return
+}
+
+// PathExistsInfo 文件是否存在
+func PathExistsInfo(path string) (bool, error, os.FileInfo) {
+	info, err := os.Stat(path)
 	if err == nil {
-		return true, nil
+		return true, nil, info
 	}
 	if os.IsNotExist(err) {
-		return false, nil
+		return false, nil, info
 	}
-	return false, err
+	return false, err, info
 }
 
 func getDirPath(rootpath string, data string) string {

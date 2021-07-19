@@ -5,6 +5,7 @@ import (
 	"github.com/skydrive/config"
 	"github.com/skydrive/db"
 	"github.com/skydrive/handler/cache"
+	"github.com/skydrive/logger"
 	"github.com/skydrive/media"
 	"github.com/skydrive/response"
 	"github.com/skydrive/utils"
@@ -17,7 +18,7 @@ import (
 	"strconv"
 )
 
-//通过文件sha1获取文件的详细信息
+// GetFileInfoBySha1Handler 通过文件sha1获取文件的详细信息
 func GetFileInfoBySha1Handler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	if r.Method == "GET" {
 		r.ParseForm()
@@ -33,7 +34,7 @@ func GetFileInfoBySha1Handler(w http.ResponseWriter, r *http.Request, utoken *db
 	}
 }
 
-//下载文件
+// Deprecated: OpenFile1Handler 下载文件
 func OpenFile1Handler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	filesha1 := r.FormValue("filesha1")
@@ -65,6 +66,7 @@ func OpenFile1Handler(w http.ResponseWriter, r *http.Request, utoken *db.TableUT
 	http.ServeFile(w, r, data.FileLocation)
 }
 
+// OpenFile1HandlerV2 新的文件查看，支持原文件和视频压缩，图片压缩
 func OpenFile1HandlerV2(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	filesha1 := r.FormValue("filesha1")
@@ -80,35 +82,58 @@ func OpenFile1HandlerV2(w http.ResponseWriter, r *http.Request, utoken *db.Table
 		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "not find filesha1:"+filesha1)
 		return
 	}
-	//只针对图片压缩
-	setHeaderFileName(w, data.FileName, nil)
-	if q != 0 && data.Ftype == 0 {
-		err, target := utils.CreateThumbDir(config.ThumbnailRoot, filesha1, strconv.FormatInt(q, 10), data.FileName)
-		if err == nil {
-			//_, error := os.Open(data.FileLocation)
-			exists, _ := utils.PathExists(target)
-			if !exists {
-				media.ScaleImageByWidthAndQuity(data.FileLocation, int(width), widthf, config.Thumbnail_Quality, target)
+
+	if q != 0 {
+		if  data.Ftype == 0{
+			//图片压缩
+			err, target := utils.CreateThumbDir(config.ThumbnailRoot, filesha1, strconv.FormatInt(q, 10), data.FileName)
+			if err == nil {
+				//_, error := os.Open(data.FileLocation)
+				exists, _ := utils.PathExists(target)
+				if !exists {
+					media.ScaleImageByWidthAndQuity(data.FileLocation, int(width), widthf, config.Thumbnail_Quality, target)
+				}
+				exists, _ = utils.PathExists(target)
+				if exists {
+					//只针对图片压缩
+					setHeaderFileName(w, data.FileName, nil)
+					http.ServeFile(w, r, target)
+					return
+				}
+				//ScaleImageByWidthAndQuity(path, 0, 0.5, 100, output_path)
+				//if !exists && media.ScaleImageByWidthAndQuity(data.FileLocation, int(width),widthf,config.Thumbnail_Quality,target) {
+				//	http.ServeFile(w, r, target)
+				//} else {
+				//	http.ServeFile(w, r, target)
+				//}
 			}
-			exists, _ = utils.PathExists(target)
-			if exists {
-				http.ServeFile(w, r, target)
-				return
+		}else if  data.Ftype == 1 {
+			//视频缩略图
+			err, target := utils.CreateThumbDir(config.ThumbnailRoot, filesha1, strconv.FormatInt(q, 10), data.FileName+".jpg")
+			if err == nil {
+				exists, _ ,info:= utils.PathExistsInfo(target)
+				if !exists {
+					media.VideoThumbnail(data.FileLocation,target)
+					exists, _ ,info= utils.PathExistsInfo(target)
+				}
+				if exists {
+					setHeaderFileName(w, info.Name(), nil)
+					http.ServeFile(w, r, target)
+					return
+				}
 			}
-			//ScaleImageByWidthAndQuity(path, 0, 0.5, 100, output_path)
-			//if !exists && media.ScaleImageByWidthAndQuity(data.FileLocation, int(width),widthf,config.Thumbnail_Quality,target) {
-			//	http.ServeFile(w, r, target)
-			//} else {
-			//	http.ServeFile(w, r, target)
-			//}
+
 		}
 	}
+	//只针对图片压缩
+	setHeaderFileName(w, data.FileName, nil)
 	http.ServeFile(w, r, data.FileLocation)
 }
 
 func setHeaderFileName(w http.ResponseWriter, fileName string,file *os.File) {
 	ctype := mime.TypeByExtension(filepath.Ext(fileName))
-	if ctype == "" && file!=nil {
+	logger.Infof("fileName :%s ctype %s ",fileName,ctype)
+	if ctype == "" && file != nil {
 		// read a chunk to decide between utf-8 text and binary
 		var buf [512]byte
 		n, _ := io.ReadFull(file, buf[:])
@@ -135,7 +160,7 @@ func setHeaderFileName(w http.ResponseWriter, fileName string,file *os.File) {
 	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", data.FileName))*/
 }
 
-//获取文件信息,暂时不支持
+// UpdateFileInfoFileNameBySha1Handler 获取文件信息,暂时不支持
 func UpdateFileInfoFileNameBySha1Handler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	filesha1 := r.FormValue("filesha1")
@@ -154,7 +179,7 @@ func UpdateFileInfoFileNameBySha1Handler(w http.ResponseWriter, r *http.Request,
 	response.ReturnMetaInfo(w, config.Net_SuccessCode, "update file "+data.FileName+" success ", data)
 }
 
-//删除文件
+// DeleteFileInfoBySha1Handler 删除文件
 func DeleteFileInfoBySha1Handler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	filesha1 := r.FormValue("filesha1")

@@ -54,8 +54,9 @@ func httpServer(configInit *config.ConfigInt) {
 	http.HandleFunc("/file/delete", handler.TokenCheckInterceptor(handler.DeleteFileInfoBySha1Handler))
 	//浏览器打开直接下载文件
 	http.HandleFunc("/file/download", handler.TokenCheckInterceptor(handler.DownloadFileWebBySha1Handler))
-	//浏览器直接打开查看
+	//Deprecated 不再维护
 	http.HandleFunc("/file/open", handler.TokenCheckInterceptor(handler.OpenFile1Handler))
+	//新的文件查看，支持原文件和视频压缩，图片压缩
 	http.HandleFunc("/file/openV2", handler.TokenCheckInterceptor(handler.OpenFile1HandlerV2))
 
 	http.HandleFunc("/userfile/getSha1IsExistList", handler.TokenCheckInterceptor(handler.GetSha1ListIsExistByUidHandler))
