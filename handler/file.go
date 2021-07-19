@@ -79,7 +79,7 @@ func OpenFile1HandlerV2(w http.ResponseWriter, r *http.Request, utoken *db.Table
 	}
 	data, ok := cache.GetFileMeta(filesha1)
 	if !ok {
-		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "not find filesha1:"+filesha1)
+		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, " not find filesha1: "+filesha1)
 		return
 	}
 

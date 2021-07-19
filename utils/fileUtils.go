@@ -70,7 +70,7 @@ func PathExistsInfo(path string) (bool, error, os.FileInfo) {
 
 func getDirPath(rootpath string, data string) string {
 	code := HashCode(data)
-	logger.Info("file sha1", data,"code ",code)
+	logger.Info("file sha1 ", data," code ",code)
 	return fmt.Sprintf("%s/%d/%d/%d/%d/%d", rootpath, code&0xf, (code>>4)&0xf, (code>>8)&0xf, (code>>12)&0xf, (code>>16)&0xf)
 }
 

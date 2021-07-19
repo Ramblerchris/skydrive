@@ -5,6 +5,7 @@ import (
 	"github.com/disintegration/imaging"
 	"github.com/rwcarlsen/goexif/exif"
 	"github.com/sirupsen/logrus"
+	"github.com/skydrive/logger"
 	"image"
 	"image/color"
 	"image/draw"
@@ -21,12 +22,12 @@ func ScaleImageQualityV1(p string, target string,quality int ) (isSuccess bool) 
 	open, err := os.Open(p)
 	defer open.Close()
 	if err != nil {
-		print(err.Error())
+		logger.Error(err.Error())
 		return false
 	}
 	decode, s, err := image.Decode(open)
 	if err != nil {
-		print(err.Error())
+		logger.Error("文件信息%s :%d",open.Name(),err.Error())
 		return false
 	}
 	if s != "jpg" && s != "jpeg" && s != "png" {
@@ -69,11 +70,11 @@ func ScaleImageByWidthAndQuity(originPath string, targetWidth int, targetWidthFl
 	defer efile.Close()
 	open, format, err := image.Decode(efile)
 	if err != nil {
-		print(err.Error())
+		logger.Error(err.Error())
 		return false
 	}
 	if format != "jpg" && format != "jpeg" && format != "png" {
-		print(err.Error())
+		logger.Error("图片格式不支持",format)
 		return false
 	}
 	var config image.Config
@@ -81,13 +82,13 @@ func ScaleImageByWidthAndQuity(originPath string, targetWidth int, targetWidthFl
 	if format == "jpg" || format == "jpeg" {
 		config, err = jpeg.DecodeConfig(efile)
 		if err != nil {
-			print(err.Error())
+			logger.Error(err.Error())
 			return false
 		}
 	} else if format == "png" {
 		config, err = png.DecodeConfig(efile)
 		if err != nil {
-			print(err.Error())
+			logger.Error(err.Error())
 			return false
 		}
 	}
