@@ -85,27 +85,30 @@ func OpenFile1HandlerV2(w http.ResponseWriter, r *http.Request, utoken *db.Table
 
 	if q != 0 {
 		if  data.Ftype == 0{
-			//图片压缩
-			err, target := utils.CreateThumbDir(config.ThumbnailRoot, filesha1, strconv.FormatInt(q, 10), data.FileName)
-			if err == nil {
-				//_, error := os.Open(data.FileLocation)
-				exists, _ := utils.PathExists(target)
-				if !exists {
-					media.ScaleImageByWidthAndQuity(data.FileLocation, int(width), widthf, config.Thumbnail_Quality, target)
+			//超过 100K的图片才进行压缩
+			if data.FileSize> 102400{
+				//图片压缩
+				err, target := utils.CreateThumbDir(config.ThumbnailRoot, filesha1, strconv.FormatInt(q, 10), data.FileName)
+				if err == nil  {
+					//_, error := os.Open(data.FileLocation)
+					exists, _ := utils.PathExists(target)
+					if !exists {
+						media.ScaleImageByWidthAndQuity(data.FileLocation, int(width), widthf, config.Thumbnail_Quality, target)
+					}
+					exists, _ = utils.PathExists(target)
+					if exists {
+						//只针对图片压缩
+						setHeaderFileName(w, data.FileName, nil)
+						http.ServeFile(w, r, target)
+						return
+					}
+					//ScaleImageByWidthAndQuity(path, 0, 0.5, 100, output_path)
+					//if !exists && media.ScaleImageByWidthAndQuity(data.FileLocation, int(width),widthf,config.Thumbnail_Quality,target) {
+					//	http.ServeFile(w, r, target)
+					//} else {
+					//	http.ServeFile(w, r, target)
+					//}
 				}
-				exists, _ = utils.PathExists(target)
-				if exists {
-					//只针对图片压缩
-					setHeaderFileName(w, data.FileName, nil)
-					http.ServeFile(w, r, target)
-					return
-				}
-				//ScaleImageByWidthAndQuity(path, 0, 0.5, 100, output_path)
-				//if !exists && media.ScaleImageByWidthAndQuity(data.FileLocation, int(width),widthf,config.Thumbnail_Quality,target) {
-				//	http.ServeFile(w, r, target)
-				//} else {
-				//	http.ServeFile(w, r, target)
-				//}
 			}
 		}else if  data.Ftype == 1 {
 			//视频缩略图
