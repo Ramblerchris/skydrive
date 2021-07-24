@@ -5,12 +5,14 @@ go 1.13
 replace github.com/skydrive => ../skydrive
 
 require (
+	github.com/StackExchange/wmi v1.2.0 // indirect
 	//配置文件的使用由来已久，从.ini、XML、JSON、YAML再到TOML，语言的表达能力越来越强，同时书写便捷性也在不断提升。
 	//TOML是前GitHub CEO， Tom Preston-Werner，于2013年创建的语言，其目标是成为一个小规模的易于使用的语义化配置文件格式。
 	//TOML被设计为可以无二义性的转换为一个哈希表(Hash table)。
 	//github.com/BurntSushi/toml v0.3.1 // indirect
 	//github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
 	github.com/disintegration/imaging v1.6.2
+	github.com/go-ole/go-ole v1.2.5 // indirect
 	//github.com/go-ole/go-ole v1.2.5 // indirect
 	//github.com/esimov/caire v1.2.6 // indirect
 	//github.com/esimov/pigo v1.4.2 // indirect

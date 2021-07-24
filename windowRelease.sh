@@ -1,6 +1,8 @@
 #!/bin/bash
 
 set -e
+go mod vendor
+go mod verify
 
 PROJECT_NAME="skydrive"
 BINARY="skydrive_debug"

@@ -4,6 +4,9 @@ set -e
 set GOARCH=amd64
 set GOOS=linux
 
+go mod vendor
+go mod verify
+
 PROJECT_NAME="skydrive"
 BINARY="skydrive_release"
 

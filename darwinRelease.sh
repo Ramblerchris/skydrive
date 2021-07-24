@@ -9,6 +9,8 @@ OUTPUT_DIR=output
 # GOOS=$(go env GOOS)
 # GOOS=windows
 GOOS=darwin
+go mod vendor
+go mod verify
 
 APP_NAME=${PROJECT_NAME}
 APP_VERSION=$(git log -1 --oneline)
