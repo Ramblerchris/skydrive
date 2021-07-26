@@ -83,6 +83,9 @@ const (
 
 	//SaveFileRoot_thumbnail = "thumbnail"
 	Thumbnail_Quality      = 40
+	Thumbnail_index      = 3
+	Thumbnail_width      = 0
+	Thumbnail_widthf      = 0.3
 	LOG_FILE_NAME          = "logfile.log"
 	configInt              = "config_ini.json"
 	AdminManagerDir        = "html"

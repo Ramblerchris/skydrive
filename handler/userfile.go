@@ -7,6 +7,7 @@ import (
 	"github.com/skydrive/db"
 	"github.com/skydrive/handler/cache"
 	"github.com/skydrive/logger"
+	"github.com/skydrive/media"
 	"github.com/skydrive/response"
 	"github.com/skydrive/utils"
 	"io"
@@ -269,18 +270,7 @@ func HitPassBySha1Handler(w http.ResponseWriter, r *http.Request, utoken *db.Tab
 //上传文件
 func UploadUserFileHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
-	/*if r.Method == "GET" {
-		//浏览器打开
-		// data, error := ioutil.ReadFile("./static/view/index.html")
-		// if error != nil {
-		// 	ReturnResponseCodeMessage(w, Net_ErrorCode, "internel server error ")
-		// 	return
-		// }
-		// // io.WriteString(w, string(data))
-		// w.Write(data)
-		//http.ServeFile(w, r, "./static/view/index.html")
-		io.WriteString(w, string("<h1>请下载客户端<h1>"))
-	} else */if r.Method == "POST" {
+	if r.Method == "POST" {
 		sha1, _ := strconv.Unquote(r.FormValue("sha1"))
 		minetype,_ := strconv.Unquote(r.FormValue("minetype"))
 		file, fileheader, error := r.FormFile("file")
@@ -323,6 +313,12 @@ func UploadUserFileHandler(w http.ResponseWriter, r *http.Request, utoken *db.Ta
 		//cache.AddOrUpdateFileMeta(metaInfo)
 		//处理文件已经存在的情况
 		_, ok := cache.GetFileMeta(metaInfo.Filesha1)
+		media.AddSCTask(media.SCTask{
+			Sha1:metaInfo.Filesha1,
+			Sctype:ftype,
+			Locationpath: metaInfo.FileLocation,
+			FileName:metaInfo.FileName,
+		})
 		if !ok {
 			//如果不存在 先插入文件表
 			if !db.SaveFileInfo(metaInfo.Filesha1, metaInfo.FileName, metaInfo.FileSize, metaInfo.FileLocation, minetype, ftype, videoduration) {

@@ -71,8 +71,8 @@ func OpenFile1HandlerV2(w http.ResponseWriter, r *http.Request, utoken *db.Table
 	r.ParseForm()
 	filesha1 := r.FormValue("filesha1")
 	q, _ := strconv.ParseInt(r.FormValue("q"), 10, 64)
-	widthf, _ := strconv.ParseFloat(r.FormValue("widthf"), 10)
-	width, _ := strconv.ParseInt(r.FormValue("width"), 10, 64)
+	//widthf, _ := strconv.ParseFloat(r.FormValue("widthf"), 10)
+	//width, _ := strconv.ParseInt(r.FormValue("width"), 10, 64)
 	if len(filesha1) == 0 || filesha1 == "" || len(filesha1) == 0 || filesha1 == "" {
 		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.FormValueError)
 		return
@@ -84,7 +84,6 @@ func OpenFile1HandlerV2(w http.ResponseWriter, r *http.Request, utoken *db.Table
 	}
 
 	if q != 0 {
-		media.AddTask(data.FileLocation)
 		if  data.Ftype == 0{
 			//超过 100K的图片才进行压缩
 			if data.FileSize> 102400{
@@ -93,14 +92,17 @@ func OpenFile1HandlerV2(w http.ResponseWriter, r *http.Request, utoken *db.Table
 				if err == nil  {
 					//_, error := os.Open(data.FileLocation)
 					exists, _ := utils.PathExists(target)
-					if !exists {
-						media.ScaleImageByWidthAndQuity(data.FileLocation, int(width), widthf, config.Thumbnail_Quality, target)
-					}
-					exists, _ = utils.PathExists(target)
+					//if !exists {
+					//	media.ScaleImageByWidthAndQuity(data.FileLocation, int(width), widthf, config.Thumbnail_Quality, target)
+					//}
+					//exists, _ = utils.PathExists(target)
 					if exists {
 						//只针对图片压缩
 						setHeaderFileName(w, data.FileName, nil)
 						http.ServeFile(w, r, target)
+						return
+					}else{
+						w.WriteHeader(http.StatusForbidden)
 						return
 					}
 					//ScaleImageByWidthAndQuity(path, 0, 0.5, 100, output_path)
@@ -111,18 +113,21 @@ func OpenFile1HandlerV2(w http.ResponseWriter, r *http.Request, utoken *db.Table
 					//}
 				}
 			}
-		}else if  data.Ftype == 1 {
+		} else if data.Ftype == 1 {
 			//视频缩略图
 			err, target := utils.CreateThumbDir(config.ThumbnailRoot, filesha1, strconv.FormatInt(q, 10), data.FileName+".jpg")
 			if err == nil {
 				exists, _ ,info:= utils.PathExistsInfo(target)
-				if !exists || info.Size() < 1000 {
-					media.VideoThumbnail(data.FileLocation,target)
-					exists, _ ,info= utils.PathExistsInfo(target)
-				}
+				//if !exists || info.Size() < 1000 {
+				//	media.VideoThumbnail(data.FileLocation,target)
+				//	exists, _ ,info= utils.PathExistsInfo(target)
+				//}
 				if exists {
 					setHeaderFileName(w, info.Name(), nil)
 					http.ServeFile(w, r, target)
+					return
+				}else{
+					w.WriteHeader(http.StatusForbidden)
 					return
 				}
 			}

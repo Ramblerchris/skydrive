@@ -2,13 +2,18 @@ package media
 
 import (
 	"fmt"
+	"github.com/skydrive/config"
+	"github.com/skydrive/utils"
 	"reflect"
+	"strconv"
 	"time"
 )
 
 type SCTask struct {
-	id  int
-	url string
+	Sha1  string
+	Sctype int
+	Locationpath string
+	FileName string
 }
 func (x SCTask) IsStructureEmpty() bool {
 	return reflect.DeepEqual(x, SCTask{})
@@ -106,17 +111,41 @@ func dealScWork(taskNum int) {
 
 func working(chTasks chan SCTask) {
 	for task := range chTasks {
-		fmt.Printf("处理线程: %d  url:%s ,id:%d  ,当前线程还剩size:%d \n", 1, task.url, task.id, taskueue.GetQueueLength())
-		time.Sleep(time.Second * 3)
-		finishOneTask <- 1
+		scImageAndVideo(task)
 
 	}
 }
-var id=0;
-func AddTask( url string) {
-	taskueue.Push(SCTask{
-		id:  id,
-		url: url,
-	})
-	id++;
+
+func scImageAndVideo(task SCTask) {
+
+	fmt.Printf("处理线程: %s   ,当前线程还剩size:%d \n", task.Sha1, taskueue.GetQueueLength())
+	if task.Sctype == 1 {
+		//video
+		err, target := utils.CreateThumbDir(config.ThumbnailRoot, task.Sha1, strconv.FormatInt(config.Thumbnail_index, 10), task.FileName+".jpg")
+		if err == nil {
+			exists, _, info := utils.PathExistsInfo(target)
+			if !exists || info.Size() < 1000 {
+				VideoThumbnail(task.Locationpath, target)
+			}
+		}
+	} else if task.Sctype == 0 {
+		//image
+		exists, _, _ := utils.PathExistsInfo(task.Locationpath)
+		//if exists && info.Size() > 102400 {
+		if exists {
+			//图片压缩
+			err, target := utils.CreateThumbDir(config.ThumbnailRoot, task.Sha1, strconv.FormatInt(config.Thumbnail_index, 10), task.FileName)
+			if err == nil {
+				//_, error := os.Open(data.FileLocation)
+				exists, _ := utils.PathExists(target)
+				if !exists {
+					ScaleImageByWidthAndQuity(task.Locationpath, config.Thumbnail_width, config.Thumbnail_widthf, config.Thumbnail_Quality, target)
+				}
+			}
+		}
+	}
+	finishOneTask <- 1
+}
+func AddSCTask( url SCTask) {
+	taskueue.Push(url)
 }

@@ -1,6 +1,6 @@
 {
   "mysqlDbUsername":"root",
-  "mysqlDbPassword":"Nihao@123456",
+  "mysqlDbPassword":"nihao@123456",
   "mysqlDbHost":"localhost",
   "mysqlDbPort":"3306",
   "mysqlDbName":"skydrive",
