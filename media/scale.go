@@ -235,14 +235,14 @@ func imageCompress(
 //			logger.Info("生成缩略图失败")
 //		}else{
 //			logger.Info("生成缩略图成功 "+inputArgs.OutputPath)
-//			finish()
+//			finishOneTask()
 //		}
 //	}
 //
 //	time.Sleep(5 * time.Minute) /** 如果不是自己点击退出，延时5分钟 */
 //}
 //
-//func finish()  {
+//func finishOneTask()  {
 //	fmt.Printf("继续输入进行压缩或者退出程序：")
 //	execute()
 //}

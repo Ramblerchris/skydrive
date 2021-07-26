@@ -2,16 +2,17 @@ package main
 
 import (
 	"fmt"
+	"github.com/skydrive/broadcast"
+	"github.com/skydrive/cache/redisconn"
+	"github.com/skydrive/db/mysqlconn"
+	"github.com/skydrive/media"
 	"net/http"
 	_ "net/http/pprof"
 	"os"
 	"strconv"
 	"time"
 
-	"github.com/skydrive/broadcast"
-	"github.com/skydrive/cache/redisconn"
 	"github.com/skydrive/config"
-	"github.com/skydrive/db/mysqlconn"
 	"github.com/skydrive/handler"
 	"github.com/skydrive/logger"
 	"github.com/skydrive/utils"
@@ -29,6 +30,8 @@ var (
 )
 
 func main() {
+	media.StartScWork(1)
+	
 	config.Debug, _ = strconv.ParseBool(Debug)
 	configInit := config.Setup()
 	mysqlconn.Setup(configInit.GetDataSourceName())

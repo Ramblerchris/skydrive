@@ -84,6 +84,7 @@ func OpenFile1HandlerV2(w http.ResponseWriter, r *http.Request, utoken *db.Table
 	}
 
 	if q != 0 {
+		media.AddTask(data.FileLocation)
 		if  data.Ftype == 0{
 			//超过 100K的图片才进行压缩
 			if data.FileSize> 102400{

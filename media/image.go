@@ -27,7 +27,7 @@ func ScaleImageQualityV1(p string, target string,quality int ) (isSuccess bool) 
 	}
 	decode, s, err := image.Decode(open)
 	if err != nil {
-		logger.Error("文件信息%s :%d",open.Name(),err.Error())
+		logger.Errorf("文件信息 %s :%s",open.Name(),err.Error())
 		return false
 	}
 	if s != "jpg" && s != "jpeg" && s != "png" {
