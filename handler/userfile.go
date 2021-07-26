@@ -330,6 +330,17 @@ func UploadUserFileHandler(w http.ResponseWriter, r *http.Request, utoken *db.Ta
 				response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "系统文件保存失败")
 				return
 			}
+			//视频缩略图
+		/*	if ftype == 1 {
+				err, target := utils.CreateThumbDir(config.ThumbnailRoot, metaInfo.Filesha1, strconv.FormatInt(3, 10), metaInfo.FileName+".jpg")
+				if err == nil {
+					exists, _, info := utils.PathExistsInfo(target)
+					if !exists || info.Size() < 1000 {
+						media.VideoThumbnail(metaInfo.FileLocation, target)
+						exists, _, info = utils.PathExistsInfo(target)
+					}
+				}
+			}*/
 		}
 		//查看是否已经保存过
 		if value, err := db.GetUserFileInfoByUidSha1(metaInfo.Filesha1, utoken.Uid.Int64); err == nil {
@@ -346,5 +357,6 @@ func UploadUserFileHandler(w http.ResponseWriter, r *http.Request, utoken *db.Ta
 		} else {
 			response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.SaveFileError)
 		}
+
 	}
 }

@@ -115,7 +115,7 @@ func OpenFile1HandlerV2(w http.ResponseWriter, r *http.Request, utoken *db.Table
 			err, target := utils.CreateThumbDir(config.ThumbnailRoot, filesha1, strconv.FormatInt(q, 10), data.FileName+".jpg")
 			if err == nil {
 				exists, _ ,info:= utils.PathExistsInfo(target)
-				if !exists {
+				if !exists || info.Size() < 1000 {
 					media.VideoThumbnail(data.FileLocation,target)
 					exists, _ ,info= utils.PathExistsInfo(target)
 				}

@@ -34,9 +34,10 @@ func VideoThumbnail(videoPath, videoThumbNail string) bool {
 	cmd := exec.Command("ffmpeg", cmdArguments...)
 	var out bytes.Buffer
 	cmd.Stdout = &out
+	fmt.Printf("command 开始执行")
 	err := cmd.Run()
 	if err != nil {
-		log.Fatal(err)
+		fmt.Printf("command err %s\n", err.Error())
 		return false
 	}
 	fmt.Printf("command output: %q\n", out.String())
