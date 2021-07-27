@@ -10,11 +10,12 @@ import (
 )
 
 type SCTask struct {
-	Sha1  string
-	Sctype int
+	Sha1         string
+	Sctype       int
 	Locationpath string
-	FileName string
+	FileName     string
 }
+
 func (x SCTask) IsStructureEmpty() bool {
 	return reflect.DeepEqual(x, SCTask{})
 }
@@ -77,29 +78,30 @@ func CloseScWork() {
 }
 
 func dealScWork(taskNum int) {
-	chTaskList = make(chan SCTask,taskNum)
+	chTaskList = make(chan SCTask, taskNum)
 	go working(chTaskList)
 	tick := time.Tick(time.Second * 10)
 	for {
 		var chTaskListtemp chan SCTask
-		var taskinit SCTask=SCTask{}
+		var taskinit = SCTask{}
 		if !taskueue.IsEmpty() {
-			_, taskinit= taskueue.Pop()
-			chTaskListtemp=chTaskList
+			_, taskinit = taskueue.Pop()
+			chTaskListtemp = chTaskList
 		}
 		select {
 		case finishindex := <-finishOneTask:
 			fmt.Printf("finishindex index: %d   ,tick 还剩size:%d  \n", finishindex, taskueue.GetQueueLength())
-			if !taskinit .IsStructureEmpty(){
+			if !taskinit.IsStructureEmpty() {
 				chTaskList <- taskinit
 			}
 		case <-tick:
 			if !taskueue.IsEmpty() {
 				fmt.Printf(" tick 还剩size:%d   \n", taskueue.GetQueueLength())
 			}
-		case chTaskListtemp <- taskinit:{
-			fmt.Printf(" 插入ok 还剩size:%d   \n", taskueue.GetQueueLength())
-		}
+		case chTaskListtemp <- taskinit:
+			{
+				fmt.Printf(" 插入ok 还剩size:%d   \n", taskueue.GetQueueLength())
+			}
 		case <-CLOSE:
 			//关闭任务列队
 			fmt.Println("close")
@@ -146,6 +148,6 @@ func scImageAndVideo(task SCTask) {
 	}
 	finishOneTask <- 1
 }
-func AddSCTask( url SCTask) {
+func AddSCTask(url SCTask) {
 	taskueue.Push(url)
 }

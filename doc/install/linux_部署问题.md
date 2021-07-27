@@ -248,22 +248,3 @@ shutdown -r 20:30  晚上8:30定时重起
 ```
 
 
-
-root@skydriver:/home/wisn/deploy# cp skydrive_release ../
-
-cp: cannot create regular file '../skydrive_release': Text file busy
-
-root@skydriver:/home/wisn/deploy# fuser skydrive_release 
-
-root@skydriver:/home/wisn/deploy# cd ..
-
-root@skydriver:/home/wisn# fuser skydrive_release 
-
-/home/wisn/skydrive_release:  690e
-
-root@skydriver:/home/wisn# kill -9 690e
-
-bash: kill: 690e: arguments must be process or job IDs
-
-root@skydriver:/home/wisn# kill -9 690
-

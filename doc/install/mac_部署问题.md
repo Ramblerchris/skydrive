@@ -54,3 +54,14 @@ Or, if you don't want/need a background service you can just run:
 ```shell
 mysql_secure_installation
 ```
+
+### 安装Imagemagick
+
+用于图片压缩缩略图获取
+
+```shell
+brew install imagemagick
+brew install ghostscript
+```
+
+### 

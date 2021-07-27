@@ -101,8 +101,14 @@ func OpenFile1HandlerV2(w http.ResponseWriter, r *http.Request, utoken *db.Table
 						setHeaderFileName(w, data.FileName, nil)
 						http.ServeFile(w, r, target)
 						return
-					}else{
+					} else {
 						w.WriteHeader(http.StatusForbidden)
+						media.AddSCTask(media.SCTask{
+							Sha1:         filesha1,
+							Sctype:       int(data.Ftype),
+							Locationpath: data.FileLocation,
+							FileName:     data.FileName,
+						})
 						return
 					}
 					//ScaleImageByWidthAndQuity(path, 0, 0.5, 100, output_path)
@@ -117,7 +123,7 @@ func OpenFile1HandlerV2(w http.ResponseWriter, r *http.Request, utoken *db.Table
 			//视频缩略图
 			err, target := utils.CreateThumbDir(config.ThumbnailRoot, filesha1, strconv.FormatInt(q, 10), data.FileName+".jpg")
 			if err == nil {
-				exists, _ ,info:= utils.PathExistsInfo(target)
+				exists, _, info := utils.PathExistsInfo(target)
 				//if !exists || info.Size() < 1000 {
 				//	media.VideoThumbnail(data.FileLocation,target)
 				//	exists, _ ,info= utils.PathExistsInfo(target)
@@ -126,8 +132,14 @@ func OpenFile1HandlerV2(w http.ResponseWriter, r *http.Request, utoken *db.Table
 					setHeaderFileName(w, info.Name(), nil)
 					http.ServeFile(w, r, target)
 					return
-				}else{
+				} else {
 					w.WriteHeader(http.StatusForbidden)
+					media.AddSCTask(media.SCTask{
+						Sha1:         filesha1,
+						Sctype:       int(data.Ftype),
+						Locationpath: data.FileLocation,
+						FileName:     data.FileName,
+					})
 					return
 				}
 			}

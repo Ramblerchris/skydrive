@@ -74,6 +74,10 @@ func ScaleImageByWidthAndQuity(originPath string, targetWidth int, targetWidthFl
 		return false
 	}
 	if format != "jpg" && format != "jpeg" && format != "png" {
+		if  format == "gif"{
+
+			return ;
+		}
 		logger.Error("图片格式不支持",format)
 		return false
 	}
@@ -164,4 +168,27 @@ func reverseOrientation(img image.Image, o string) *image.NRGBA {
 	return imaging.Clone(img)
 }
 
-
+/*
+func getOrientation(img image.Image, o string) int {
+	switch o {
+	case "1":
+		return 0
+	case "2":
+		return imaging.FlipV(img)
+	case "3":
+		return imaging.Rotate180(img)
+	case "4":
+		return imaging.Rotate180(imaging.FlipV(img))
+	case "5":
+		return imaging.Rotate270(imaging.FlipV(img))
+	case "6":
+		return imaging.Rotate270(img)
+	case "7":
+		return imaging.Rotate90(imaging.FlipV(img))
+	case "8":
+		return imaging.Rotate90(img)
+	}
+	logrus.Errorf("unknown orientation %s, expect 1-8", o)
+	return imaging.Clone(img)
+}
+*/
