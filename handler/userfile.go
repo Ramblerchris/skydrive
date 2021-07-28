@@ -316,6 +316,7 @@ func UploadUserFileHandler(w http.ResponseWriter, r *http.Request, utoken *db.Ta
 		media.AddSCTask(media.SCTask{
 			Sha1:metaInfo.Filesha1,
 			Sctype:ftype,
+			Minetype:minetype,
 			Locationpath: metaInfo.FileLocation,
 			FileName:metaInfo.FileName,
 		})

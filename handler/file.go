@@ -106,6 +106,7 @@ func OpenFile1HandlerV2(w http.ResponseWriter, r *http.Request, utoken *db.Table
 						media.AddSCTask(media.SCTask{
 							Sha1:         filesha1,
 							Sctype:       int(data.Ftype),
+							Minetype: data.Minitype,
 							Locationpath: data.FileLocation,
 							FileName:     data.FileName,
 						})
@@ -137,6 +138,7 @@ func OpenFile1HandlerV2(w http.ResponseWriter, r *http.Request, utoken *db.Table
 					media.AddSCTask(media.SCTask{
 						Sha1:         filesha1,
 						Sctype:       int(data.Ftype),
+						Minetype: data.Minitype,
 						Locationpath: data.FileLocation,
 						FileName:     data.FileName,
 					})

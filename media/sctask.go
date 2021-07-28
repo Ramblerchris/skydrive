@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/skydrive/config"
 	"github.com/skydrive/utils"
+	"image"
+	"os"
 	"reflect"
 	"strconv"
 	"time"
@@ -12,6 +14,7 @@ import (
 type SCTask struct {
 	Sha1         string
 	Sctype       int
+	Minetype       string
 	Locationpath string
 	FileName     string
 }
@@ -119,7 +122,6 @@ func working(chTasks chan SCTask) {
 }
 
 func scImageAndVideo(task SCTask) {
-
 	fmt.Printf("处理线程: %s   ,当前线程还剩size:%d \n", task.Sha1, taskueue.GetQueueLength())
 	if task.Sctype == 1 {
 		//video
@@ -141,7 +143,19 @@ func scImageAndVideo(task SCTask) {
 				//_, error := os.Open(data.FileLocation)
 				exists, _ := utils.PathExists(target)
 				if !exists {
-					ScaleImageByWidthAndQuity(task.Locationpath, config.Thumbnail_width, config.Thumbnail_widthf, config.Thumbnail_Quality, target)
+					//todo 可以通过minitype 获取类型
+					efile, err := os.Open(task.Locationpath)
+					if err != nil {
+						fmt.Printf("could not open file for : %s", task.Locationpath)
+						return
+					}
+					_, format, err := image.Decode(efile)
+
+					if format == "gif" {
+						ImageThumbnailGif(config.Thumbnail_fuzz_gif, task.Locationpath, target)
+					} else {
+						ImageThumbnailJPG(config.Thumbnail_Quality, config.Thumbnail_widthf, task.Locationpath, target)
+					}
 				}
 			}
 		}

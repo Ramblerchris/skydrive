@@ -84,8 +84,10 @@ const (
 	//SaveFileRoot_thumbnail = "thumbnail"
 	Thumbnail_Quality      = 40
 	Thumbnail_index      = 3
-	Thumbnail_width      = 0
-	Thumbnail_widthf      = 0.3
+	//用于压缩gif
+	Thumbnail_fuzz_gif    = 5
+	//宽高百分比
+	Thumbnail_widthf      = 40
 	LOG_FILE_NAME          = "logfile.log"
 	configInt              = "config_ini.json"
 	AdminManagerDir        = "html"

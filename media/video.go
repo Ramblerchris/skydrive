@@ -3,11 +3,11 @@ package media
 import (
 	"bytes"
 	"fmt"
-	"log"
 	"os/exec"
 	"strconv"
 )
-//source：是原始文件的名字，可以是mov，mpeg，avi，wmv各类格式，ffmpeg基本都支持。
+
+// VideoThumbnail source：是原始文件的名字，可以是mov，mpeg，avi，wmv各类格式，ffmpeg基本都支持。
 //-s wxh: 指定视频的宽和高
 //-b : 设定视频的比特率
 //-aspect: 保持视频的比率。如4:3或者16:9
@@ -24,6 +24,7 @@ import (
 //-t duration 设置纪录时间 hh:mm:ss[.xxx]格式的记录时间也支持
 //-ss position 搜索到指定的时间 [-]hh:mm:ss[.xxx]的格式也支持
 //s wxh: 指定视频的宽和高
+//获取视频静态缩略图
 func VideoThumbnail(videoPath, videoThumbNail string) bool {
 	//ffmpeg -i /Users/mac/Desktop/media/video/video_ddd.mkv -y -f image2 -ss 8 -t 0.001  /Users/mac/Desktop/media/video/aaa.jpg
 	//cmdArguments := []string{"-i", videoPath, "-y", "-f",
@@ -31,30 +32,38 @@ func VideoThumbnail(videoPath, videoThumbNail string) bool {
 	cmdArguments := []string{"-i", videoPath, "-y", "-f",
 		"mjpeg", "-ss", "3", "-t", "0.001", videoThumbNail}
 	//cmdArguments := []string{"-i", videoPath, "-y", "-f", "-ss", "1", videoThumbNail}
-	cmd := exec.Command("ffmpeg", cmdArguments...)
+	return execCommend("ffmpeg", cmdArguments)
+}
+
+// VideoThumbnailGif 获取视频gif 缩略图
+func VideoThumbnailGif(videoPath, videoThumbNail string, countfram int) bool {
+	cmdArguments := []string{"-i", videoPath, "-vframes", strconv.Itoa(countfram),
+		"-y", "-f", "gif", videoThumbNail}
+	return execCommend("ffmpeg", cmdArguments)
+}
+
+func ImageThumbnailJPG(quality, resizef int, videoPath, jpgehumbNail string) bool {
+	//convert -quality 30 -resize 500 1627138076033.jpeg  1627138076033_2.jpeg
+	cmdArguments := []string{"-quality", strconv.Itoa(quality), "-resize", fmt.Sprintf("%d%%", resizef),videoPath, jpgehumbNail}
+	return execCommend("convert", cmdArguments)
+}
+
+func ImageThumbnailGif(fuzz int, videoPath, gifThumbNail string) bool {
+	//convert test.gif -fuzz 5% -layers Optimize result.gif
+	cmdArguments := []string{ videoPath, "-fuzz", fmt.Sprintf("%d%%", fuzz), "-layers", "Optimize", gifThumbNail}
+	return execCommend("convert", cmdArguments)
+}
+
+func execCommend(name string, arguments []string) bool {
+	cmd := exec.Command(name, arguments...)
 	var out bytes.Buffer
 	cmd.Stdout = &out
-	fmt.Printf("command 开始执行")
+	fmt.Println("command start",arguments)
 	err := cmd.Run()
 	if err != nil {
 		fmt.Printf("command err %s\n", err.Error())
 		return false
 	}
-	fmt.Printf("command output: %q\n", out.String())
-	return true
-}
-
-func VideoThumbnailGif(videoPath, videoThumbNail string,countfram int ) bool {
-	cmdArguments := []string{"-i", videoPath, "-vframes", strconv.Itoa(countfram),
-		"-y", "-f", "gif",  videoThumbNail}
-	cmd := exec.Command("ffmpeg", cmdArguments...)
-	var out bytes.Buffer
-	cmd.Stdout = &out
-	err := cmd.Run()
-	if err != nil {
-		log.Fatal(err)
-		return false
-	}
-	fmt.Printf("command output: %q\n", out.String())
+	fmt.Printf("command: %q\n", out.String())
 	return true
 }

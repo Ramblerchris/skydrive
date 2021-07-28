@@ -9,6 +9,8 @@ import (
 	"image/draw"
 	"image/jpeg"
 	"io"
+	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -20,14 +22,24 @@ func Test_image(t *testing.T) {
 	//var path = "/Users/mac/Desktop/5_03bf5931ffcd43068197154706049452_IMG_20210218_181450.jpg"
 	//var output_path = "/Users/mac/Desktop/5_03bf5931ffcd43068197154706049452_IMG_20210218_181450_1.jpg"
 
-	var path1 = "/Users/wisn/Desktop/video/1627138076033.jpeg"
+/*	var path1 = "/Users/wisn/Desktop/video/1627138076033.jpeg"
 	var path3 = "/Users/wisn/Desktop/video/1627138076033_1.jpeg"
 	var path2 = "/Users/wisn/Desktop/video/1627138076033_2.jpeg"
 	var testbmp = "/Users/wisn/Desktop/video/testbmp.bmp"
 	getOrigin(path1)
 	getOrigin(path3)
 	getOrigin(path2)
-	getOrigin(testbmp)
+	getOrigin(testbmp)*/
+
+	var dirPath="/Users/wisn/Desktop/video/testtype"
+	dir, err := ioutil.ReadDir(dirPath)
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, info := range dir {
+		tempfile := dirPath + "/" + info.Name()
+		getOrigin(tempfile)
+	}
 	/*	var output_path = "/Users/wisn/Desktop/video/1627138076033_1.jpeg"
 		//var path="/Users/mac/Desktop/10a3903d83294b3ab15fd05f1644bef0.jpg"
 		//var output_path="/Users/mac/Desktop/10a3903d83294b3ab15fd05f1644bef0_1.jpg"
@@ -40,6 +52,13 @@ func getOrigin(path string) {
 		fmt.Printf("could not open file for exif decoder: %s", path)
 		return
 	}
+	_, format, err := image.Decode(efile)
+	if err != nil {
+		fmt.Printf("文件信息 %s %s :%s \n",format,efile.Name(),err.Error())
+		return
+	}
+	fmt.Printf("efile.Name() : %s ", efile.Name())
+	fmt.Printf(" format : %s ", format)
 	x, _ := exif.Decode(efile)
 	if x != nil {
 		orient, _ := x.Get(exif.Orientation)
@@ -47,7 +66,7 @@ func getOrigin(path string) {
 			fmt.Printf("%s had orientation %s \n", path, orient.String())
 		}
 	}else{
-		fmt.Printf("aaaacould not open file for exif decoder: %s\n", path)
+		fmt.Printf("  %s\n", path)
 	}
 }
 
