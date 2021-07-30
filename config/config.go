@@ -81,13 +81,12 @@ const (
 	Regex_MobilePhone = `^(1[3|4|5|8][0-9]\d{4,8})$`
 	Salt_MD5          = "&%)&%A3t8C"
 
-	//SaveFileRoot_thumbnail = "thumbnail"
-	Thumbnail_Quality      = 40
+	Thumbnail_Quality      = 30
 	Thumbnail_index      = 3
 	//用于压缩gif
 	Thumbnail_fuzz_gif    = 5
 	//宽高百分比
-	Thumbnail_widthf      = 40
+	Thumbnail_widthf      = 30
 	LOG_FILE_NAME          = "logfile.log"
 	configInt              = "config_ini.json"
 	AdminManagerDir        = "html"

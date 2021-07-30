@@ -58,12 +58,12 @@ func execCommend(name string, arguments []string) bool {
 	cmd := exec.Command(name, arguments...)
 	var out bytes.Buffer
 	cmd.Stdout = &out
-	fmt.Println("command start",arguments)
+	fmt.Printf("command start %s %s \n ",name,arguments)
 	err := cmd.Run()
 	if err != nil {
 		fmt.Printf("command err %s\n", err.Error())
 		return false
 	}
-	fmt.Printf("command: %q\n", out.String())
+	fmt.Printf("command success : %q\n", out.String())
 	return true
 }

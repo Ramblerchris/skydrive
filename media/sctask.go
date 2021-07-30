@@ -83,7 +83,7 @@ func CloseScWork() {
 func dealScWork(taskNum int) {
 	chTaskList = make(chan SCTask, taskNum)
 	go working(chTaskList)
-	tick := time.Tick(time.Second * 10)
+	tick := time.Tick(time.Second * 1)
 	for {
 		var chTaskListtemp chan SCTask
 		var taskinit = SCTask{}
@@ -92,18 +92,21 @@ func dealScWork(taskNum int) {
 			chTaskListtemp = chTaskList
 		}
 		select {
-		case finishindex := <-finishOneTask:
-			fmt.Printf("finishindex index: %d   ,tick 还剩size:%d  \n", finishindex, taskueue.GetQueueLength())
+		case <-finishOneTask:
 			if !taskinit.IsStructureEmpty() {
 				chTaskList <- taskinit
 			}
+			fmt.Printf("finishOneTask current size:%d  \n", taskueue.GetQueueLength())
 		case <-tick:
 			if !taskueue.IsEmpty() {
-				fmt.Printf(" tick 还剩size:%d   \n", taskueue.GetQueueLength())
+				fmt.Printf("ticktimer task current size:%d   \n", taskueue.GetQueueLength())
+			}
+			if !taskinit.IsStructureEmpty() {
+				taskueue.Push(taskinit)
 			}
 		case chTaskListtemp <- taskinit:
 			{
-				fmt.Printf(" 插入ok 还剩size:%d   \n", taskueue.GetQueueLength())
+				fmt.Printf("send task success current size:%d   \n", taskueue.GetQueueLength())
 			}
 		case <-CLOSE:
 			//关闭任务列队
@@ -121,8 +124,11 @@ func working(chTasks chan SCTask) {
 	}
 }
 
+var count=0
+
 func scImageAndVideo(task SCTask) {
-	fmt.Printf("处理线程: %s   ,当前线程还剩size:%d \n", task.Sha1, taskueue.GetQueueLength())
+	count++
+	fmt.Printf("Thumbnail count:%d sha: %s  \n", count ,task.Sha1)
 	if task.Sctype == 1 {
 		//video
 		err, target := utils.CreateThumbDir(config.ThumbnailRoot, task.Sha1, strconv.FormatInt(config.Thumbnail_index, 10), task.FileName+".jpg")
@@ -150,7 +156,6 @@ func scImageAndVideo(task SCTask) {
 						return
 					}
 					_, format, err := image.Decode(efile)
-
 					if format == "gif" {
 						ImageThumbnailGif(config.Thumbnail_fuzz_gif, task.Locationpath, target)
 					} else {
@@ -158,6 +163,8 @@ func scImageAndVideo(task SCTask) {
 					}
 				}
 			}
+		}else{
+			fmt.Printf("file not exist : %s", task.Locationpath)
 		}
 	}
 	finishOneTask <- 1
