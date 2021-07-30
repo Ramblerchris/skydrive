@@ -294,50 +294,54 @@ func UploadUserFileHandler(w http.ResponseWriter, r *http.Request, utoken *db.Ta
 		}
 		metaInfo.FileName=fileheader.Filename
 		metaInfo.FileLocation=path
-		newfile, error := os.Create(metaInfo.FileLocation)
-		if error != nil {
-			fmt.Printf("创建文件出错 %s \n", error.Error())
-			response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "file create error")
-			return
+		exists, _, info := utils.PathExistsInfo(metaInfo.FileLocation)
+		if exists {
+			//如果文件存在，再次验证sha1
+			efile, err := os.Open(metaInfo.FileLocation)
+			if err != nil {
+				fmt.Printf("could not open file for : %s", metaInfo.FileLocation)
+			} else {
+				metaInfo.Filesha1 = utils.GetFileSha1(efile)
+				metaInfo.FileSize = info.Size()
+			}
 		}
-		defer newfile.Close()
-		metaInfo.FileSize, error = io.Copy(newfile, file)
-		if error != nil {
-			logger.Infof("保存文件出错 %s ", error.Error())
-			response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "file copy error")
-			return
+		//文件不存在的情况，重新保存
+		if metaInfo.Filesha1 != sha1 {
+			newfile, error := os.Create(metaInfo.FileLocation)
+			if error != nil {
+				fmt.Printf("创建文件出错 %s \n", error.Error())
+				response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "file create error")
+				return
+			}
+			defer newfile.Close()
+			metaInfo.FileSize, error = io.Copy(newfile, file)
+			if error != nil {
+				logger.Infof("保存文件出错 %s ", error.Error())
+				response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "file copy error")
+				return
+			}
+			metaInfo.Filesha1 = utils.GetFileSha1(newfile)
+			//新文件添加缩略图任务
+			media.AddSCTask(media.SCTask{
+				Sha1:metaInfo.Filesha1,
+				Sctype:ftype,
+				Minetype:minetype,
+				Locationpath: metaInfo.FileLocation,
+				FileName:metaInfo.FileName,
+			})
 		}
-		metaInfo.Filesha1 = utils.GetFileSha1(newfile)
 		//logger.Info("file sha1", metaInfo.Filesha1)
 		//todo 缓存添加
 		//cache.AddOrUpdateFileMeta(metaInfo)
 		//处理文件已经存在的情况
 		_, ok := cache.GetFileMeta(metaInfo.Filesha1)
-		media.AddSCTask(media.SCTask{
-			Sha1:metaInfo.Filesha1,
-			Sctype:ftype,
-			Minetype:minetype,
-			Locationpath: metaInfo.FileLocation,
-			FileName:metaInfo.FileName,
-		})
 		if !ok {
-			//如果不存在 先插入文件表
+			//如果不存在 先插入文件表 文件表只保留一份
 			if !db.SaveFileInfo(metaInfo.Filesha1, metaInfo.FileName, metaInfo.FileSize, metaInfo.FileLocation, minetype, ftype, videoduration) {
 				//插入文件表不成功
 				response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "系统文件保存失败")
 				return
 			}
-			//视频缩略图
-		/*	if ftype == 1 {
-				err, target := utils.CreateThumbDir(config.ThumbnailRoot, metaInfo.Filesha1, strconv.FormatInt(3, 10), metaInfo.FileName+".jpg")
-				if err == nil {
-					exists, _, info := utils.PathExistsInfo(target)
-					if !exists || info.Size() < 1000 {
-						media.VideoThumbnail(metaInfo.FileLocation, target)
-						exists, _, info = utils.PathExistsInfo(target)
-					}
-				}
-			}*/
 		}
 		//查看是否已经保存过
 		if value, err := db.GetUserFileInfoByUidSha1(metaInfo.Filesha1, utoken.Uid.Int64); err == nil {
@@ -349,7 +353,7 @@ func UploadUserFileHandler(w http.ResponseWriter, r *http.Request, utoken *db.Ta
 		if db.SaveUserFileInfo(utoken.Uid.Int64, pid, utoken.Phone.String, metaInfo.Filesha1, metaInfo.FileName, metaInfo.FileLocation, metaInfo.FileSize, minetype, ftype, utils.GetTimeStr(int(videoduration))) {
 			//更新当前文件夹的缩略图最新
 			db.UpdateUserFileDirPreSha1ById(metaInfo.Filesha1, pid)
-			logger.Info(" metaInfo: ", metaInfo)
+			logger.Info(" 用户上传文件成功: ", metaInfo)
 			response.ReturnResponse(w, config.Net_SuccessCode, config.Success, &metaInfo)
 		} else {
 			response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.SaveFileError)
