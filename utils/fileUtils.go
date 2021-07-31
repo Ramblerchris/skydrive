@@ -46,7 +46,8 @@ func CreateDirbySha1(rootpath, sha, filename string,uid int64) (error, string) {
 	if err!=nil{
 		return err,path
 	}
-	filename=fmt.Sprintf("%d_%s_%s", uid, BuildUUID(), filename)
+	//filename=fmt.Sprintf("%d_%s_%s", uid, BuildUUID(), filename)
+	filename=fmt.Sprintf("%d_%s_%s", uid, sha, filename)
 	return nil, fmt.Sprintf("%s/%s", path,  filename)
 }
 
