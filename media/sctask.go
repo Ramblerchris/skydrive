@@ -1,8 +1,8 @@
 package media
 
 import (
-	"fmt"
 	"github.com/skydrive/config"
+	"github.com/skydrive/logger"
 	"github.com/skydrive/utils"
 	"image"
 	"os"
@@ -83,7 +83,7 @@ func CloseScWork() {
 func dealScWork(taskNum int) {
 	chTaskList = make(chan SCTask, taskNum)
 	go working(chTaskList)
-	tick := time.Tick(time.Second * 1)
+	tick := time.Tick(time.Second * 6)
 	for {
 		var chTaskListtemp chan SCTask
 		var taskinit = SCTask{}
@@ -96,21 +96,21 @@ func dealScWork(taskNum int) {
 			if !taskinit.IsStructureEmpty() {
 				chTaskList <- taskinit
 			}
-			fmt.Printf("finishOneTask current size:%d  \n", taskueue.GetQueueLength())
+			logger.Infof("finishOneTask current size:%d  \n", taskueue.GetQueueLength())
 		case <-tick:
 			if !taskueue.IsEmpty() {
-				fmt.Printf("ticktimer task current size:%d   \n", taskueue.GetQueueLength())
+				logger.Infof("ticktimer task current size:%d   \n", taskueue.GetQueueLength())
 			}
 			if !taskinit.IsStructureEmpty() {
 				taskueue.Push(taskinit)
 			}
 		case chTaskListtemp <- taskinit:
 			{
-				fmt.Printf("send task success current size:%d   \n", taskueue.GetQueueLength())
+				logger.Infof("send task success current size:%d   \n", taskueue.GetQueueLength())
 			}
 		case <-CLOSE:
 			//关闭任务列队
-			fmt.Println("close")
+			logger.Infof("close")
 			return
 		}
 	}
@@ -128,7 +128,7 @@ var count=0
 
 func scImageAndVideo(task SCTask) {
 	count++
-	fmt.Printf("Thumbnail count:%d sha: %s  \n", count ,task.Sha1)
+	logger.Infof("Thumbnail count:%d sha: %s  \n", count ,task.Sha1)
 	if task.Sctype == 1 {
 		//video
 		err, target := utils.CreateThumbDir(config.ThumbnailRoot, task.Sha1, strconv.FormatInt(config.Thumbnail_index, 10), task.FileName+".jpg")
@@ -152,7 +152,7 @@ func scImageAndVideo(task SCTask) {
 					//todo 可以通过minitype 获取类型
 					efile, err := os.Open(task.Locationpath)
 					if err != nil {
-						fmt.Printf("could not open file for : %s", task.Locationpath)
+						logger.Infof("could not open file for : %s", task.Locationpath)
 						return
 					}
 					_, format, err := image.Decode(efile)
@@ -164,7 +164,7 @@ func scImageAndVideo(task SCTask) {
 				}
 			}
 		}else{
-			fmt.Printf("file not exist : %s", task.Locationpath)
+			logger.Infof("file not exist : %s", task.Locationpath)
 		}
 	}
 	finishOneTask <- 1

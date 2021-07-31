@@ -18,7 +18,7 @@ import (
 	"time"
 )
 
-//获取用户文件列表
+// GetUserFileListByUidHandler 获取用户文件列表
 func GetUserFileListByUidHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	pageNo, _ := strconv.ParseInt(r.FormValue("pageNo"), 10, 64)
@@ -50,7 +50,7 @@ func GetUserFileListByUidHandler(w http.ResponseWriter, r *http.Request, utoken 
 	response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.GetFileDirListError)
 }
 
-// 获取用户文件夹内的所有文件夹列表
+// GetUserDirFileListByPidHandler 获取用户文件夹内的所有文件夹列表
 func GetUserDirFileListByPidHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	pageNo, _ := strconv.ParseInt(r.FormValue("pageNo"), 10, 64)
@@ -103,7 +103,7 @@ func GetUserDirFileListByPidHandler(w http.ResponseWriter, r *http.Request, utok
 	response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.Error)
 }
 
-//批量查询文件是否存在
+// GetSha1ListIsExistByUidHandler 批量查询文件是否存在
 func GetSha1ListIsExistByUidHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	if r.Method == "POST" {
@@ -126,7 +126,7 @@ func GetSha1ListIsExistByUidHandler(w http.ResponseWriter, r *http.Request, utok
 	}
 }
 
-//批量删除文件
+// DeleteFileListBySha1sUidHandler 批量删除文件
 func DeleteFileListBySha1sUidHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	if r.Method == "POST" {
@@ -149,7 +149,7 @@ func DeleteFileListBySha1sUidHandler(w http.ResponseWriter, r *http.Request, uto
 	}
 }
 
-//批量删除指定文件夹
+// UpdateFileDirStatusByUidHandler 批量删除指定文件夹
 func UpdateFileDirStatusByUidHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	if r.Method == "POST" {
@@ -186,7 +186,7 @@ func UpdateFileDirStatusByUidHandler(w http.ResponseWriter, r *http.Request, uto
 	}
 }
 
-//修改指定文件夹名称
+// UpdateDirNameById 修改指定文件夹名称
 func UpdateDirNameById(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	id, _ := strconv.ParseInt(r.FormValue("id"), 10, 64)
@@ -202,7 +202,7 @@ func UpdateDirNameById(w http.ResponseWriter, r *http.Request, utoken *db.TableU
 	response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.Error)
 }
 
-//查看当前用户所有保存文件的sha1
+// GetAllSha1ListByUidHandler 查看当前用户所有保存文件的sha1
 func GetAllSha1ListByUidHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	if byuid, err := db.GetUserFileAllSha1ListByUid(utoken.Uid.Int64); err == nil {
 		response.ReturnResponse(w, config.Net_SuccessCode, "get sha1s success ", byuid)
@@ -211,7 +211,7 @@ func GetAllSha1ListByUidHandler(w http.ResponseWriter, r *http.Request, utoken *
 	response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "get sha1s success ")
 }
 
-//创建文件夹
+// AddFileDirByUidPidHandler 创建文件夹
 func AddFileDirByUidPidHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	dirname := r.FormValue("filename")

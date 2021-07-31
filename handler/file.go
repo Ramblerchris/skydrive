@@ -88,7 +88,7 @@ func OpenFile1HandlerV2(w http.ResponseWriter, r *http.Request, utoken *db.Table
 			//超过 100K的图片才进行压缩
 			if data.FileSize> 102400{
 				//图片压缩
-				err, target := utils.CreateThumbDir(config.ThumbnailRoot, filesha1, strconv.FormatInt(q, 10), data.FileName)
+				err, target := utils.CreateThumbDir(config.ThumbnailRoot, filesha1, strconv.FormatInt(config.Thumbnail_index, 10), data.FileName)
 				if err == nil  {
 					//_, error := os.Open(data.FileLocation)
 					exists, _ := utils.PathExists(target)
@@ -122,14 +122,14 @@ func OpenFile1HandlerV2(w http.ResponseWriter, r *http.Request, utoken *db.Table
 			}
 		} else if data.Ftype == 1 {
 			//视频缩略图
-			err, target := utils.CreateThumbDir(config.ThumbnailRoot, filesha1, strconv.FormatInt(q, 10), data.FileName+".jpg")
+			err, target := utils.CreateThumbDir(config.ThumbnailRoot, filesha1, strconv.FormatInt(config.Thumbnail_index, 10), data.FileName+".jpg")
 			if err == nil {
 				exists, _, info := utils.PathExistsInfo(target)
 				//if !exists || info.Size() < 1000 {
 				//	media.VideoThumbnail(data.FileLocation,target)
 				//	exists, _ ,info= utils.PathExistsInfo(target)
 				//}
-				if exists {
+				if exists && info.Size() >= 1000 {
 					setHeaderFileName(w, info.Name(), nil)
 					http.ServeFile(w, r, target)
 					return

@@ -3,6 +3,7 @@ package media
 import (
 	"bytes"
 	"fmt"
+	"github.com/skydrive/logger"
 	"os/exec"
 	"strconv"
 )
@@ -58,12 +59,12 @@ func execCommend(name string, arguments []string) bool {
 	cmd := exec.Command(name, arguments...)
 	var out bytes.Buffer
 	cmd.Stdout = &out
-	fmt.Printf("command start %s %s \n ",name,arguments)
+	logger.Infof("command start %s %s \n ",name,arguments)
 	err := cmd.Run()
 	if err != nil {
-		fmt.Printf("command err %s\n", err.Error())
+		logger.Infof("command err %s\n", err.Error())
 		return false
 	}
-	fmt.Printf("command success : %q\n", out.String())
+	logger.Infof("command success : %q\n", out.String())
 	return true
 }
