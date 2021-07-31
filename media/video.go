@@ -26,12 +26,12 @@ import (
 //-ss position 搜索到指定的时间 [-]hh:mm:ss[.xxx]的格式也支持
 //s wxh: 指定视频的宽和高
 //获取视频静态缩略图
-func VideoThumbnail(videoPath, videoThumbNail string) bool {
+func VideoThumbnail(ss,videoPath, videoThumbNail string) bool {
 	//ffmpeg -i /Users/mac/Desktop/media/video/video_ddd.mkv -y -f image2 -ss 8 -t 0.001  /Users/mac/Desktop/media/video/aaa.jpg
 	//cmdArguments := []string{"-i", videoPath, "-y", "-f",
 	//	"mjpeg", "-ss", "0.9", "-t", "0.001", videoThumbNail}
 	cmdArguments := []string{"-i", videoPath, "-y", "-f",
-		"mjpeg", "-ss", "3", "-t", "0.001", videoThumbNail}
+		"mjpeg", "-ss", ss, "-t", "0.001", videoThumbNail}
 	//cmdArguments := []string{"-i", videoPath, "-y", "-f", "-ss", "1", videoThumbNail}
 	return execCommend("ffmpeg", cmdArguments)
 }

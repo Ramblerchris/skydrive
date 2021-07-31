@@ -134,8 +134,10 @@ func scImageAndVideo(task SCTask) {
 		err, target := utils.CreateThumbDir(config.ThumbnailRoot, task.Sha1, strconv.FormatInt(config.Thumbnail_index, 10), task.FileName+".jpg")
 		if err == nil {
 			exists, _, info := utils.PathExistsInfo(target)
-			if !exists || info.Size() < 1000 {
-				VideoThumbnail(task.Locationpath, target)
+			if !exists {
+				VideoThumbnail("3", task.Locationpath, target)
+			} else if info.Size() < 1000 {
+				VideoThumbnail("1", task.Locationpath, target)
 			}
 		}
 	} else if task.Sctype == 0 {
