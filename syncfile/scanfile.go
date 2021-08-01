@@ -1,11 +1,16 @@
 package syncfile
 
 import (
+	"fmt"
 	"github.com/skydrive/logger"
 	"io/ioutil"
 	"log"
 	"os"
 )
+
+//备份算法：
+//
+
 
 type HandleFile func(string, os.FileInfo,int)
 
@@ -27,7 +32,7 @@ func scanDir(dirpath string,handle HandleFile, level int, filecount int64,dircou
 	}
 	for index, info := range dir {
 		tempfile := dirpath + "/" + info.Name()
-		logger.Infof("%s L %d N %1d %s ", tag, level, index, tempfile)
+		fmt.Printf("%s %s L %d N %1d %s \n",info.ModTime().Format("2006-01-02 15:04:05"), tag, level, index, tempfile)
 		if info.IsDir() {
 			dircount++
 			filecount,dircount,countsize= scanDir(tempfile,handle, level+1, filecount, dircount,countsize)

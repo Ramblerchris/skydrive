@@ -6,7 +6,7 @@ import (
 )
 
 func Test_Scanfile(t *testing.T) {
-	StartScanFile("/Users/mac/Desktop/Version", func(s string, info os.FileInfo, i int) {
+	StartScanFile("/Users/wisn/Desktop/video", func(s string, info os.FileInfo, i int) {
 
 	})
 }
