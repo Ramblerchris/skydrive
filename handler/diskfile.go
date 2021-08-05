@@ -8,6 +8,7 @@ import (
 	"github.com/skydrive/handler/cache"
 	"github.com/skydrive/logger"
 	"github.com/skydrive/response"
+	"github.com/skydrive/syncfile"
 	"github.com/skydrive/utils"
 	"io"
 	"net/http"
@@ -17,7 +18,7 @@ import (
 	"time"
 )
 
-// 获取用户文件夹内的所有文件
+// GetDiskDirFileListByPidHandler 获取用户文件夹内的所有文件
 func GetDiskDirFileListByPidHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	pageNo, _ := strconv.ParseInt(r.FormValue("pageNo"), 10, 64)
@@ -48,7 +49,7 @@ func GetDiskDirFileListByPidHandler(w http.ResponseWriter, r *http.Request, utok
 	response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.Error)
 }
 
-//批量删除指定文件夹
+// DeleteDiskFileDirByUidHandler 批量删除指定文件夹
 func DeleteDiskFileDirByUidHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	if r.Method == "POST" {
@@ -67,7 +68,7 @@ func DeleteDiskFileDirByUidHandler(w http.ResponseWriter, r *http.Request, utoke
 	}
 }
 
-//创建文件夹
+// AddDiskFileDirByUidPidHandler 创建文件夹
 func AddDiskFileDirByUidPidHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	dirname := r.FormValue("filename")
@@ -90,7 +91,7 @@ func AddDiskFileDirByUidPidHandler(w http.ResponseWriter, r *http.Request, utoke
 	response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.CreateError)
 }
 
-// 文件通过sha1 秒传
+// HitPassDiskBySha1Handler 文件通过sha1 秒传
 func HitPassDiskBySha1Handler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	sha1 := r.FormValue("sha1")
@@ -140,8 +141,7 @@ func UpdateDiskDirNameById(w http.ResponseWriter, r *http.Request, utoken *db.Ta
 	response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, config.Error)
 }
 
-
-//上传文件
+// UploadDiskFileHandler 上传文件
 func UploadDiskFileHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	/*if r.Method == "GET" {
@@ -192,6 +192,7 @@ func UploadDiskFileHandler(w http.ResponseWriter, r *http.Request, utoken *db.Ta
 			response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "file copy error")
 			return
 		}
+		syncfile.ChangeDirModTime(metaInfo.FileLocation,5)
 		metaInfo.Filesha1 = utils.GetFileSha1(newfile)
 		//logger.Error("file sha1", metaInfo.Filesha1)
 		//todo 缓存添加

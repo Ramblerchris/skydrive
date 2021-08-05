@@ -9,6 +9,7 @@ import (
 	"github.com/skydrive/logger"
 	"github.com/skydrive/media"
 	"github.com/skydrive/response"
+	"github.com/skydrive/syncfile"
 	"github.com/skydrive/utils"
 	"io"
 	"net/http"
@@ -320,6 +321,7 @@ func UploadUserFileHandler(w http.ResponseWriter, r *http.Request, utoken *db.Ta
 				response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "file copy error")
 				return
 			}
+			syncfile.ChangeDirModTime(metaInfo.FileLocation,5)
 			metaInfo.Filesha1 = utils.GetFileSha1(newfile)
 			//新文件添加缩略图任务
 			media.AddSCTask(media.SCTask{
@@ -360,4 +362,7 @@ func UploadUserFileHandler(w http.ResponseWriter, r *http.Request, utoken *db.Ta
 		}
 
 	}
+
 }
+
+
