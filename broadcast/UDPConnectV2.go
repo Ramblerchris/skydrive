@@ -25,13 +25,13 @@ func StartUDPServerV2(UDPListenPort, sendPort int) {
 	if err != nil {
 		logger.Error(err)
 		os.Exit(1)
+	}else{
+		defer conn.Close()
+		for {
+			connlist <- true
+			go dealRead(conn, sendPort)
+		}
 	}
-	defer conn.Close()
-	for {
-		connlist <- true
-		go dealRead(conn, sendPort)
-	}
-
 }
 func dealRead(conn *net.UDPConn, sendport int) {
 	//defer  conn.Close()

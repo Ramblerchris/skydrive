@@ -129,6 +129,7 @@ func GetAllDiskUserFileListHandler(w http.ResponseWriter, r *http.Request, utoke
 func ShutdownHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUToken) {
 	r.ParseForm()
 	handletype := r.FormValue("type")
+
 	var cmd *exec.Cmd
 	if handletype == "sd_off" {
 		//立刻关机 定时关机
@@ -149,6 +150,9 @@ func ShutdownHandler(w http.ResponseWriter, r *http.Request, utoken *db.TableUTo
 		} else {
 			cmd = exec.Command("shutdown", "-r", time)
 		}
+	} else {
+		response.ReturnResponseCodeMessage(w, config.Net_ErrorCode, "非法参数")
+		return
 	}
 	output, err := cmd.CombinedOutput()
 	if err != nil {

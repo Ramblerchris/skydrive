@@ -42,13 +42,14 @@ func dealUdpGroup(UDPServerSendPort int,listener *net.UDPConn) {
 	srcAddr := &net.UDPAddr{IP: net.IPv4zero, Port: 0}
 	dstAddr := &net.UDPAddr{IP: remoteAddr.IP, Port: UDPServerSendPort}
 	conn, err := net.DialUDP("udp", srcAddr, dstAddr)
-	defer conn.Close()
 	if err != nil {
 		logger.Error(err)
+	}else{
+		defer conn.Close()
+		//defer conn.Close()
+		conn.Write([]byte(fmt.Sprintf("{\"debug\":%t ,\"message\":\"pong %s\"}",config.Debug, strings.ToUpper(string(data[:n])))))
+		logger.Infof("<%s>\n", conn.RemoteAddr())
 	}
-	//defer conn.Close()
-	conn.Write([]byte(fmt.Sprintf("{\"debug\":%t ,\"message\":\"pong %s\"}",config.Debug, strings.ToUpper(string(data[:n])))))
-	logger.Infof("<%s>\n", conn.RemoteAddr())
 	<-conngrouplist
 
 }

@@ -78,7 +78,7 @@ const (
 	Net_SuccessAginCode = 101
 	Net_EmptyCode       = 1
 
-	Regex_MobilePhone = `^(1[3|4|5|8][0-9]\d{4,8})$`
+	Regex_MobilePhone = `^(1[3|5|6|7|8|9][0-9]\d{4,8})$`
 	Salt_MD5          = "&%)&%A3t8C"
 
 	Thumbnail_Quality      = 30
