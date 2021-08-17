@@ -4,7 +4,7 @@
   "mysqlDbHost":"localhost",
   "mysqlDbPort":"3306",
   "mysqlDbName":"skydrive",
-  "mysqlDbcharset":"utf8",
+  "mysqlDbcharset":"utf8mb4",
   "mysqlDbconSprintf":"%s:%s@tcp(%s:%s)/%s?timeout=%dms&readTimeout=%dms&writeTimeout=%dms&charset=%s",
   "HttpPORT":9996,
   "UDP_SERVER_ListenPORT":8997,
