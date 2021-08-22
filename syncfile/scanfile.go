@@ -35,17 +35,17 @@ func scanDirBack(srcDirPath, srcRootPath, backupRootPath string, handle HandleFi
 
 	dir, err := ioutil.ReadDir(srcDirPath)
 	if err != nil {
-		log.Fatal(err)
+		logger.Error(err)
 	}
 	for index, info := range dir {
 		tempfile := fmt.Sprintf("%s%s%s", srcDirPath, string(os.PathSeparator), info.Name())
-		fmt.Printf("%s L %d N %1d %s \n", info.ModTime().Format("2006-01-02 15:04:05"),  level, index, tempfile)
+		logger.Infof("%s L %d N %1d %s \n", info.ModTime().Format("2006-01-02 15:04:05"),  level, index, tempfile)
 		newpath := strings.Replace(tempfile, srcRootPath, backupRootPath, 1)
 		if info.IsDir() {
 			dircount++
 			existdir, _ ,newinfo:= utils.PathExistsInfo(newpath)
 			if existdir {
-				fmt.Println("exist dir:",info.ModTime().Format("2006-01-02 15:04:05"), newinfo.ModTime().Format("2006-01-02 15:04:05"))
+				logger.Info("exist dir:",info.ModTime().Format("2006-01-02 15:04:05"), newinfo.ModTime().Format("2006-01-02 15:04:05"))
 				//如果存在
 				/*if  newinfo.ModTime().Before(info.ModTime()){
 					//修改时间在原始文件时间之前，需要扫描
@@ -59,16 +59,16 @@ func scanDirBack(srcDirPath, srcRootPath, backupRootPath string, handle HandleFi
 				modTime, err := readModTime(newpath)
 				if err !=nil|| modTime.UnixNano()!=info.ModTime().UnixNano(){
 					//修改时间不一致，继续扫描
-					fmt.Println("修改时间不一致，继续扫描")
+					logger.Info("修改时间不一致，继续扫描")
 					writeModTime(newpath,info.ModTime())
 					filecount, dircount, countsize = scanDirBack(tempfile, srcRootPath, backupRootPath, handle, level+1, filecount, dircount, countsize)
 
 				} else {
-					fmt.Println("修改时间一致，跳过扫描")
+					logger.Info("修改时间一致，跳过扫描")
 				}
 			} else {
 				//如果不存在，先创建文件夹，再继续扫描
-				fmt.Println("CreatebackupRootPath path:", newpath)
+				logger.Info("CreatebackupRootPath path:", newpath)
 				err := os.MkdirAll(newpath, os.ModePerm)
 				if err != nil {
 					return
@@ -87,16 +87,16 @@ func scanDirBack(srcDirPath, srcRootPath, backupRootPath string, handle HandleFi
 				//不存在直接复制
 				newfile, error := os.Create(newpath)
 				if error != nil {
-					fmt.Printf("创建文件出错 %s \n", error.Error())
+					logger.Error("创建文件出错 %s \n", error.Error())
 					return
 				}
 				efile, err := os.Open(tempfile)
 				if err != nil {
-					fmt.Printf("could not open file for : %s", tempfile)
+					logger.Error("could not open file for : %s", tempfile)
 					return
 				}
 				_, error = io.Copy(newfile, efile)
-				fmt.Printf("复制文件  : %s",newpath)
+				logger.Infof("复制文件  : %s",newpath)
 			}
 		}
 	}
@@ -135,7 +135,7 @@ func readModTime(DirPath string ) (modtime time.Time ,err error) {
 		fmt.Println("abc:",err.Error())
 	}
 	modtime=time.Unix(0,timena)
-	fmt.Printf("read  %s  %s %s  %d %s \n",contentByte,DirPath,content,timena,modtime.Format("2006-01-02 15:04:05"))
+	logger.Infof("read  %s  %s %s  %d %s \n",contentByte,DirPath,content,timena,modtime.Format("2006-01-02 15:04:05"))
 	return modtime,nil
 }
 
@@ -153,7 +153,7 @@ func ChangeDirModTime(parentDir string ,dirlevel int )bool  {
 		}
 	}
 	t:=time.Now().UnixNano()-start
-	fmt.Printf("ChangeDirModTime:%d \n",t)
+	logger.Infof("ChangeDirModTime:%d \n",t)
 	return success
 }
 
@@ -169,7 +169,7 @@ func scanDir(srcDirPath, backupRootPath string, handle HandleFile, level int, fi
 	}
 	for index, info := range dir {
 		tempfile := srcDirPath + "/" + info.Name()
-		fmt.Printf("%s %s L %d N %1d %s \n", info.ModTime().Format("2006-01-02 15:04:05"), tag, level, index, tempfile)
+		logger.Infof("%s %s L %d N %1d %s \n", info.ModTime().Format("2006-01-02 15:04:05"), tag, level, index, tempfile)
 		if info.IsDir() {
 			dircount++
 			filecount, dircount, countsize = scanDir(tempfile, backupRootPath, handle, level+1, filecount, dircount, countsize)
