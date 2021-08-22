@@ -24,5 +24,7 @@
 
 app端源码地址：https://github.com/Ramblerchris/skydriveandroid
 
+web端源码地址：https://github.com/Ramblerchris/skydrive-admin
+
 app下载地址：https://www.pgyer.com/6dX6
 
