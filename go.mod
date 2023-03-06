@@ -32,7 +32,7 @@ require (
 	//日志
 	github.com/sirupsen/logrus v1.7.0
 	github.com/tklauser/go-sysconf v0.3.5 // indirect
-	golang.org/x/image v0.0.0-20210216034530-4410531fe030 // indirect
+	golang.org/x/image v0.5.0 // indirect
 	//文件解析及手动实现ini文件解析
 	//gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
